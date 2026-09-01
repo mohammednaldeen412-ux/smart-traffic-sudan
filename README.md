@@ -104,6 +104,9 @@ npm run dev
 
 ---
 
-## 👥 فريق العمل والمطور
-* **م. محمد نصر الدين** — مطور ومصمم النظام
+## 👥 فريق العمل والتطوير (Development Team)
+* 👨‍💻 **م. محمد نصر الدين**
+* 👨‍💻 **م. مصطفى عيسى**
+* 👨‍💻 **م. علي عبد الرحمن**
+
 * **المستودع الرسمي على GitHub**: [https://github.com/mohammednaldeen412-ux/smart-traffic-sudan](https://github.com/mohammednaldeen412-ux/smart-traffic-sudan)
