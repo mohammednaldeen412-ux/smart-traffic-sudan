@@ -5,6 +5,24 @@
 
 ---
 
+## 📲 تحميل تطبيق الأندرويد المباشر (Direct APK Download)
+
+<div align="center">
+
+<a href="https://drive.google.com/file/d/1r20g4kPyctYmfG-sXNd6vTH7-rQdWV30/view?usp=sharing">
+  <img src="https://img.shields.io/badge/📥_تحميل_تطبيق_المرور-Android_APK-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="تحميل تطبيق المرور APK" height="48" />
+</a>
+
+<br /><br />
+
+**[ 📥 اضغط هنا لتحميل وتثبيت التطبيق مباشرة على هاتفك الأندرويد ](https://drive.google.com/file/d/1r20g4kPyctYmfG-sXNd6vTH7-rQdWV30/view?usp=sharing)**
+
+*(حجم الملف: 60MB - جاهز للتثبيت والتجربة الفورية)*
+
+</div>
+
+---
+
 ## 🌐 روابط الأنظمة المنشورة أونلاين (Live Demos)
 
 | النظام / الموقع | التقنية المستخدمة | رابط الوصول المباشر |
