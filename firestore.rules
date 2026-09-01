@@ -1,0 +1,106 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // التحقق من تسجيل الدخول
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // التحقق من الدور (Role)
+    function hasRole(role) {
+      return isAuth() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
+    }
+
+    // التحقق من ملكية البيانات
+    function isOwner(data) {
+      return isAuth() && data.userId == request.auth.uid;
+    }
+
+    // --- مجموعة المستخدمين ---
+    match /users/{userId} {
+      allow read: if isAuth();
+      allow create: if isAuth() && request.auth.uid == userId;
+      allow update: if isAuth() && (request.auth.uid == userId || hasRole('admin'));
+      allow delete: if hasRole('admin');
+    }
+
+    // --- مجموعة المركبات ---
+    match /vehicles/{vehicleId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update: if isAuth() && (resource.data.userId == request.auth.uid || hasRole('admin'));
+      allow delete: if hasRole('admin');
+    }
+
+    // --- مجموعة المخالفات ---
+    match /violations/{violationId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update: if isAuth() && (hasRole('admin') || hasRole('officer') || resource.data.userId == request.auth.uid);
+      allow delete: if hasRole('admin');
+    }
+
+    // --- مجموعة الاعتراضات ---
+    match /disputes/{disputeId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+      allow update: if hasRole('admin') || hasRole('officer');
+      allow delete: if hasRole('admin');
+    }
+
+    // --- مجموعة الإيصالات ---
+    match /receipts/{receiptId} {
+      allow read: if isAuth() && (resource.data.userId == request.auth.uid || hasRole('admin') || hasRole('officer'));
+      allow create: if isAuth();
+      allow update, delete: if hasRole('admin');
+    }
+
+    // --- مجموعة الإشعارات ---
+    match /notifications/{notificationId} {
+      allow read: if isAuth() && (resource.data.userId == request.auth.uid || hasRole('admin'));
+      allow create: if isAuth();
+      allow update, delete: if isAuth() && (resource.data.userId == request.auth.uid || hasRole('admin'));
+    }
+
+    // --- سجل تعاميم الضباط ---
+    match /announcements_log/{logId} {
+      allow read: if isAuth();
+      allow create: if isAuth();
+    }
+
+    // --- مجموعة الإعلانات ---
+    match /announcements/{announcementId} {
+      allow read: if true; // الإعلانات عامة
+      allow create, update, delete: if hasRole('admin');
+    }
+
+    // --- سجل العمليات (Audit Logs) ---
+    match /audit_logs/{logId} {
+      allow read: if hasRole('admin');
+      allow create: if isAuth();
+      allow update, delete: if false; 
+    }
+
+    // --- رموز التحقق (OTP) ---
+    match /otp_codes/{email} {
+      allow read, write: if true; // السماح بالوصول لعملية التحقق (يتم التحكم بها عبر الخدمة)
+    }
+
+    // --- حسابات البنك الافتراضي ---
+    match /bank_accounts/{accountId} {
+      allow read, write: if true;
+    }
+
+    // --- معاملات البنك الافتراضي ---
+    match /bank_transactions/{txnId} {
+      allow read, write: if true;
+    }
+
+    // --- طلبات الدفع ---
+    match /payment_requests/{reqId} {
+      allow read, write: if true;
+    }
+  }
+}

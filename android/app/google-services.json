@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "332395737612",
+    "project_id": "smart-traffic-sudan",
+    "storage_bucket": "smart-traffic-sudan.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332395737612:android:17f5e20af6d1ed50413429",
+        "android_client_info": {
+          "package_name": "com.example.smart_traffic_sudan"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRZMjrE-v3NprXmg1KZVn-Q4qzlRnDL2k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
