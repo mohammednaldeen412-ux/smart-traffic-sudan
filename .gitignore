@@ -1,0 +1,38 @@
+﻿# Large binaries and tools
+*.exe
+firebase.exe
+*.dll
+*.so
+*.dylib
+
+# Logs
+*.log
+*.txt
+*.log.*
+
+# Flutter & Dart ephemeral
+**/ephemeral/
+**/.plugin_symlinks/
+**/doc/api/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+**/build/
+
+# Android
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/android/app/build/
+**/.cxx/
+
+# Node & Web
+**/node_modules/
+**/dist/
+.firebase/
