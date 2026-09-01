@@ -66,33 +66,32 @@ smart-traffic-sudan/
 
 ---
 
-## 🚀 دليل التشغيل المحلي (Getting Started)
+## 👥 فريق العمل وتوزيع المهام (Development Team & Task Allocation)
 
-### متطلبات التشغيل:
-* **Flutter SDK** (v3.19+)
-* **Node.js** (v20+) & **npm**
-* **Git**
+### 👨‍💻 1. م. محمد نصر الدين (Team Leader & Mobile App Architect)
+* **المسؤوليات والمهام**:
+  * التصميم المعماري العام للمنظومة وهيكلية الـ Monorepo.
+  * تطوير وبرمجة تطبيق الهاتف الذكي (`moror`) عبر Flutter (واجهات المواطنين وضباط المرور).
+  * تكامل ميزات الضبط الميداني، رصد المخالفات، واستعلام لوحات المركبات.
+  * إدارة استضافة السيرفرات السحابية ونشر المشاريع على Firebase Hosting.
 
-### 1. تشغيل تطبيق الهاتف (`moror`):
-```bash
-cd moror
-flutter pub get
-flutter run
-```
+---
 
-### 2. تشغيل لوحة الإدارة (`smart_traffic_admin`):
-```bash
-cd smart_traffic_admin
-flutter pub get
-flutter run -d chrome
-```
+### 👨‍💻 2. م. مصطفى عيسى (Backend & Database Security Specialist)
+* **المسؤوليات والمهام**:
+  * تصميم وبناء هيكلية قاعدة البيانات السحابية (Firebase Cloud Firestore).
+  * برمجة قواعد الحماية وصلاحيات الأدوار (Security Rules & Authentication).
+  * تطوير المعاملات المالية الذرية (Atomic Transactions) وتشفير الإيصالات المالية (SHA-256 Hash).
+  * إعداد وضبط خدمة الإشعارات التنبيهية الفورية (Cloud Messaging).
 
-### 3. تشغيل موقع بنكك (`bankak`):
-```bash
-cd bankak
-npm install
-npm run dev
-```
+---
+
+### 👨‍💻 3. م. علي عبد الرحمن (Web Gateways & QA Specialist)
+* **المسؤوليات والمهام**:
+  * تطوير وتصميم بوابة ومحاكي بنكك للدفع الإلكتروني (`Bankak`) عبر React + TypeScript.
+  * تطوير واجهات لوحة تحكم وإدارة المرور العامة (`smart_traffic_admin`) عبر Flutter Web.
+  * ربط واختبار تدفق عمليات الدفع الإلكتروني والمزامنة اللحظية بين البنك والتطبيق.
+  * اختبار الجودة وفحص الأداء الشامل للأنظمة (Quality Assurance & End-to-End Testing).
 
 ---
 
@@ -104,9 +103,5 @@ npm run dev
 
 ---
 
-## 👥 فريق العمل والتطوير (Development Team)
-* 👨‍💻 **م. محمد نصر الدين**
-* 👨‍💻 **م. مصطفى عيسى**
-* 👨‍💻 **م. علي عبد الرحمن**
-
-* **المستودع الرسمي على GitHub**: [https://github.com/mohammednaldeen412-ux/smart-traffic-sudan](https://github.com/mohammednaldeen412-ux/smart-traffic-sudan)
+## 🌐 المستودع الرسمي على GitHub
+👉 [https://github.com/mohammednaldeen412-ux/smart-traffic-sudan](https://github.com/mohammednaldeen412-ux/smart-traffic-sudan)
