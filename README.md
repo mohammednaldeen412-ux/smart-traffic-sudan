@@ -66,38 +66,66 @@ smart-traffic-sudan/
 
 ---
 
-## 👥 فريق العمل وتوزيع المهام (Development Team & Task Allocation)
+## 👥 فريق العمل والمطورين (Development Team)
 
-### 👨‍💻 1. م. محمد نصر الدين
-* **المسمى**: قائد الفريق ومطور تطبيق الهاتف *(Team Leader & Mobile Architect)*
-* 💬 **واتساب**: [0961941263 (تواصل مباشر)](https://wa.me/249961941263)
-* **المسؤوليات والمهام**:
-  * التصميم المعماري العام للمنظومة وهيكلية الـ Monorepo.
-  * تطوير وبرمجة تطبيق الهاتف الذكي (`moror`) عبر Flutter (واجهات المواطنين وضباط المرور).
-  * تكامل ميزات الضبط الميداني، رصد المخالفات، واستعلام لوحات المركبات.
-  * إدارة استضافة السيرفرات السحابية ونشر المشاريع على Firebase Hosting.
-
----
-
-### 👨‍💻 2. م. مصطفى عيسى
-* **المسمى**: مهندس الخوادم وقواعد البيانات والأمان *(Backend & Security Specialist)*
-* 💬 **واتساب**: [0909987293 (تواصل مباشر)](https://wa.me/249909987293)
-* **المسؤوليات والمهام**:
-  * تصميم وبناء هيكلية قاعدة البيانات السحابية (Firebase Cloud Firestore).
-  * برمجة قواعد الحماية وصلاحيات الأدوار (Security Rules & Authentication).
-  * تطوير المعاملات المالية الذرية (Atomic Transactions) وتشفير الإيصالات المالية (SHA-256 Hash).
-  * إعداد وضبط خدمة الإشعارات التنبيهية الفورية (Cloud Messaging).
-
----
-
-### 👨‍💻 3. م. علي عبد الرحمن
-* **المسمى**: مطور واجهات الويب وبوابة الدفع واختبار الجودة *(Web & QA Specialist)*
-* 💬 **واتساب**: [0960402145 (تواصل مباشر)](https://wa.me/249960402145)
-* **المسؤوليات والمهام**:
-  * تطوير وتصميم بوابة ومحاكي بنكك للدفع الإلكتروني (`Bankak`) عبر React + TypeScript.
-  * تطوير واجهات لوحة تحكم وإدارة المرور العامة (`smart_traffic_admin`) عبر Flutter Web.
-  * ربط واختبار تدفق عمليات الدفع الإلكتروني والمزامنة اللحظية بين البنك والتطبيق.
-  * اختبار الجودة وفحص الأداء الشامل للأنظمة (Quality Assurance & End-to-End Testing).
+<table align="center" width="100%">
+  <tr>
+    <td align="center" width="33%" valign="top">
+      <img src="docs/team/mohammed.jpg" width="170" height="220" style="border-radius: 18px; object-fit: cover;" alt="م. محمد نصر الدين"/><br /><br />
+      <b>م. محمد نصر الدين</b><br />
+      <sub>قائد الفريق ومطور تطبيق الهاتف</sub><br /><br />
+      <a href="https://wa.me/249961941263">💬 واتساب: 0961941263</a>
+      <br /><br />
+      <details>
+        <summary><b>📋 عرض تفاصيل المهام</b></summary>
+        <div align="right">
+          <ul>
+            <li>التخطيط المعماري العام للمنظومة وهيكلية الـ Monorepo.</li>
+            <li>تطوير وبرمجة تطبيق الموبايل (<code>moror</code>) عبر Flutter.</li>
+            <li>بناء وتطوير واجهات المواطنين وضباط المرور الميدانيين.</li>
+            <li>إدارة الاستضافة السحابية ونشر المشاريع على Firebase.</li>
+          </ul>
+        </div>
+      </details>
+    </td>
+    <td align="center" width="33%" valign="top">
+      <img src="docs/team/mustafa.jpg" width="170" height="220" style="border-radius: 18px; object-fit: cover;" alt="م. مصطفى عيسى"/><br /><br />
+      <b>م. مصطفى عيسى</b><br />
+      <sub>مهندس الخوادم وقواعد البيانات والأمان</sub><br /><br />
+      <a href="https://wa.me/249909987293">💬 واتساب: 0909987293</a>
+      <br /><br />
+      <details>
+        <summary><b>📋 عرض تفاصيل المهام</b></summary>
+        <div align="right">
+          <ul>
+            <li>تصميم وبناء هيكلية قاعدة البيانات (Cloud Firestore).</li>
+            <li>إعداد وبرمجة قواعد الحماية وصلاحيات الأدوار (Security Rules).</li>
+            <li>برمجة المعاملات المالية الذرية (Atomic Transactions).</li>
+            <li>تطبيق خوارزميات التشفير وإعداد الإشعارات (Cloud Messaging).</li>
+          </ul>
+        </div>
+      </details>
+    </td>
+    <td align="center" width="33%" valign="top">
+      <img src="docs/team/ali.jpg" width="170" height="220" style="border-radius: 18px; object-fit: cover;" alt="م. علي عبد الرحمن"/><br /><br />
+      <b>م. علي عبد الرحمن</b><br />
+      <sub>مطور واجهات الويب وبوابة الدفع واختبار الجودة</sub><br /><br />
+      <a href="https://wa.me/249960402145">💬 واتساب: 0960402145</a>
+      <br /><br />
+      <details>
+        <summary><b>📋 عرض تفاصيل المهام</b></summary>
+        <div align="right">
+          <ul>
+            <li>تصميم وبناء بوابة ومحاكي بنكك (React + TypeScript).</li>
+            <li>تطوير لوحة تحكم إدارة المرور (Flutter Web).</li>
+            <li>ربط وتجربة تدفق عمليات السداد الإلكتروني والمزامنة.</li>
+            <li>اختبار الأداء وفحص الجودة الشامل للأنظمة (QA Testing).</li>
+          </ul>
+        </div>
+      </details>
+    </td>
+  </tr>
+</table>
 
 ---
 
