@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../core/services/app_update_service.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/locale_provider.dart';
 import '../../core/services/theme_provider.dart';
@@ -147,7 +148,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'تطبيق مرور السودان الذكي (Smart Traffic Sudan)\n'
+                'تطبيق مـرورك (Mororak) - خدمات المرور بين يديك\n'
                 'الإدارة العامة للمرور - وزارة الداخلية',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
               ),
@@ -733,10 +734,24 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             ),
 
             const SizedBox(height: 16),
-            const Center(
-              child: Text(
-                'جمهورية السودان - وزارة الداخلية - المرور الذكي v1.0.0',
-                style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+            Center(
+              child: InkWell(
+                onTap: () => context.read<AppUpdateService>().checkForUpdate(context, isManual: true),
+                borderRadius: BorderRadius.circular(8),
+                child: const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.sync_rounded, size: 14, color: AppColors.textMuted),
+                      SizedBox(width: 4),
+                      Text(
+                        'تطبيق مـرورك v${AppUpdateService.currentVersionName} (فحص التحديثات)',
+                        style: TextStyle(fontSize: 11, color: AppColors.textMuted),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 110), // مسافة سفلية كافية لظهور زر تسجيل الخروج فوق شريط التنقل

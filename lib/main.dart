@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -6,6 +6,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'core/services/announcement_service.dart';
 import 'core/services/auth_service.dart';
+import 'core/services/app_update_service.dart';
 import 'core/services/connectivity_service.dart';
 import 'core/services/locale_provider.dart';
 import 'core/services/notification_service.dart';
@@ -47,6 +48,7 @@ class SmartTrafficSudanApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ConnectivityService()),
         ChangeNotifierProvider(create: (_) => NotificationService()),
         ChangeNotifierProvider(create: (_) => PaymentService()),
+        ChangeNotifierProvider(create: (_) => AppUpdateService()),
         ChangeNotifierProxyProvider<TrafficService, AnnouncementService>(
           create: (context) =>
               AnnouncementService(context.read<TrafficService>()),
@@ -73,7 +75,7 @@ class SmartTrafficSudanApp extends StatelessWidget {
           );
 
           return MaterialApp(
-            title: 'مرور السودان الذكي - Smart Traffic Sudan',
+            title: 'مرورك - خدمات المرور بين يديك',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,

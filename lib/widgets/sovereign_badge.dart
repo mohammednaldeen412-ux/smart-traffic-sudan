@@ -10,7 +10,7 @@ class SovereignBadge extends StatelessWidget {
   const SovereignBadge({
     super.key,
     this.title = 'جمهورية السودان - وزارة الداخلية',
-    this.subtitle = 'الإدارة العامة للمرور - البوابة الإلكترونية',
+    this.subtitle = 'منظومة مـرورك - خدمات المرور بين يديك',
     this.trailing,
   });
 

@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../core/services/app_update_service.dart';
 import '../../core/services/theme_provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../profile/digital_license_screen.dart';
@@ -30,6 +31,11 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<AppUpdateService>().checkForUpdate(context);
+      }
+    });
   }
 
   void _onTabTapped(int index) {

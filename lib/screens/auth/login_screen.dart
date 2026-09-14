@@ -172,19 +172,31 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
 
-                          const SizedBox(height: 18),
+                          const SizedBox(height: 14),
+                          Text(
+                            'مـرورك',
+                            style: AppTypography.displayMedium.copyWith(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.goldPrimary),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'خدمات المرور بين يديك',
+                            style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w500),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 20),
                           Text(
                             'تسجيل الدخول',
-                            style: AppTypography.displayMedium.copyWith(fontSize: 24, fontWeight: FontWeight.w900),
+                            style: AppTypography.displayMedium.copyWith(fontSize: 20, fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 4),
                           Text(
                             'بوابة المواطن للخدمات المرورية',
-                            style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary),
+                            style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
                             textAlign: TextAlign.center,
                           ),
-                          const SizedBox(height: 32),
+                          const SizedBox(height: 28),
 
                           Container(
                             padding: const EdgeInsets.all(24),

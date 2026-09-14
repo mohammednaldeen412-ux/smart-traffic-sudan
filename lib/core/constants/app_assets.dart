@@ -2,8 +2,8 @@ class AppAssets {
   AppAssets._();
 
   // أيقونات ورموز توضيحية
-  static const String appName = 'مرور السودان الذكي';
-  static const String appTagline = 'الطريق الذكي لمستقبل أكثر أماناً';
+  static const String appName = 'مـرورك';
+  static const String appTagline = 'خدمات المرور بين يديك';
   static const String sovereignEntity = 'جمهورية السودان - وزارة الداخلية';
   static const String sovereignDirectorate = 'الإدارة العامة للمرور';
   static const String emergencyHotline = '777';

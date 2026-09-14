@@ -229,7 +229,7 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Column(
                       children: [
                         Text(
-                          'مرور السودان الذكي',
+                          'مـرورك',
                           style: AppTypography.displayMedium.copyWith(
                             color: AppColors.goldPrimary,
                             fontWeight: FontWeight.bold,
@@ -239,7 +239,7 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          'SMART TRAFFIC SUDAN',
+                          'MORORAK',
                           style: AppTypography.bodyMedium.copyWith(
                             color: AppColors.goldLight.withValues(alpha: 0.7),
                             letterSpacing: 3.0,
@@ -249,7 +249,7 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'المنظومة الرقمية القومية للمرور والسلامة',
+                          'خدمات المرور بين يديك',
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.textMuted,
                           ),

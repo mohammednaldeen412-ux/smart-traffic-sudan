@@ -1,3 +1,15 @@
+// Fix Android Studio / Gradle environment preference path conflict safely in Groovy
+System.clearProperty("ANDROID_PREFS_ROOT")
+try {
+    def env = System.getenv()
+    if (env.containsKey("ANDROID_PREFS_ROOT")) {
+        def field = env.getClass().getDeclaredField("m")
+        field.setAccessible(true)
+        def map = field.get(env)
+        map.remove("ANDROID_PREFS_ROOT")
+    }
+} catch (e) {}
+
 allprojects {
     repositories {
         google()
