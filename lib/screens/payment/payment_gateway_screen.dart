@@ -80,7 +80,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
     final accountController = TextEditingController(
         text: _accountNumberController.text.trim().isNotEmpty
             ? _accountNumberController.text.trim()
-            : '2849102948');
+            : '28491');
     final pinController = TextEditingController();
     
     Map<String, dynamic>? lookedUpAccount;
@@ -198,7 +198,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
                             borderRadius: BorderRadius.circular(10),
                             borderSide: const BorderSide(color: Color(0xFF334155)),
                           ),
-                          hintText: 'مثال: 2849102948',
+                          hintText: 'مثال: 28491',
                           hintStyle: const TextStyle(color: Colors.white30),
                         ),
                         onChanged: (_) {
@@ -342,7 +342,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: const Text(
-                      'الحساب الافتراضي: 2849102948 | الـ PIN: 1234',
+                      'الحساب الافتراضي: 28491 (أو الهاتف: 0912345678) | الـ PIN: 1234',
                       style: TextStyle(color: Color(0xFF34D399), fontSize: 11),
                     ),
                   ),
