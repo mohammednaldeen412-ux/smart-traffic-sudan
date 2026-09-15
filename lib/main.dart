@@ -44,9 +44,14 @@ class SmartTrafficSudanApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider(create: (_) => AuthService()),
-        ChangeNotifierProvider(create: (_) => TrafficService()),
-        ChangeNotifierProvider(create: (_) => ConnectivityService()),
         ChangeNotifierProvider(create: (_) => NotificationService()),
+        ChangeNotifierProxyProvider<NotificationService, TrafficService>(
+          create: (context) =>
+              TrafficService()..setNotificationService(context.read<NotificationService>()),
+          update: (context, notif, traffic) =>
+              (traffic ?? TrafficService())..setNotificationService(notif),
+        ),
+        ChangeNotifierProvider(create: (_) => ConnectivityService()),
         ChangeNotifierProvider(create: (_) => PaymentService()),
         ChangeNotifierProvider(create: (_) => AppUpdateService()),
         ChangeNotifierProxyProvider<TrafficService, AnnouncementService>(

@@ -1,6 +1,7 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/localization/app_strings.dart';
 import '../../core/services/theme_provider.dart';
 import '../../core/services/traffic_service.dart';
 import '../../core/theme/app_colors.dart';
@@ -78,11 +79,11 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        title: const Text('إدارة المركبات والتراخيص'),
+        title: Text(context.tr('vehicles_management')),
         actions: [
           IconButton(
             icon: const Icon(Icons.add_circle_outline_rounded, color: AppColors.goldPrimary),
-            tooltip: 'إضافة مركبة',
+            tooltip: context.tr('add_vehicle'),
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -108,7 +109,7 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
                 },
                 style: TextStyle(color: textPrimary),
                 decoration: InputDecoration(
-                  hintText: 'ابحث برقم اللوحة، الماركة، أو الموديل...',
+                  hintText: context.tr('search_vehicles_hint'),
                   prefixIcon: const Icon(Icons.search_rounded, color: AppColors.goldPrimary),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
@@ -144,15 +145,15 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
               // فلتر الفئات
               Row(
                 children: [
-                  _buildFilterChip('الكل (${traffic.vehicles.length})', 0),
+                  _buildFilterChip('${context.tr('all')} (${traffic.vehicles.length})', 0),
                   const SizedBox(width: 8),
                   _buildFilterChip(
-                    'موثقة (${traffic.vehicles.where((v) => v.isVerified).length})',
+                    '${context.tr('verified')} (${traffic.vehicles.where((v) => v.isVerified).length})',
                     1,
                   ),
                   const SizedBox(width: 8),
                   _buildFilterChip(
-                    'قيد المراجعة (${traffic.vehicles.where((v) => !v.isVerified).length})',
+                    '${context.tr('under_review')} (${traffic.vehicles.where((v) => !v.isVerified).length})',
                     2,
                   ),
                 ],
@@ -190,18 +191,18 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
                                         ),
                                         const SizedBox(height: 16),
                                         Text(
-                                          'لا توجد مركبات تطابق البحث',
+                                          context.tr('no_vehicles'),
                                           style: AppTypography.titleMedium,
                                         ),
                                         const SizedBox(height: 8),
                                         Text(
-                                          'يمكنك إضافة مركبة جديدة وربطها برقمك الوطني بسهولة',
+                                          context.tr('clean_record_msg'),
                                           style: AppTypography.bodySmall,
                                           textAlign: TextAlign.center,
                                         ),
                                         const SizedBox(height: 20),
                                         CustomButton(
-                                          text: 'إضافة مركبة جديدة',
+                                          text: context.tr('add_vehicle_btn'),
                                           icon: Icons.add_rounded,
                                           width: 220,
                                           onPressed: () {

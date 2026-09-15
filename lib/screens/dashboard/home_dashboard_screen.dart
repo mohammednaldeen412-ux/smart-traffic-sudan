@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/localization/app_strings.dart';
 import '../../core/services/auth_service.dart';
+import '../../core/services/notification_service.dart';
 import '../../core/services/traffic_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
@@ -16,13 +18,28 @@ import '../vehicles/add_vehicle_screen.dart';
 import '../vehicles/vehicle_details_screen.dart';
 import '../violations/violation_details_screen.dart';
 
-class HomeDashboardScreen extends StatelessWidget {
+class HomeDashboardScreen extends StatefulWidget {
   final Function(int)? onNavigateTab;
 
   const HomeDashboardScreen({
     super.key,
     this.onNavigateTab,
   });
+
+  @override
+  State<HomeDashboardScreen> createState() => _HomeDashboardScreenState();
+}
+
+class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<NotificationService>().requestNotificationPermission();
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +95,7 @@ class HomeDashboardScreen extends StatelessWidget {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Text(
-                                            'مرحباً بك،',
+                                            context.tr('welcome'),
                                             style: AppTypography.bodySmall.copyWith(
                                               color: AppColors.primary,
                                               fontWeight: FontWeight.bold,
@@ -94,7 +111,7 @@ class HomeDashboardScreen extends StatelessWidget {
                                         ],
                                       ),
                                       Text(
-                                        user?.fullName ?? 'المواطن',
+                                        user?.fullName ?? context.tr('citizen'),
                                         style: AppTypography.titleSmall.copyWith(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 13,
@@ -139,7 +156,7 @@ class HomeDashboardScreen extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    'طوارئ 777',
+                                    context.tr('emergency_777'),
                                     style: AppTypography.bodySmall.copyWith(
                                       color: AppColors.error,
                                       fontWeight: FontWeight.bold,
@@ -198,7 +215,7 @@ class HomeDashboardScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'المخالفات المستحقة',
+                                    context.tr('total_fines'),
                                     style: AppTypography.bodySmall.copyWith(
                                       color: AppColors.textSecondary,
                                     ),
@@ -214,7 +231,7 @@ class HomeDashboardScreen extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    ' مخالفات غير مدفوعة',
+                                    ' ${context.tr('unpaid_violations')}',
                                     style: AppTypography.bodySmall.copyWith(
                                       fontSize: 10,
                                       color: AppColors.textMuted,
@@ -235,7 +252,7 @@ class HomeDashboardScreen extends StatelessWidget {
                                   );
                                 },
                                 icon: const Icon(Icons.payment, size: 16),
-                                label: const Text('سداد الكل'),
+                                label: Text(context.tr('pay_all')),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.primary,
                                   foregroundColor: Colors.white,
@@ -253,7 +270,7 @@ class HomeDashboardScreen extends StatelessWidget {
 
                       // Quick Services Section Title
                       Text(
-                        'الخدمات السريعة',
+                        context.tr('quick_services'),
                         style: AppTypography.titleMedium.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -272,21 +289,21 @@ class HomeDashboardScreen extends StatelessWidget {
                         children: [
                           _buildServiceCard(
                             context: context,
-                            title: 'مركباتي',
+                            title: context.tr('my_vehicles'),
                             icon: Icons.directions_car_rounded,
                             color: Colors.blue,
-                            onTap: () => onNavigateTab?.call(1),
+                            onTap: () => widget.onNavigateTab?.call(1),
                           ),
                           _buildServiceCard(
                             context: context,
-                            title: 'المخالفات',
+                            title: context.tr('violations'),
                             icon: Icons.receipt_long_rounded,
                             color: Colors.orange,
-                            onTap: () => onNavigateTab?.call(2),
+                            onTap: () => widget.onNavigateTab?.call(2),
                           ),
                           _buildServiceCard(
                             context: context,
-                            title: 'رخصتي الرقمية',
+                            title: context.tr('digital_license'),
                             icon: Icons.badge_rounded,
                             color: Colors.teal,
                             onTap: () {
@@ -299,7 +316,7 @@ class HomeDashboardScreen extends StatelessWidget {
                           ),
                           _buildServiceCard(
                             context: context,
-                            title: 'سداد سريع',
+                            title: context.tr('quick_pay'),
                             icon: Icons.payment_rounded,
                             color: Colors.green,
                             onTap: () {
@@ -313,8 +330,8 @@ class HomeDashboardScreen extends StatelessWidget {
                                 );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('لا توجد مخالفات غير مدفوعة حالياً'),
+                                  SnackBar(
+                                    content: Text(context.tr('all_clear')),
                                     backgroundColor: AppColors.success,
                                   ),
                                 );
@@ -323,7 +340,7 @@ class HomeDashboardScreen extends StatelessWidget {
                           ),
                           _buildServiceCard(
                             context: context,
-                            title: 'إضافة مركبة',
+                            title: context.tr('add_vehicle'),
                             icon: Icons.add_circle_outline_rounded,
                             color: Colors.purple,
                             onTap: () {
@@ -336,7 +353,7 @@ class HomeDashboardScreen extends StatelessWidget {
                           ),
                           _buildServiceCard(
                             context: context,
-                            title: 'بلاغ طوارئ',
+                            title: context.tr('emergency_report'),
                             icon: Icons.support_agent_rounded,
                             color: Colors.red,
                             onTap: () {
@@ -357,14 +374,14 @@ class HomeDashboardScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'مركباتي المسجلة',
+                            context.tr('registered_vehicles'),
                             style: AppTypography.titleMedium.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           TextButton(
-                            onPressed: () => onNavigateTab?.call(1),
-                            child: const Text('عرض الكل'),
+                            onPressed: () => widget.onNavigateTab?.call(1),
+                            child: Text(context.tr('view_all')),
                           ),
                         ],
                       ),
@@ -385,7 +402,7 @@ class HomeDashboardScreen extends StatelessWidget {
                               const Icon(Icons.directions_car_outlined, size: 40, color: AppColors.textMuted),
                               const SizedBox(height: 8),
                               Text(
-                                'لا توجد مركبات مسجلة باسمك حالياً',
+                                context.tr('no_vehicles'),
                                 style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary),
                               ),
                               const SizedBox(height: 12),
@@ -396,7 +413,7 @@ class HomeDashboardScreen extends StatelessWidget {
                                   );
                                 },
                                 icon: const Icon(Icons.add, size: 18),
-                                label: const Text('إضافة مركبة جديدة'),
+                                label: Text(context.tr('add_vehicle_btn')),
                               ),
                             ],
                           ),
@@ -431,14 +448,14 @@ class HomeDashboardScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'أحدث المخالفات',
+                            context.tr('recent_violations'),
                             style: AppTypography.titleMedium.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           TextButton(
-                            onPressed: () => onNavigateTab?.call(2),
-                            child: const Text('عرض الكل'),
+                            onPressed: () => widget.onNavigateTab?.call(2),
+                            child: Text(context.tr('view_all')),
                           ),
                         ],
                       ),
@@ -460,7 +477,7 @@ class HomeDashboardScreen extends StatelessWidget {
                               const Icon(Icons.verified_user_rounded, color: AppColors.success, size: 24),
                               const SizedBox(width: 8),
                               Text(
-                                'سجلك نظيف! لا توجد مخالفات مسجلة',
+                                context.tr('all_clear'),
                                 style: AppTypography.bodyMedium.copyWith(
                                   color: AppColors.success,
                                   fontWeight: FontWeight.bold,

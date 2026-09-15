@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../core/localization/app_strings.dart';
 import '../../core/services/app_update_service.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/locale_provider.dart';
+import '../../core/services/notification_service.dart';
 import '../../core/services/theme_provider.dart';
 import '../../core/services/traffic_service.dart';
 import '../../core/theme/app_colors.dart';
@@ -340,7 +342,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    user?.fullName ?? 'المواطن السوداني',
+                    user?.fullName ?? context.tr('citizen'),
                     style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
@@ -350,7 +352,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       const Icon(Icons.fingerprint, size: 14, color: AppColors.textMuted),
                       const SizedBox(width: 4),
                       Text(
-                        'الرقم الوطني: ${user?.nationalId ?? 'غير موثق'}',
+                        '${context.tr('national_id_label')} ${user?.nationalId ?? '---'}',
                         style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted),
                       ),
                     ],
@@ -363,7 +365,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      user?.isOfficer == true ? 'حساب ضابط مرور معتمد' : 'حساب مواطن موثق',
+                      user?.isOfficer == true ? context.tr('officer_account_tag') : context.tr('citizen_account_tag'),
                       style: const TextStyle(
                         color: AppColors.success,
                         fontSize: 11,
@@ -380,11 +382,11 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               padding: const EdgeInsets.symmetric(vertical: 16),
               child: Row(
                 children: [
-                  _buildStatItem('المركبات', traffic.totalVehiclesCount.toString(), Icons.directions_car_filled_rounded),
+                  _buildStatItem(context.tr('vehicles_stat'), traffic.totalVehiclesCount.toString(), Icons.directions_car_filled_rounded),
                   const SizedBox(width: 12),
-                  _buildStatItem('المخالفات', traffic.unpaidViolationsCount.toString(), Icons.receipt_long_rounded, isError: traffic.unpaidViolationsCount > 0),
+                  _buildStatItem(context.tr('violations_stat'), traffic.unpaidViolationsCount.toString(), Icons.receipt_long_rounded, isError: traffic.unpaidViolationsCount > 0),
                   const SizedBox(width: 12),
-                  _buildStatItem('المبالغ', '${traffic.totalUnpaidAmount.toInt()} ج.س', Icons.account_balance_wallet_rounded),
+                  _buildStatItem(context.tr('amounts_stat'), '${traffic.totalUnpaidAmount.toInt()} ${context.tr('currency_sdg')}', Icons.account_balance_wallet_rounded),
                 ],
               ),
             ),
@@ -424,12 +426,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'بطاقة رخصة القيادة الرقمية',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          Text(
+                            context.tr('digital_license_full'),
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                           ),
                           Text(
-                            'رقم الرخصة: ${user?.driverLicenseNumber ?? 'غير متوفر'}',
+                            '${context.tr('license_number_label')} ${user?.driverLicenseNumber ?? '---'}',
                             style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
                           ),
                         ],
@@ -445,7 +447,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
             // ─── 3. Personal Information Section ───
             Text(
-              'البيانات والمعلومات الشخصية',
+              context.tr('personal_info_section'),
               style: AppTypography.titleSmall.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
@@ -544,9 +546,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             ),
             const SizedBox(height: 20),
 
-            // ─── 5. Application Settings (Language, Dark Mode, Alerts) ───
+            // ─── 4. Application Settings (Language, Dark Mode, Alerts) ───
             Text(
-              'إعدادات التطبيق والمظهر',
+              context.tr('app_settings_section'),
               style: AppTypography.titleSmall.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
@@ -565,9 +567,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   // Language Selector
                   ListTile(
                     leading: const Icon(Icons.language_rounded, color: AppColors.primary),
-                    title: const Text('لغة التطبيق (Language)', style: TextStyle(fontSize: 14)),
+                    title: Text(context.tr('app_language'), style: const TextStyle(fontSize: 14)),
                     subtitle: Text(
-                      localeProvider.isArabic ? 'العربية (السودان)' : 'English (United States)',
+                      localeProvider.isArabic ? context.tr('arabic_lang') : context.tr('english_lang'),
                       style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
                     ),
                     trailing: DropdownButton<String>(
@@ -599,9 +601,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       themeProvider.isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
                       color: AppColors.primary,
                     ),
-                    title: const Text('الوضع المظلم (Dark Mode)', style: TextStyle(fontSize: 14)),
+                    title: Text(context.tr('dark_mode_title'), style: const TextStyle(fontSize: 14)),
                     subtitle: Text(
-                      themeProvider.isDark ? 'مفعل (الملكي الداكن)' : 'الوضع النهاري الفاتح',
+                      themeProvider.isDark ? context.tr('dark_mode_active') : context.tr('dark_mode_inactive'),
                       style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
                     ),
                     value: themeProvider.isDark,
@@ -615,12 +617,15 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   // Notifications Toggle
                   SwitchListTile(
                     secondary: const Icon(Icons.notifications_active_outlined, color: AppColors.primary),
-                    title: const Text('إشعارات المخالفات والرسائل', style: TextStyle(fontSize: 14)),
-                    subtitle: const Text('تنبيه فوري عند تسجيل أي مخالفة', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                    title: Text(context.tr('notifications_title'), style: const TextStyle(fontSize: 14)),
+                    subtitle: Text(context.tr('notifications_subtitle'), style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
                     value: _notificationsEnabled,
                     activeThumbColor: AppColors.primary,
-                    onChanged: (val) {
+                    onChanged: (val) async {
                       setState(() => _notificationsEnabled = val);
+                      if (val) {
+                        await context.read<NotificationService>().requestNotificationPermission();
+                      }
                     },
                   ),
                   const Divider(height: 1, indent: 16, endIndent: 16),
@@ -628,8 +633,8 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   // Radar Proximity Alert
                   SwitchListTile(
                     secondary: const Icon(Icons.speed_rounded, color: AppColors.primary),
-                    title: const Text('تنبيهات السرعة والرادار', style: TextStyle(fontSize: 14)),
-                    subtitle: const Text('تنبيه السائق بنقاط التهدئة المرورية', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                    title: Text(context.tr('radar_alerts_title'), style: const TextStyle(fontSize: 14)),
+                    subtitle: Text(context.tr('radar_alerts_subtitle'), style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
                     value: _radarAlerts,
                     activeThumbColor: AppColors.primary,
                     onChanged: (val) {
@@ -644,7 +649,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
             // ─── 5. Privacy, Policy, & Support ───
             Text(
-              'الخصوصية، المعايير والمساعدة',
+              context.tr('privacy_support_section'),
               style: AppTypography.titleSmall.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppColors.primary,
@@ -662,15 +667,15 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                 children: [
                   ListTile(
                     leading: const Icon(Icons.policy_outlined, color: AppColors.primary),
-                    title: const Text('سياسة الاستخدام والخصوصية', style: TextStyle(fontSize: 14)),
-                    subtitle: const Text('معايير حماية البيانات وأمان أندرويد', style: TextStyle(fontSize: 12, color: AppColors.textMuted)),
+                    title: Text(context.tr('privacy_policy_title'), style: const TextStyle(fontSize: 14)),
+                    subtitle: Text(context.tr('privacy_policy_subtitle'), style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
                     trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                     onTap: _showPrivacyPolicyDialog,
                   ),
                   const Divider(height: 1, indent: 16, endIndent: 16),
                   ListTile(
                     leading: const Icon(Icons.headset_mic_outlined, color: AppColors.primary),
-                    title: const Text('طوارئ وغرفة عمليات المرور (777)', style: TextStyle(fontSize: 14)),
+                    title: Text(context.tr('emergency_center_title'), style: const TextStyle(fontSize: 14)),
                     trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                     onTap: () {
                       Navigator.of(context).push(
@@ -681,7 +686,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   const Divider(height: 1, indent: 16, endIndent: 16),
                   ListTile(
                     leading: const Icon(Icons.info_outline_rounded, color: AppColors.primary),
-                    title: const Text('حول التطبيق ومعايير النظام', style: TextStyle(fontSize: 14)),
+                    title: Text(context.tr('about_app_title'), style: const TextStyle(fontSize: 14)),
                     trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14),
                     onTap: _showAboutDialog,
                   ),
@@ -693,7 +698,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
             // ─── 6. Logout & Session Actions ───
             CustomButton(
-              text: 'تسجيل الخروج من الحساب',
+              text: context.tr('signout_btn'),
               icon: Icons.logout_rounded,
               isOutlined: true,
               textColor: AppColors.error,
@@ -704,12 +709,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                   builder: (dialogCtx) => AlertDialog(
                     backgroundColor: Theme.of(dialogCtx).cardColor,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    title: const Text('تأكيد تسجيل الخروج'),
-                    content: const Text('هل أنت متأكد من رغبتك في تسجيل الخروج من التطبيق؟'),
+                    title: Text(context.tr('confirm_signout')),
+                    content: Text(context.tr('confirm_signout_msg')),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(dialogCtx, false),
-                        child: const Text('إلغاء'),
+                        child: Text(context.tr('cancel')),
                       ),
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
@@ -717,7 +722,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                           foregroundColor: Colors.white,
                         ),
                         onPressed: () => Navigator.pop(dialogCtx, true),
-                        child: const Text('تسجيل الخروج'),
+                        child: Text(context.tr('signout_btn')),
                       ),
                     ],
                   ),

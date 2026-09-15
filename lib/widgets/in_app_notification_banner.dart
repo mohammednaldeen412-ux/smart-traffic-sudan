@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../core/services/notification_service.dart';
 import '../core/theme/app_colors.dart';
@@ -53,6 +54,11 @@ class _InAppNotificationListenerState
     setState(() => _current = notif);
     _animController.forward(from: 0);
     _dismissTimer = Timer(const Duration(seconds: 4), _dismiss);
+
+    // اهتزاز وتنبيه ملموس
+    try {
+      HapticFeedback.heavyImpact();
+    } catch (_) {}
   }
 
   void _dismiss() {

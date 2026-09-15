@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import '../../core/localization/app_strings.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
@@ -21,7 +22,7 @@ class _DigitalLicenseScreenState extends State<DigitalLicenseScreen> {
     final auth = context.watch<AuthService>();
     final user = auth.currentUser;
 
-    final String fullName = user?.fullName ?? 'مواطن سوداني';
+    final String fullName = user?.fullName ?? context.tr('citizen');
     final String nationalId = user?.nationalId ?? '11111111111';
     final String licenseNumber = user?.driverLicenseNumber.isNotEmpty == true
         ? user!.driverLicenseNumber
@@ -32,7 +33,7 @@ class _DigitalLicenseScreenState extends State<DigitalLicenseScreen> {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('الرخصة الرقمية'),
+        title: Text(context.tr('digital_license')),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -40,10 +41,7 @@ class _DigitalLicenseScreenState extends State<DigitalLicenseScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SovereignBadge(
-                title: 'الإدارة العامة للمرور',
-                subtitle: 'وثيقة رسمية معتمدة إلكترونياً',
-              ),
+              const SovereignBadge(),
               const SizedBox(height: 24),
               GestureDetector(
                 onTap: () => setState(() => _showBackFace = !_showBackFace),
@@ -62,7 +60,7 @@ class _DigitalLicenseScreenState extends State<DigitalLicenseScreen> {
                   children: [
                     const Icon(Icons.touch_app_rounded, size: 14, color: AppColors.primary),
                     const SizedBox(width: 6),
-                    Text('اضغط على البطاقة للوجه الآخر', style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted, fontSize: 11)),
+                    Text(context.tr('tap_to_flip'), style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted, fontSize: 11)),
                   ],
                 ),
               ),
@@ -89,9 +87,9 @@ class _DigitalLicenseScreenState extends State<DigitalLicenseScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('حالة الرخصة: سارية وموثقة', style: AppTypography.titleSmall.copyWith(color: AppColors.success, fontWeight: FontWeight.bold)),
+                          Text(context.tr('license_status_valid'), style: AppTypography.titleSmall.copyWith(color: AppColors.success, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 2),
-                          Text('تاريخ الانتهاء: 2028/11/15', style: AppTypography.bodySmall),
+                          Text(context.tr('license_expiry_date'), style: AppTypography.bodySmall),
                         ],
                       ),
                     ),
@@ -137,8 +135,8 @@ class _DigitalLicenseScreenState extends State<DigitalLicenseScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('جمهورية السودان', style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                      Text('رخصة قيادة وطنية', style: TextStyle(color: AppColors.primary, fontSize: 10)),
+                      Text(context.tr('sudan_republic'), style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                      Text(context.tr('national_driver_license'), style: const TextStyle(color: AppColors.primary, fontSize: 10)),
                     ],
                   ),
                 ],
@@ -166,13 +164,13 @@ class _DigitalLicenseScreenState extends State<DigitalLicenseScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildInfoRow('الاسم:', fullName),
+                    _buildInfoRow(context.tr('name_label'), fullName),
                     const SizedBox(height: 8),
-                    _buildInfoRow('الرقم الوطني:', nationalId),
+                    _buildInfoRow(context.tr('national_id_label'), nationalId),
                     const SizedBox(height: 8),
-                    _buildInfoRow('رقم الرخصة:', licenseNumber),
+                    _buildInfoRow(context.tr('license_number_label'), licenseNumber),
                     const SizedBox(height: 8),
-                    _buildInfoRow('الولاية:', state),
+                    _buildInfoRow(context.tr('state_label'), state),
                   ],
                 ),
               ),
@@ -202,10 +200,10 @@ class _DigitalLicenseScreenState extends State<DigitalLicenseScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('تعليمات:', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 12)),
+                Text(context.tr('license_rules_title'), style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 12)),
                 const SizedBox(height: 4),
-                const Text('1. يجب حمل هذه الرخصة أثناء القيادة.', style: TextStyle(color: Colors.white70, fontSize: 10)),
-                const Text('2. يعاقب القانون على تزوير أو إساءة استخدامها.', style: TextStyle(color: Colors.white70, fontSize: 10)),
+                Text(context.tr('license_rule_1'), style: const TextStyle(color: Colors.white70, fontSize: 10)),
+                Text(context.tr('license_rule_2'), style: const TextStyle(color: Colors.white70, fontSize: 10)),
                 const Spacer(),
                 Text(licenseNumber, style: const TextStyle(color: Colors.white, fontSize: 14, letterSpacing: 2)),
               ],

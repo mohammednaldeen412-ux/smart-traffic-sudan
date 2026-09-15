@@ -96,6 +96,31 @@ class NotificationService extends ChangeNotifier {
     });
   }
 
+  /// طلب إذن الإشعارات من النظام يدوياً (مفيد عند تفعيل الإشعارات من الإعدادات أو عند الدخول)
+  Future<bool> requestNotificationPermission() async {
+    try {
+      final settings = await _fcm.requestPermission(
+        alert: true,
+        announcement: false,
+        badge: true,
+        carPlay: false,
+        criticalAlert: true,
+        provisional: false,
+        sound: true,
+      );
+      final isGranted = settings.authorizationStatus == AuthorizationStatus.authorized ||
+          settings.authorizationStatus == AuthorizationStatus.provisional;
+      if (isGranted) {
+        _fcmToken = await _fcm.getToken();
+        await _updateTokenInFirestore();
+      }
+      return isGranted;
+    } catch (e) {
+      debugPrint('[FCM] Error requesting permission: $e');
+      return false;
+    }
+  }
+
   void _handleNotificationClick(RemoteMessage message) {
     _notificationClickController.add(message);
   }

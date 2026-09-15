@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
+import '../core/localization/app_strings.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_typography.dart';
 
 class SovereignBadge extends StatelessWidget {
-  final String title;
-  final String subtitle;
+  final String? title;
+  final String? subtitle;
   final Widget? trailing;
 
   const SovereignBadge({
     super.key,
-    this.title = 'جمهورية السودان - وزارة الداخلية',
-    this.subtitle = 'منظومة مـرورك - خدمات المرور بين يديك',
+    this.title,
+    this.subtitle,
     this.trailing,
   });
 
   @override
   Widget build(BuildContext context) {
+    final displayTitle = title ?? context.tr('sovereign_title');
+    final displaySubtitle = subtitle ?? context.tr('sovereign_subtitle');
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
@@ -42,12 +46,12 @@ class SovereignBadge extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  displayTitle,
                   style: AppTypography.titleSmall.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 13),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  subtitle,
+                  displaySubtitle,
                   style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary, fontSize: 11),
                 ),
               ],

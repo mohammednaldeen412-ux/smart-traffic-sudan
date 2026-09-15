@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/localization/app_strings.dart';
 import '../../core/services/theme_provider.dart';
 import '../../core/services/traffic_service.dart';
 import '../../core/theme/app_colors.dart';
@@ -89,7 +90,7 @@ class _ViolationsListScreenState extends State<ViolationsListScreen> {
     return Scaffold(
       backgroundColor: bg,
       appBar: AppBar(
-        title: const Text('سجل المخالفات والغرامات'),
+        title: Text(context.tr('violations_record')),
       ),
       body: SafeArea(
         child: Padding(
@@ -106,7 +107,7 @@ class _ViolationsListScreenState extends State<ViolationsListScreen> {
                 },
                 style: TextStyle(color: textPrimary),
                 decoration: InputDecoration(
-                  hintText: 'ابحث برقم اللوحة، الموقع، أو نوع المخالفة...',
+                  hintText: context.tr('search_violations_hint'),
                   prefixIcon: const Icon(Icons.search_rounded, color: AppColors.goldPrimary),
                   suffixIcon: _searchQuery.isNotEmpty
                       ? IconButton(
@@ -159,7 +160,7 @@ class _ViolationsListScreenState extends State<ViolationsListScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'المجموع غير المسدد:',
+                          context.tr('total_unpaid'),
                           style: AppTypography.bodySmall.copyWith(color: textSecondary),
                         ),
                       ],
@@ -180,11 +181,11 @@ class _ViolationsListScreenState extends State<ViolationsListScreen> {
               // أزرار الفلترة (الكل / غير مسددة / مسددة)
               Row(
                 children: [
-                  _buildFilterChip('الكل (${traffic.violations.length})', 0),
+                  _buildFilterChip('${context.tr('all')} (${traffic.violations.length})', 0),
                   const SizedBox(width: 8),
-                  _buildFilterChip('غير مسددة (${traffic.unpaidViolationsCount})', 1),
+                  _buildFilterChip('${context.tr('unpaid')} (${traffic.unpaidViolationsCount})', 1),
                   const SizedBox(width: 8),
-                  _buildFilterChip('مسددة (${traffic.paidViolationsCount})', 2),
+                  _buildFilterChip('${context.tr('paid')} (${traffic.paidViolationsCount})', 2),
                 ],
               ),
 
@@ -221,12 +222,12 @@ class _ViolationsListScreenState extends State<ViolationsListScreen> {
                                         ),
                                         const SizedBox(height: 16),
                                         Text(
-                                          'لا توجد مخالفات في هذه الفئة',
+                                          context.tr('no_violations_category'),
                                           style: AppTypography.titleMedium,
                                         ),
                                         const SizedBox(height: 6),
                                         Text(
-                                          'سجل القيادة نظيف والالتزام بالقوانين مستمر',
+                                          context.tr('clean_record_msg'),
                                           style: AppTypography.bodySmall,
                                         ),
                                       ],

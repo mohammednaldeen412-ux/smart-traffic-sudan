@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:uuid/uuid.dart';
 import '../constants/sudan_locations.dart';
 import '../../models/dispute_model.dart';
@@ -39,6 +40,12 @@ class TrafficService extends ChangeNotifier {
   List<DisputeModel> get disputes => List.unmodifiable(_disputes);
   List<ViolationModel> get allViolations => List.unmodifiable(_allViolations);
   bool get isLoading => _isLoading;
+
+  NotificationService? _notificationService;
+
+  void setNotificationService(NotificationService service) {
+    _notificationService = service;
+  }
 
   // إحصائيات المواطن
   int get totalVehiclesCount => _vehicles.length;
@@ -133,11 +140,33 @@ class TrafficService extends ChangeNotifier {
       notifyListeners();
     });
 
-    // الاستماع لمخالفات المواطن
+    // الاستماع لمخالفات المواطن (مع إشعار منبثق فوري عند قيد أي مخالفة جديدة)
+    bool isInitialViolationsLoad = true;
     _violationsSub = _firestore.collection('violations')
         .where('userId', isEqualTo: user.uid)
         .snapshots()
         .listen((snapshot) {
+      if (!isInitialViolationsLoad) {
+        for (final change in snapshot.docChanges) {
+          if (change.type == DocumentChangeType.added) {
+            final data = change.doc.data();
+            if (data != null) {
+              final newVio = ViolationModel.fromJson(data);
+              _notificationService?.triggerInAppNotification(
+                title: '⚠️ تم قيد مخالفة مرورية جديدة',
+                body: 'لوحة ${newVio.plateNumber} — ${newVio.violationType}\nالمبلغ: ${newVio.amount.toStringAsFixed(0)} ج.س.',
+                type: 'violation',
+                resourceId: newVio.id,
+              );
+              try {
+                HapticFeedback.heavyImpact();
+              } catch (_) {}
+            }
+          }
+        }
+      }
+      isInitialViolationsLoad = false;
+
       _violations = snapshot.docs.map((doc) => ViolationModel.fromJson(doc.data())).toList();
       _violations.sort((a, b) => b.date.compareTo(a.date));
       notifyListeners();

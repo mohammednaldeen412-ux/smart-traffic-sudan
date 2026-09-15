@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../core/localization/app_strings.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_typography.dart';
 import '../core/utils/currency_formatter.dart';
@@ -19,7 +20,7 @@ class ViolationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dateFormat = DateFormat('yyyy/MM/dd - hh:mm a', 'ar');
+    final dateFormat = DateFormat('yyyy/MM/dd - hh:mm a', context.isArabic ? 'ar' : 'en');
     final formattedDate = dateFormat.format(violation.date);
 
     return Container(
@@ -119,7 +120,7 @@ class ViolationCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 5),
                           Text(
-                            violation.isPaid ? 'مسددة' : 'غير مسددة',
+                            violation.isPaid ? context.tr('paid') : context.tr('unpaid'),
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -187,7 +188,7 @@ class ViolationCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'قيمة الغرامة',
+                          context.tr('fine_amount'),
                           style: AppTypography.bodySmall.copyWith(
                             color: AppColors.textMuted,
                             fontSize: 10,
@@ -242,7 +243,7 @@ class ViolationCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                'سداد الآن',
+                                context.tr('pay_now'),
                                 style: AppTypography.bodySmall.copyWith(
                                   color: AppColors.background,
                                   fontWeight: FontWeight.bold,
@@ -256,7 +257,7 @@ class ViolationCard extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'التفاصيل والـ QR',
+                            context.tr('details_and_qr'),
                             style: AppTypography.bodySmall.copyWith(
                               color: AppColors.goldPrimary,
                               fontWeight: FontWeight.bold,

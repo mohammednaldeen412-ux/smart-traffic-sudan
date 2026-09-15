@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import '../../core/localization/app_strings.dart';
 import '../../core/services/app_update_service.dart';
 import '../../core/services/theme_provider.dart';
 import '../../core/theme/app_colors.dart';
@@ -146,27 +147,27 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
                       BottomNavigationBarItem(
                         icon: const Icon(Icons.home_outlined),
                         activeIcon: Icon(Icons.home_filled, color: activeColor),
-                        label: 'الرئيسية',
+                        label: context.tr('home'),
                       ),
                       BottomNavigationBarItem(
                         icon: const Icon(Icons.directions_car_outlined),
                         activeIcon: Icon(Icons.directions_car_filled_rounded, color: activeColor),
-                        label: 'مركباتي',
+                        label: context.tr('my_vehicles'),
                       ),
                       BottomNavigationBarItem(
                         icon: const Icon(Icons.receipt_long_outlined),
                         activeIcon: Icon(Icons.receipt_long_rounded, color: activeColor),
-                        label: 'المخالفات',
+                        label: context.tr('violations'),
                       ),
                       BottomNavigationBarItem(
                         icon: const Icon(Icons.badge_outlined),
                         activeIcon: Icon(Icons.badge_rounded, color: activeColor),
-                        label: 'رخصتي',
+                        label: context.tr('my_license'),
                       ),
                       BottomNavigationBarItem(
                         icon: const Icon(Icons.person_outline_rounded),
                         activeIcon: Icon(Icons.person_rounded, color: activeColor),
-                        label: 'حسابي',
+                        label: context.tr('profile'),
                       ),
                     ],
                   ),
