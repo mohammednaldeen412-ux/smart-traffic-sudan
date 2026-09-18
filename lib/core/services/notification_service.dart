@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -223,7 +225,7 @@ class NotificationService extends ChangeNotifier {
   }
 
   // ─── إشعار: قيد مخالفة جديدة على المواطن ───────────────────────────────
-  /// يُحفظ الإشعار في Firestore ويُطلق InApp Banner
+  /// يُحفظ الإشعار في Firestore ويُطلق InApp Banner وأيضاً يتصل بالسيرفر المجاني لإرسال الإشعار
   Future<void> sendViolationIssuedNotification({
     required String targetUserId,
     required String violationId,
@@ -243,6 +245,24 @@ class NotificationService extends ChangeNotifier {
       resourceId: violationId,
     );
 
+    // استدعاء السيرفر المجاني (Render / Local) لإرسال الإشعار للموبايل فعلياً
+    try {
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:3000/send-violation'), // استبدل الرابط برابط موقع Render لاحقاً
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'targetUserId': targetUserId,
+          'title': title,
+          'body': body,
+          'violationId': violationId,
+          'type': 'violation'
+        }),
+      );
+      debugPrint('[FCM API] push server response: ${response.body}');
+    } catch (e) {
+      debugPrint('[FCM API] Error calling push server: $e');
+    }
+
     // إطلاق InApp للمستخدم الحالي إذا كان هو نفس المستهدف
     if (_auth.currentUser?.uid == targetUserId) {
       triggerInAppNotification(
@@ -255,6 +275,7 @@ class NotificationService extends ChangeNotifier {
 
     debugPrint('[FCM] Violation notification saved for $targetUserId');
   }
+
 
   // ─── إشعار: تأكيد سداد مخالفة ───────────────────────────────────────────
   Future<void> sendPaymentConfirmedNotification({
