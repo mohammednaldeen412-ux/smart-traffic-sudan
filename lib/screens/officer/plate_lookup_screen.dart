@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import '../../core/services/traffic_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/vehicle_model.dart';
+import '../../models/user_model.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
 import '../officer/ticket_issuer_screen.dart';
@@ -17,6 +20,7 @@ class PlateLookupScreen extends StatefulWidget {
 class _PlateLookupScreenState extends State<PlateLookupScreen> {
   final _plateController = TextEditingController();
   VehicleModel? _result;
+  UserModel? _ownerResult;
   bool _hasSearched = false;
   bool _isLoading = false;
 
@@ -31,8 +35,22 @@ class _PlateLookupScreenState extends State<PlateLookupScreen> {
     setState(() { _isLoading = true; _hasSearched = false; });
     final traffic = context.read<TrafficService>();
     final found = await traffic.lookupVehicleByPlate(plate);
+    
+    UserModel? owner;
+    if (found != null && found.userId.isNotEmpty) {
+      try {
+        final doc = await FirebaseFirestore.instance.collection('users').doc(found.userId).get();
+        if (doc.exists) {
+          owner = UserModel.fromJson(doc.data()!);
+        }
+      } catch (e) {
+        debugPrint('Error fetching owner details: $e');
+      }
+    }
+
     setState(() {
       _result = found;
+      _ownerResult = owner;
       _hasSearched = true;
       _isLoading = false;
     });
@@ -88,7 +106,7 @@ class _PlateLookupScreenState extends State<PlateLookupScreen> {
             else if (_hasSearched && _result == null)
               _buildNotFound()
             else if (_hasSearched && _result != null)
-              Expanded(child: _buildResult(_result!)),
+              Expanded(child: _buildResult(_result!, _ownerResult)),
           ],
         ),
       ),
@@ -115,8 +133,15 @@ class _PlateLookupScreenState extends State<PlateLookupScreen> {
     );
   }
 
-  Widget _buildResult(VehicleModel v) {
+  Widget _buildResult(VehicleModel v, UserModel? owner) {
     final isWanted = v.isWanted;
+    
+    // License formatting
+    final dateFormat = DateFormat('yyyy/MM/dd', 'ar');
+    final formattedExpiry = v.licenseExpiryDate != null ? dateFormat.format(v.licenseExpiryDate!) : 'غير محدد';
+    final isExpired = v.isLicenseExpired;
+    final daysLeft = v.daysUntilExpiry;
+
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -129,12 +154,17 @@ class _PlateLookupScreenState extends State<PlateLookupScreen> {
                 color: Colors.red,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.warning_amber, color: Colors.white, size: 28),
-                  SizedBox(width: 10),
+                  const Icon(Icons.warning_amber, color: Colors.white, size: 28),
+                  const SizedBox(width: 10),
                   Expanded(
-                    child: Text('⚠️ تنبيه أمني: هذه المركبة مطلوبة!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)),
+                    child: Text(
+                      v.wantedReason != null 
+                        ? '⚠️ تنبيه أمني: أمر حجز! (${v.wantedReason})'
+                        : '⚠️ تنبيه أمني: هذه المركبة مطلوبة!', 
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14)
+                    ),
                   ),
                 ],
               ),
@@ -185,6 +215,67 @@ class _PlateLookupScreenState extends State<PlateLookupScreen> {
           ),
           const SizedBox(height: 12),
 
+          // License Duration Card
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.4), width: 1.5),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('بيانات الترخيص', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                const Divider(height: 20),
+                _row(Icons.calendar_month, 'تاريخ الإنتهاء', formattedExpiry),
+                if (v.licenseExpiryDate != null) ...[
+                  const Divider(height: 20),
+                  _row(
+                    isExpired ? Icons.warning_amber : Icons.check_circle_outline,
+                    'حالة الترخيص',
+                    isExpired ? 'منتهي الصلاحية' : 'ساري (متبقي $daysLeft يوم)',
+                    color: isExpired ? Colors.red : Colors.green,
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Owner Details Card
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.4), width: 1.5),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('تفاصيل مالك المركبة', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                const Divider(height: 20),
+                if (owner != null) ...[
+                  _row(Icons.person, 'الاسم', owner.fullName),
+                  const Divider(height: 20),
+                  _row(Icons.badge, 'الرقم الوطني', owner.nationalId),
+                  const Divider(height: 20),
+                  _row(Icons.phone, 'رقم الهاتف', owner.phoneNumber),
+                ] else ...[
+                  const Row(
+                    children: [
+                      Icon(Icons.person_off, color: Colors.grey),
+                      SizedBox(width: 10),
+                      Text('لا توجد بيانات مسجلة لمالك هذه المركبة', style: TextStyle(color: Colors.grey)),
+                    ],
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+
           // Certificate Image
           if (v.certificateImageUrl.isNotEmpty)
             Column(
@@ -229,4 +320,3 @@ class _PlateLookupScreenState extends State<PlateLookupScreen> {
     );
   }
 }
-

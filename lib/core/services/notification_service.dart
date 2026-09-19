@@ -235,7 +235,7 @@ class NotificationService extends ChangeNotifier {
   }) async {
     const title = '⚠️ تم قيد مخالفة مرورية جديدة';
     final body =
-        'لوحة $plateNumber — $violationType\nالمبلغ: ${amount.toStringAsFixed(0)} ج.س.';
+        'لوحة $plateNumber — $violationType\nالمبلغ: ${amount.toStringAsFixed(0)} ج.س.\n⚠️ تنبيه: تضاف 30% غرامة تأخير في حال عدم السداد خلال 3 أيام.';
 
     await _saveNotificationToFirestore(
       userId: targetUserId,

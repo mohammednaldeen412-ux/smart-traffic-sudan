@@ -1,0 +1,1345 @@
+@startuml
+set namespaceSeparator ::
+
+class "smart_traffic_sudan::core::constants::app_assets.dart::AppAssets" {
+  {static} +String appName
+  {static} +String appTagline
+  {static} +String sovereignEntity
+  {static} +String sovereignDirectorate
+  {static} +String emergencyHotline
+  {static} +String logoDark
+  {static} +String logoLight
+  {static} +String onboarding1
+  {static} +String onboarding2
+  {static} +String onboarding3
+}
+
+class "smart_traffic_sudan::core::constants::app_constants.dart::AppConstants" {
+  {static} +String whiteNileState
+  {static} +List<String> whiteNileLocalities
+}
+
+class "smart_traffic_sudan::core::constants::sudan_locations.dart::SudanLocations" {
+  {static} +String operationalState
+  {static} +List<Map<String, String>> allStates
+  {static} +List<String> whiteNileLocalities
+  {static} +List<String> whiteNileCities
+  {static} +bool isValidWhiteNileLocality()
+}
+
+class "smart_traffic_sudan::core::localization::app_strings.dart::AppStrings" {
+  {static} -Map<String, Map<String, String>> _values
+  {static} +String tr()
+}
+
+class "smart_traffic_sudan::core::services::announcement_service.dart::AnnouncementService" {
+  -FirebaseFirestore _firestore
+  -FirebaseAuth _auth
+  -TrafficService _trafficService
+  +dynamic sendAnnouncement()
+  +Stream<List<AnnouncementModel>> getAnnouncements()
+  +Stream<List<AnnouncementModel>> getAllAnnouncements()
+}
+
+"smart_traffic_sudan::core::services::announcement_service.dart::AnnouncementService" o-- "cloud_firestore::cloud_firestore.dart::FirebaseFirestore"
+"smart_traffic_sudan::core::services::announcement_service.dart::AnnouncementService" o-- "firebase_auth::firebase_auth.dart::FirebaseAuth"
+"smart_traffic_sudan::core::services::announcement_service.dart::AnnouncementService" o-- "smart_traffic_sudan::core::services::traffic_service.dart::TrafficService"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "smart_traffic_sudan::core::services::announcement_service.dart::AnnouncementService"
+
+class "smart_traffic_sudan::core::services::app_update_service.dart::AppUpdateInfo" {
+  +int latestVersionCode
+  +String latestVersionName
+  +String downloadUrl
+  +String releaseNotes
+  +bool isMandatory
+}
+
+class "smart_traffic_sudan::core::services::app_update_service.dart::AppUpdateService" {
+  -FirebaseFirestore _firestore
+  {static} +int currentVersionCode
+  {static} +String currentVersionName
+  -AppUpdateInfo? _updateInfo
+  -bool _hasChecked
+  +AppUpdateInfo? updateInfo
+  +bool hasChecked
+  +dynamic checkUpdateAvailability()
+  -dynamic _initDefaultConfig()
+  +dynamic checkForUpdate()
+  +void showUpdateDialog()
+}
+
+"smart_traffic_sudan::core::services::app_update_service.dart::AppUpdateService" o-- "cloud_firestore::cloud_firestore.dart::FirebaseFirestore"
+"smart_traffic_sudan::core::services::app_update_service.dart::AppUpdateService" o-- "smart_traffic_sudan::core::services::app_update_service.dart::AppUpdateInfo"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "smart_traffic_sudan::core::services::app_update_service.dart::AppUpdateService"
+
+class "smart_traffic_sudan::core::services::auth_service.dart::AuthService" {
+  -FirebaseAuth _auth
+  -FirebaseFirestore _firestore
+  -LocalAuthentication _localAuth
+  -FlutterSecureStorage _secureStorage
+  -UserModel? _currentUser
+  -bool _isLoading
+  -bool _isInitialized
+  -bool _isBiometricAvailable
+  -bool _isBiometricEnabled
+  +UserModel? currentUser
+  +bool isAuthenticated
+  +bool isLoading
+  +bool isInitialized
+  +UserRole currentRole
+  +bool isOfficer
+  +bool isCitizen
+  +bool isBiometricAvailable
+  +bool isBiometricEnabled
+  -dynamic _init()
+  -dynamic _fetchUserProfile()
+  +dynamic sendEmailVerification()
+  +dynamic resetPassword()
+  +dynamic changePassword()
+  +dynamic login()
+  +dynamic register()
+  +dynamic uploadProfileImage()
+  +dynamic uploadDocument()
+  +dynamic switchRole()
+  +dynamic updateUser()
+  +dynamic sendOtpToEmail()
+  +dynamic verifyOtp()
+  +dynamic logout()
+  +dynamic signOut()
+  -dynamic _checkBiometricAvailability()
+  +dynamic enableBiometrics()
+  +dynamic disableBiometrics()
+  +dynamic authenticateWithBiometrics()
+  +dynamic loginWithBiometrics()
+}
+
+"smart_traffic_sudan::core::services::auth_service.dart::AuthService" o-- "firebase_auth::firebase_auth.dart::FirebaseAuth"
+"smart_traffic_sudan::core::services::auth_service.dart::AuthService" o-- "cloud_firestore::cloud_firestore.dart::FirebaseFirestore"
+"smart_traffic_sudan::core::services::auth_service.dart::AuthService" o-- "local_auth::src::local_auth.dart::LocalAuthentication"
+"smart_traffic_sudan::core::services::auth_service.dart::AuthService" o-- "flutter_secure_storage::flutter_secure_storage.dart::FlutterSecureStorage"
+"smart_traffic_sudan::core::services::auth_service.dart::AuthService" o-- "smart_traffic_sudan::models::user_model.dart::UserModel"
+"smart_traffic_sudan::core::services::auth_service.dart::AuthService" o-- "smart_traffic_sudan::models::user_model.dart::UserRole"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "smart_traffic_sudan::core::services::auth_service.dart::AuthService"
+
+class "smart_traffic_sudan::core::services::connectivity_service.dart::ConnectivityService" {
+  -bool _isOnline
+  -Timer? _heartbeatTimer
+  +bool isOnline
+  -void _startMonitoring()
+  +void setOnlineStatus()
+  +void dispose()
+}
+
+"smart_traffic_sudan::core::services::connectivity_service.dart::ConnectivityService" o-- "dart::async::Timer"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "smart_traffic_sudan::core::services::connectivity_service.dart::ConnectivityService"
+
+class "smart_traffic_sudan::core::services::locale_provider.dart::LocaleProvider" {
+  {static} -String _localeKey
+  -Locale _locale
+  +Locale locale
+  +bool isArabic
+  +String languageCode
+  -dynamic _loadLocale()
+  +dynamic setLocale()
+  +dynamic toggleLanguage()
+}
+
+"smart_traffic_sudan::core::services::locale_provider.dart::LocaleProvider" o-- "dart::ui::Locale"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "smart_traffic_sudan::core::services::locale_provider.dart::LocaleProvider"
+
+class "smart_traffic_sudan::core::services::notification_service.dart::InAppNotification" {
+  +String title
+  +String body
+  +String type
+  +String? resourceId
+  +DateTime receivedAt
+}
+
+class "smart_traffic_sudan::core::services::notification_service.dart::NotificationService" {
+  -FirebaseMessaging _fcm
+  -FirebaseFirestore _firestore
+  -FirebaseAuth _auth
+  -StreamController<RemoteMessage> _notificationClickController
+  -StreamController<InAppNotification> _inAppController
+  -String? _fcmToken
+  -List<InAppNotification> _recentNotifications
+  +Stream<RemoteMessage> notificationClicks
+  +Stream<InAppNotification> inAppNotifications
+  +String? fcmToken
+  +List<InAppNotification> recentNotifications
+  -dynamic _init()
+  +dynamic requestNotificationPermission()
+  -void _handleNotificationClick()
+  -InAppNotification _remoteMessageToInApp()
+  -dynamic _updateTokenInFirestore()
+  +dynamic subscribeToTopic()
+  +dynamic unsubscribeFromTopic()
+  +dynamic subscribeByRole()
+  -dynamic _saveNotificationToFirestore()
+  +void triggerInAppNotification()
+  +dynamic sendViolationIssuedNotification()
+  +dynamic sendPaymentConfirmedNotification()
+  +dynamic sendAnnouncementNotification()
+  +dynamic sendViolationStatusUpdateNotification()
+  +void markAllRead()
+  +void dispose()
+}
+
+"smart_traffic_sudan::core::services::notification_service.dart::NotificationService" o-- "firebase_messaging::firebase_messaging.dart::FirebaseMessaging"
+"smart_traffic_sudan::core::services::notification_service.dart::NotificationService" o-- "cloud_firestore::cloud_firestore.dart::FirebaseFirestore"
+"smart_traffic_sudan::core::services::notification_service.dart::NotificationService" o-- "firebase_auth::firebase_auth.dart::FirebaseAuth"
+"smart_traffic_sudan::core::services::notification_service.dart::NotificationService" o-- "dart::async::StreamController<RemoteMessage>"
+"smart_traffic_sudan::core::services::notification_service.dart::NotificationService" o-- "dart::async::StreamController<InAppNotification>"
+"smart_traffic_sudan::core::services::notification_service.dart::NotificationService" o-- "dart::async::Stream<RemoteMessage>"
+"smart_traffic_sudan::core::services::notification_service.dart::NotificationService" o-- "dart::async::Stream<InAppNotification>"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "smart_traffic_sudan::core::services::notification_service.dart::NotificationService"
+
+class "smart_traffic_sudan::core::services::payment_service.dart::PaymentService" {
+  -FirebaseFirestore _firestore
+  -FirebaseAuth _auth
+  -bool _isProcessing
+  +bool isProcessing
+  {static} +String generateBankingTransactionId()
+  {static} +String generateVerificationHash()
+  +dynamic seedDefaultBankAccountsIfEmpty()
+  +dynamic lookupBankAccount()
+  +dynamic processRealBankPayment()
+  +dynamic initiatePayment()
+  +dynamic processFullPayment()
+}
+
+"smart_traffic_sudan::core::services::payment_service.dart::PaymentService" o-- "cloud_firestore::cloud_firestore.dart::FirebaseFirestore"
+"smart_traffic_sudan::core::services::payment_service.dart::PaymentService" o-- "firebase_auth::firebase_auth.dart::FirebaseAuth"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "smart_traffic_sudan::core::services::payment_service.dart::PaymentService"
+
+class "smart_traffic_sudan::core::services::payment_service.dart::PaymentRequestStatus" {
+  +int index
+  {static} +List<PaymentRequestStatus> values
+  {static} +PaymentRequestStatus pending
+  {static} +PaymentRequestStatus processing
+  {static} +PaymentRequestStatus confirmed
+  {static} +PaymentRequestStatus failed
+  {static} +PaymentRequestStatus cancelled
+}
+
+"smart_traffic_sudan::core::services::payment_service.dart::PaymentRequestStatus" o-- "smart_traffic_sudan::core::services::payment_service.dart::PaymentRequestStatus"
+"dart::core::Enum" <|-- "smart_traffic_sudan::core::services::payment_service.dart::PaymentRequestStatus"
+
+class "smart_traffic_sudan::core::services::theme_provider.dart::ThemeProvider" {
+  {static} -String _themeKey
+  -bool _isDark
+  +bool isDark
+  -dynamic _loadTheme()
+  +dynamic toggleTheme()
+  +dynamic setDark()
+}
+
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "smart_traffic_sudan::core::services::theme_provider.dart::ThemeProvider"
+
+class "smart_traffic_sudan::core::services::traffic_service.dart::TrafficService" {
+  -FirebaseFirestore _firestore
+  -FirebaseAuth _auth
+  {static} +List<String> whiteNileLocalities
+  -List<VehicleModel> _vehicles
+  -List<ViolationModel> _violations
+  -List<PaymentReceiptModel> _receipts
+  -List<DisputeModel> _disputes
+  -List<ViolationModel> _officerViolations
+  -List<ViolationModel> _allViolations
+  -bool _isLoading
+  -StreamSubscription<dynamic>? _vehiclesSub
+  -StreamSubscription<dynamic>? _violationsSub
+  -StreamSubscription<dynamic>? _receiptsSub
+  -StreamSubscription<dynamic>? _disputesSub
+  -StreamSubscription<dynamic>? _officerViolationsSub
+  -StreamSubscription<dynamic>? _adminViolationsSub
+  -NotificationService? _notificationService
+  +List<VehicleModel> vehicles
+  +List<ViolationModel> violations
+  +List<PaymentReceiptModel> receipts
+  +List<DisputeModel> disputes
+  +List<ViolationModel> allViolations
+  +bool isLoading
+  +int totalVehiclesCount
+  +int unpaidViolationsCount
+  +int paidViolationsCount
+  +double totalUnpaidAmount
+  +double globalTotalRevenue
+  +int globalTotalViolations
+  +int globalUnpaidCount
+  +void setNotificationService()
+  +void dispose()
+  -void _cancelSubscriptions()
+  -void _clearData()
+  -void _initializeData()
+  +dynamic lookupVehicleByPlate()
+  +dynamic logActivity()
+  +dynamic issueOfficerTicket()
+  +dynamic submitDispute()
+  +dynamic resolveDispute()
+  +List<ViolationModel> getOfficerShiftViolations()
+  +dynamic addVehicle()
+  +dynamic payViolation()
+  +ViolationModel? getViolationById()
+  +VehicleModel? getVehicleById()
+}
+
+"smart_traffic_sudan::core::services::traffic_service.dart::TrafficService" o-- "cloud_firestore::cloud_firestore.dart::FirebaseFirestore"
+"smart_traffic_sudan::core::services::traffic_service.dart::TrafficService" o-- "firebase_auth::firebase_auth.dart::FirebaseAuth"
+"smart_traffic_sudan::core::services::traffic_service.dart::TrafficService" o-- "dart::async::StreamSubscription<dynamic>"
+"smart_traffic_sudan::core::services::traffic_service.dart::TrafficService" o-- "smart_traffic_sudan::core::services::notification_service.dart::NotificationService"
+"flutter::src::foundation::change_notifier.dart::ChangeNotifier" <|-- "smart_traffic_sudan::core::services::traffic_service.dart::TrafficService"
+
+class "smart_traffic_sudan::core::theme::app_colors.dart::AppColors" {
+  {static} +Color background
+  {static} +Color surface
+  {static} +Color card
+  {static} +Color cardElevated
+  {static} +Color cardBorder
+  {static} +Color inputBackground
+  {static} +Color primary
+  {static} +Color goldPrimary
+  {static} +Color goldLight
+  {static} +Color goldDark
+  {static} +Color goldMuted
+  {static} +Color goldGlow
+  {static} +LinearGradient goldGradient
+  {static} +LinearGradient darkCardGradient
+  {static} +LinearGradient sovereignHeaderGradient
+  {static} +LinearGradient goldBorderGradient
+  {static} +Color success
+  {static} +Color successGlow
+  {static} +Color warning
+  {static} +Color error
+  {static} +Color errorGlow
+  {static} +Color info
+  {static} +Color textPrimary
+  {static} +Color textSecondary
+  {static} +Color textMuted
+  {static} +Color textGold
+  {static} +Color divider
+  {static} +Color glassFill
+  {static} +Color glassBorder
+  {static} +Color lightBackground
+  {static} +Color lightSurface
+  {static} +Color lightCard
+  {static} +Color lightCardElevated
+  {static} +Color lightCardBorder
+  {static} +Color lightInputBackground
+  {static} +Color lightDivider
+  {static} +Color lightTextPrimary
+  {static} +Color lightTextSecondary
+  {static} +Color lightTextMuted
+  {static} +LinearGradient lightCardGradient
+  {static} +LinearGradient lightHeaderGradient
+  {static} +Color lightGlassFill
+  {static} +Color lightGlassBorder
+}
+
+"smart_traffic_sudan::core::theme::app_colors.dart::AppColors" o-- "dart::ui::Color"
+"smart_traffic_sudan::core::theme::app_colors.dart::AppColors" o-- "flutter::src::painting::gradient.dart::LinearGradient"
+
+class "smart_traffic_sudan::core::theme::app_theme.dart::AppTheme" {
+  {static} +ThemeData darkTheme
+  {static} +ThemeData lightTheme
+}
+
+"smart_traffic_sudan::core::theme::app_theme.dart::AppTheme" o-- "flutter::src::material::theme_data.dart::ThemeData"
+
+class "smart_traffic_sudan::core::theme::app_typography.dart::AppTypography" {
+  {static} +TextStyle displayLarge
+  {static} +TextStyle displayMedium
+  {static} +TextStyle titleLarge
+  {static} +TextStyle titleMedium
+  {static} +TextStyle titleSmall
+  {static} +TextStyle bodyLarge
+  {static} +TextStyle bodyMedium
+  {static} +TextStyle bodySmall
+  {static} +TextStyle goldAccent
+  {static} +TextStyle buttonText
+  {static} +TextStyle plateText
+}
+
+"smart_traffic_sudan::core::theme::app_typography.dart::AppTypography" o-- "flutter::src::painting::text_style.dart::TextStyle"
+
+class "smart_traffic_sudan::core::utils::currency_formatter.dart::CurrencyFormatter" {
+  {static} +String formatSDG()
+  {static} +String formatNumber()
+}
+
+class "smart_traffic_sudan::core::utils::plate_formatter.dart::PlateFormatter" {
+  {static} +Map<String, String> sudanStateCodes
+  {static} +String getStateName()
+}
+
+class "smart_traffic_sudan::main.dart::SmartTrafficSudanApp" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::main.dart::SmartTrafficSudanApp"
+
+class "smart_traffic_sudan::models::announcement_model.dart::AnnouncementModel" {
+  +String id
+  +String title
+  +String content
+  +AnnouncementCategory category
+  +String? imageUrl
+  +DateTime createdAt
+  +DateTime? expiryDate
+  +bool isPinned
+  +String authorId
+  +Map<String, dynamic> toJson()
+  {static} -AnnouncementCategory _parseCategory()
+  {static} -DateTime _parseDateTime()
+}
+
+"smart_traffic_sudan::models::announcement_model.dart::AnnouncementModel" o-- "smart_traffic_sudan::models::announcement_model.dart::AnnouncementCategory"
+
+class "smart_traffic_sudan::models::announcement_model.dart::AnnouncementCategory" {
+  +int index
+  {static} +List<AnnouncementCategory> values
+  {static} +AnnouncementCategory general
+  {static} +AnnouncementCategory emergency
+  {static} +AnnouncementCategory trafficUpdate
+  {static} +AnnouncementCategory lawUpdate
+}
+
+"smart_traffic_sudan::models::announcement_model.dart::AnnouncementCategory" o-- "smart_traffic_sudan::models::announcement_model.dart::AnnouncementCategory"
+"dart::core::Enum" <|-- "smart_traffic_sudan::models::announcement_model.dart::AnnouncementCategory"
+
+class "smart_traffic_sudan::models::audit_log_model.dart::AuditLogModel" {
+  +String id
+  +String userId
+  +String action
+  +String resourceId
+  +String resourceType
+  +DateTime timestamp
+  +Map<String, dynamic>? details
+  +String? ipAddress
+  +Map<String, dynamic> toJson()
+  {static} -DateTime _parseDateTime()
+}
+
+class "smart_traffic_sudan::models::dispute_model.dart::DisputeModel" {
+  +String id
+  +String violationId
+  +String userId
+  +String plateNumber
+  +String reasonCategory
+  +String description
+  +String? evidenceAttachment
+  +DateTime submissionDate
+  +String status
+  +String? reviewerOfficer
+  +String? reviewNotes
+  +DateTime? reviewedDate
+  +Map<String, dynamic> toJson()
+  {static} -DateTime _parseDateTime()
+  +DisputeModel copyWith()
+}
+
+class "smart_traffic_sudan::models::payment_receipt_model.dart::PaymentReceiptModel" {
+  +String transactionId
+  +String violationId
+  +String violationType
+  +double amount
+  +String paymentMethod
+  +DateTime paymentDate
+  +String payerName
+  +String payerNationalId
+  +String plateNumber
+  +String verificationHash
+  +String status
+  +String? gatewayRef
+  +String? bankingTransactionId
+  +DateTime? confirmedAt
+  +DateTime? initiatedAt
+  +String paymentStatus
+  +String qrData
+  +String displayBankingRef
+  +Map<String, dynamic> toJson()
+  {static} -DateTime _parseDateTime()
+}
+
+class "smart_traffic_sudan::models::user_model.dart::UserModel" {
+  +String id
+  +String fullName
+  +String nationalId
+  +String phoneNumber
+  +String email
+  +bool isEmailVerified
+  +String state
+  +String city
+  +String address
+  +String driverLicenseNumber
+  +String? profileImageUrl
+  +String? nationalIdImage
+  +String? licenseImage
+  +UserRole role
+  +String? officerRank
+  +String? officerBadgeNumber
+  +String? officerSector
+  +DateTime createdAt
+  +bool isOfficer
+  +bool isCitizen
+  +bool isAdmin
+  +Map<String, dynamic> toJson()
+  {static} -UserRole _parseRole()
+  {static} -DateTime _parseDateTime()
+  +UserModel copyWith()
+}
+
+"smart_traffic_sudan::models::user_model.dart::UserModel" o-- "smart_traffic_sudan::models::user_model.dart::UserRole"
+
+class "smart_traffic_sudan::models::user_model.dart::UserRole" {
+  +int index
+  {static} +List<UserRole> values
+  {static} +UserRole citizen
+  {static} +UserRole officer
+  {static} +UserRole admin
+}
+
+"smart_traffic_sudan::models::user_model.dart::UserRole" o-- "smart_traffic_sudan::models::user_model.dart::UserRole"
+"dart::core::Enum" <|-- "smart_traffic_sudan::models::user_model.dart::UserRole"
+
+class "smart_traffic_sudan::models::vehicle_model.dart::VehicleModel" {
+  +String id
+  +String userId
+  +String make
+  +String model
+  +String plateNumber
+  +String plateStateCode
+  +String plateCategoryCode
+  +String color
+  +String chassisNumber
+  +String certificateImageUrl
+  +bool isVerified
+  +bool isWanted
+  +DateTime? licenseExpiryDate
+  +DateTime createdAt
+  +String fullPlateDisplay
+  +bool isLicenseExpired
+  +int daysUntilExpiry
+  +Map<String, dynamic> toJson()
+}
+
+class "smart_traffic_sudan::models::violation_model.dart::ViolationModel" {
+  +String id
+  +String userId
+  +String vehicleId
+  +String plateNumber
+  +String plateStateCode
+  +String violationType
+  +double amount
+  +DateTime date
+  +String state
+  +String locality
+  +String city
+  +String locationName
+  +double latitude
+  +double longitude
+  +String officerName
+  +String officerBadge
+  +bool isPaid
+  +ViolationStatus violationStatus
+  +DateTime? paidDate
+  +String? receiptId
+  +String? paymentMethod
+  +String? paymentTransactionId
+  +bool hasDispute
+  +String? disputeId
+  +String? disputeStatus
+  +String fullPlateDisplay
+  +String qrPayload
+  +Map<String, dynamic> toJson()
+  {static} -ViolationStatus _parseStatus()
+  {static} -DateTime _parseDateTime()
+  +ViolationModel copyWith()
+}
+
+"smart_traffic_sudan::models::violation_model.dart::ViolationModel" o-- "smart_traffic_sudan::models::violation_model.dart::ViolationStatus"
+
+class "smart_traffic_sudan::models::violation_model.dart::ViolationStatus" {
+  +int index
+  {static} +List<ViolationStatus> values
+  {static} +ViolationStatus pending
+  {static} +ViolationStatus paid
+  {static} +ViolationStatus cancelled
+  {static} +ViolationStatus disputed
+}
+
+"smart_traffic_sudan::models::violation_model.dart::ViolationStatus" o-- "smart_traffic_sudan::models::violation_model.dart::ViolationStatus"
+"dart::core::Enum" <|-- "smart_traffic_sudan::models::violation_model.dart::ViolationStatus"
+
+class "smart_traffic_sudan::screens::admin::admin_dashboard_screen.dart::AdminDashboardScreen" {
+  +State<AdminDashboardScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::admin::admin_dashboard_screen.dart::AdminDashboardScreen"
+
+class "smart_traffic_sudan::screens::admin::admin_dashboard_screen.dart::_AdminDashboardScreenState" {
+  -TextEditingController _broadcastController
+  -void _sendBroadcast()
+  +Widget build()
+  -Widget _buildStatCard()
+}
+
+"smart_traffic_sudan::screens::admin::admin_dashboard_screen.dart::_AdminDashboardScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::admin::admin_dashboard_screen.dart::_AdminDashboardScreenState"
+
+class "smart_traffic_sudan::screens::admin::admin_navigation_wrapper.dart::AdminNavigationWrapper" {
+  +State<AdminNavigationWrapper> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::admin::admin_navigation_wrapper.dart::AdminNavigationWrapper"
+
+class "smart_traffic_sudan::screens::admin::admin_navigation_wrapper.dart::_AdminNavigationWrapperState" {
+  -int _selectedIndex
+  -DateTime? _lastBackPress
+  -List<Widget> _screens
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::admin::admin_navigation_wrapper.dart::_AdminNavigationWrapperState"
+
+class "smart_traffic_sudan::screens::auth::forgot_password_screen.dart::ForgotPasswordScreen" {
+  +State<ForgotPasswordScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::auth::forgot_password_screen.dart::ForgotPasswordScreen"
+
+class "smart_traffic_sudan::screens::auth::forgot_password_screen.dart::_ForgotPasswordScreenState" {
+  -TextEditingController _emailController
+  -bool _isLoading
+  +void dispose()
+  -dynamic _handleReset()
+  +Widget build()
+}
+
+"smart_traffic_sudan::screens::auth::forgot_password_screen.dart::_ForgotPasswordScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::auth::forgot_password_screen.dart::_ForgotPasswordScreenState"
+
+class "smart_traffic_sudan::screens::auth::login_screen.dart::LoginScreen" {
+  +State<LoginScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::auth::login_screen.dart::LoginScreen"
+
+class "smart_traffic_sudan::screens::auth::login_screen.dart::_LoginScreenState" {
+  -GlobalKey<FormState> _formKey
+  -TextEditingController _identifierController
+  -TextEditingController _passwordController
+  -bool _obscurePassword
+  -bool _rememberMe
+  +void dispose()
+  -dynamic _handleLogin()
+  -dynamic _handleBiometricLogin()
+  +Widget build()
+}
+
+"smart_traffic_sudan::screens::auth::login_screen.dart::_LoginScreenState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"smart_traffic_sudan::screens::auth::login_screen.dart::_LoginScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::auth::login_screen.dart::_LoginScreenState"
+
+class "smart_traffic_sudan::screens::auth::officer_login_screen.dart::OfficerLoginScreen" {
+  +State<OfficerLoginScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::auth::officer_login_screen.dart::OfficerLoginScreen"
+
+class "smart_traffic_sudan::screens::auth::officer_login_screen.dart::_OfficerLoginScreenState" {
+  -GlobalKey<FormState> _formKey
+  -TextEditingController _badgeController
+  -TextEditingController _passwordController
+  -bool _obscurePassword
+  +void dispose()
+  -dynamic _handleLogin()
+  +Widget build()
+}
+
+"smart_traffic_sudan::screens::auth::officer_login_screen.dart::_OfficerLoginScreenState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"smart_traffic_sudan::screens::auth::officer_login_screen.dart::_OfficerLoginScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::auth::officer_login_screen.dart::_OfficerLoginScreenState"
+
+class "smart_traffic_sudan::screens::auth::register_screen.dart::RegisterScreen" {
+  +State<RegisterScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::auth::register_screen.dart::RegisterScreen"
+
+class "smart_traffic_sudan::screens::auth::register_screen.dart::_RegisterScreenState" {
+  -GlobalKey<FormState> _formKey
+  -int _currentStep
+  -TextEditingController _fullNameController
+  -TextEditingController _nationalIdController
+  -TextEditingController _phoneController
+  -TextEditingController _emailController
+  -TextEditingController _passwordController
+  -TextEditingController _confirmPasswordController
+  -TextEditingController _cityController
+  -TextEditingController _addressController
+  -String _selectedState
+  -bool _obscurePassword
+  -bool _agreedToTerms
+  -File? _profileImage
+  -List<String> _sudanStates
+  -dynamic _pickImage()
+  +void dispose()
+  -dynamic _handleRegister()
+  +Widget build()
+}
+
+"smart_traffic_sudan::screens::auth::register_screen.dart::_RegisterScreenState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"smart_traffic_sudan::screens::auth::register_screen.dart::_RegisterScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"smart_traffic_sudan::screens::auth::register_screen.dart::_RegisterScreenState" o-- "dart::io::File"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::auth::register_screen.dart::_RegisterScreenState"
+
+class "smart_traffic_sudan::screens::dashboard::home_dashboard_screen.dart::HomeDashboardScreen" {
+  +dynamic Function(int)? onNavigateTab
+  +State<HomeDashboardScreen> createState()
+}
+
+"smart_traffic_sudan::screens::dashboard::home_dashboard_screen.dart::HomeDashboardScreen" o-- "null::dynamic Function(int)"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::dashboard::home_dashboard_screen.dart::HomeDashboardScreen"
+
+class "smart_traffic_sudan::screens::dashboard::home_dashboard_screen.dart::_HomeDashboardScreenState" {
+  +void initState()
+  +Widget build()
+  -Widget _buildServiceCard()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::dashboard::home_dashboard_screen.dart::_HomeDashboardScreenState"
+
+class "smart_traffic_sudan::screens::dashboard::main_navigation_wrapper.dart::MainNavigationWrapper" {
+  +int initialIndex
+  +State<MainNavigationWrapper> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::dashboard::main_navigation_wrapper.dart::MainNavigationWrapper"
+
+class "smart_traffic_sudan::screens::dashboard::main_navigation_wrapper.dart::_MainNavigationWrapperState" {
+  -int _currentIndex
+  -DateTime? _lastBackPress
+  +void initState()
+  -void _onTabTapped()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::dashboard::main_navigation_wrapper.dart::_MainNavigationWrapperState"
+
+class "smart_traffic_sudan::screens::dashboard::smart_role_router.dart::SmartRoleRouter" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::screens::dashboard::smart_role_router.dart::SmartRoleRouter"
+
+class "smart_traffic_sudan::screens::emergency::emergency_hotline_screen.dart::EmergencyHotlineScreen" {
+  +State<EmergencyHotlineScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::emergency::emergency_hotline_screen.dart::EmergencyHotlineScreen"
+
+class "smart_traffic_sudan::screens::emergency::emergency_hotline_screen.dart::_EmergencyHotlineScreenState" {
+  -TextEditingController _descriptionController
+  -String _selectedRoad
+  -bool _isSubmitting
+  -List<String> _highways
+  +void dispose()
+  -dynamic _submitReport()
+  +Widget build()
+  -Widget _buildEmergencyTile()
+}
+
+"smart_traffic_sudan::screens::emergency::emergency_hotline_screen.dart::_EmergencyHotlineScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::emergency::emergency_hotline_screen.dart::_EmergencyHotlineScreenState"
+
+class "smart_traffic_sudan::screens::officer::officer_hub_screen.dart::OfficerHubScreen" {
+  +dynamic Function(int)? onNavigateTab
+  +Widget build()
+  -Widget _buildShiftStat()
+  -Widget _buildTacticalActionCard()
+}
+
+"smart_traffic_sudan::screens::officer::officer_hub_screen.dart::OfficerHubScreen" o-- "null::dynamic Function(int)"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::screens::officer::officer_hub_screen.dart::OfficerHubScreen"
+
+class "smart_traffic_sudan::screens::officer::officer_navigation_wrapper.dart::OfficerNavigationWrapper" {
+  +int initialIndex
+  +State<OfficerNavigationWrapper> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::officer::officer_navigation_wrapper.dart::OfficerNavigationWrapper"
+
+class "smart_traffic_sudan::screens::officer::officer_navigation_wrapper.dart::_OfficerNavigationWrapperState" {
+  -int _currentIndex
+  -DateTime? _lastBackPress
+  +void initState()
+  -void _onTabTapped()
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::officer::officer_navigation_wrapper.dart::_OfficerNavigationWrapperState"
+
+class "smart_traffic_sudan::screens::officer::officer_shift_history_screen.dart::OfficerShiftHistoryScreen" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::screens::officer::officer_shift_history_screen.dart::OfficerShiftHistoryScreen"
+
+class "smart_traffic_sudan::screens::officer::plate_lookup_screen.dart::PlateLookupScreen" {
+  +State<PlateLookupScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::officer::plate_lookup_screen.dart::PlateLookupScreen"
+
+class "smart_traffic_sudan::screens::officer::plate_lookup_screen.dart::_PlateLookupScreenState" {
+  -TextEditingController _plateController
+  -VehicleModel? _result
+  -bool _hasSearched
+  -bool _isLoading
+  -dynamic _search()
+  +void dispose()
+  +Widget build()
+  -Widget _buildNotFound()
+  -Widget _buildResult()
+  -Widget _row()
+}
+
+"smart_traffic_sudan::screens::officer::plate_lookup_screen.dart::_PlateLookupScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"smart_traffic_sudan::screens::officer::plate_lookup_screen.dart::_PlateLookupScreenState" o-- "smart_traffic_sudan::models::vehicle_model.dart::VehicleModel"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::officer::plate_lookup_screen.dart::_PlateLookupScreenState"
+
+class "smart_traffic_sudan::screens::officer::ticket_issuer_screen.dart::TicketIssuerScreen" {
+  +String? prefilledPlate
+  +String? prefilledState
+  +State<TicketIssuerScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::officer::ticket_issuer_screen.dart::TicketIssuerScreen"
+
+class "smart_traffic_sudan::screens::officer::ticket_issuer_screen.dart::_TicketIssuerScreenState" {
+  -GlobalKey<FormState> _formKey
+  -TextEditingController _plateController
+  -String _selectedState
+  -List<Map<String, dynamic>> _violationTypes
+  -int _selectedViolationIndex
+  -String _selectedLocality
+  -double _latitude
+  -double _longitude
+  +void initState()
+  +void dispose()
+  -dynamic _issueTicket()
+  +Widget build()
+}
+
+"smart_traffic_sudan::screens::officer::ticket_issuer_screen.dart::_TicketIssuerScreenState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"smart_traffic_sudan::screens::officer::ticket_issuer_screen.dart::_TicketIssuerScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::officer::ticket_issuer_screen.dart::_TicketIssuerScreenState"
+
+class "smart_traffic_sudan::screens::onboarding::onboarding_screen.dart::OnboardingScreen" {
+  +State<OnboardingScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::onboarding::onboarding_screen.dart::OnboardingScreen"
+
+class "smart_traffic_sudan::screens::onboarding::onboarding_screen.dart::_OnboardingScreenState" {
+  -PageController _pageController
+  -int _currentPage
+  -AnimationController _fadeController
+  -AnimationController _slideController
+  -Animation<double> _fadeAnimation
+  -Animation<Offset> _slideAnimation
+  -List<_OnboardingData> _pages
+  +void initState()
+  +void dispose()
+  -void _onPageChanged()
+  -dynamic _completeOnboarding()
+  +Widget build()
+  -Widget _buildPage()
+  -Widget _buildBottomSection()
+}
+
+"smart_traffic_sudan::screens::onboarding::onboarding_screen.dart::_OnboardingScreenState" o-- "flutter::src::widgets::page_view.dart::PageController"
+"smart_traffic_sudan::screens::onboarding::onboarding_screen.dart::_OnboardingScreenState" o-- "flutter::src::animation::animation_controller.dart::AnimationController"
+"smart_traffic_sudan::screens::onboarding::onboarding_screen.dart::_OnboardingScreenState" o-- "flutter::src::animation::animation.dart::Animation<double>"
+"smart_traffic_sudan::screens::onboarding::onboarding_screen.dart::_OnboardingScreenState" o-- "flutter::src::animation::animation.dart::Animation<Offset>"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::onboarding::onboarding_screen.dart::_OnboardingScreenState"
+"flutter::src::widgets::ticker_provider.dart::TickerProviderStateMixin" <|-- "smart_traffic_sudan::screens::onboarding::onboarding_screen.dart::_OnboardingScreenState"
+
+class "smart_traffic_sudan::screens::onboarding::onboarding_screen.dart::_OnboardingData" {
+  +String image
+  +String title
+  +String subtitle
+  +String description
+  +IconData icon
+}
+
+"smart_traffic_sudan::screens::onboarding::onboarding_screen.dart::_OnboardingData" o-- "flutter::src::widgets::icon_data.dart::IconData"
+
+class "smart_traffic_sudan::screens::payment::payment_gateway_screen.dart::PaymentGatewayScreen" {
+  +ViolationModel violation
+  +State<PaymentGatewayScreen> createState()
+}
+
+"smart_traffic_sudan::screens::payment::payment_gateway_screen.dart::PaymentGatewayScreen" o-- "smart_traffic_sudan::models::violation_model.dart::ViolationModel"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::payment::payment_gateway_screen.dart::PaymentGatewayScreen"
+
+class "smart_traffic_sudan::screens::payment::payment_gateway_screen.dart::_PaymentGatewayScreenState" {
+  -int _selectedMethodIndex
+  -bool _isProcessingPayment
+  -String _processingStep
+  -TextEditingController _accountNumberController
+  -TextEditingController _cardNumberController
+  -TextEditingController _cardHolderController
+  -TextEditingController _expiryController
+  -TextEditingController _cvvController
+  -List<Map<String, dynamic>> _paymentMethods
+  +void dispose()
+  -dynamic _showBankakPinDialog()
+  -Widget _bankakInfoRow()
+  -dynamic _showOtpDialog()
+  -dynamic _processPayment()
+  -void _showErrorDialog()
+  +Widget build()
+  -Widget _buildPriceRow()
+  -Widget _buildProcessingView()
+}
+
+"smart_traffic_sudan::screens::payment::payment_gateway_screen.dart::_PaymentGatewayScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::payment::payment_gateway_screen.dart::_PaymentGatewayScreenState"
+"flutter::src::widgets::ticker_provider.dart::SingleTickerProviderStateMixin" <|-- "smart_traffic_sudan::screens::payment::payment_gateway_screen.dart::_PaymentGatewayScreenState"
+
+class "smart_traffic_sudan::screens::payment::payment_success_screen.dart::PaymentSuccessScreen" {
+  +PaymentReceiptModel receipt
+  +Widget build()
+  -Widget _buildReceiptItem()
+}
+
+"smart_traffic_sudan::screens::payment::payment_success_screen.dart::PaymentSuccessScreen" o-- "smart_traffic_sudan::models::payment_receipt_model.dart::PaymentReceiptModel"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::screens::payment::payment_success_screen.dart::PaymentSuccessScreen"
+
+class "smart_traffic_sudan::screens::profile::digital_license_screen.dart::DigitalLicenseScreen" {
+  +State<DigitalLicenseScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::profile::digital_license_screen.dart::DigitalLicenseScreen"
+
+class "smart_traffic_sudan::screens::profile::digital_license_screen.dart::_DigitalLicenseScreenState" {
+  -bool _showBackFace
+  +Widget build()
+  -Widget _buildLicenseFront()
+  -Widget _buildLicenseBack()
+  -Widget _buildInfoRow()
+}
+
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::profile::digital_license_screen.dart::_DigitalLicenseScreenState"
+
+class "smart_traffic_sudan::screens::profile::profile_settings_screen.dart::ProfileSettingsScreen" {
+  +State<ProfileSettingsScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::profile::profile_settings_screen.dart::ProfileSettingsScreen"
+
+class "smart_traffic_sudan::screens::profile::profile_settings_screen.dart::_ProfileSettingsScreenState" {
+  -ImagePicker _picker
+  -bool _notificationsEnabled
+  -bool _radarAlerts
+  -dynamic _changeProfilePicture()
+  -void _showEditProfileDialog()
+  -void _showPrivacyPolicyDialog()
+  -void _showAboutDialog()
+  -void _showChangePasswordDialog()
+  +Widget build()
+  -Widget _buildInfoTile()
+  -Widget _buildStatItem()
+  -Widget _buildDocPreview()
+}
+
+"smart_traffic_sudan::screens::profile::profile_settings_screen.dart::_ProfileSettingsScreenState" o-- "image_picker::image_picker.dart::ImagePicker"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::profile::profile_settings_screen.dart::_ProfileSettingsScreenState"
+
+class "smart_traffic_sudan::screens::splash::splash_screen.dart::SplashScreen" {
+  +State<SplashScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::splash::splash_screen.dart::SplashScreen"
+
+class "smart_traffic_sudan::screens::splash::splash_screen.dart::_SplashScreenState" {
+  -AnimationController _logoController
+  -AnimationController _pulseController
+  -AnimationController _progressController
+  -Animation<double> _logoScale
+  -Animation<double> _logoOpacity
+  -Animation<double> _pulseScale
+  -Animation<double> _pulseOpacity
+  -Animation<double> _progressValue
+  -Animation<double> _textFade
+  -String _statusText
+  +void initState()
+  -dynamic _startSequence()
+  -dynamic _navigateNext()
+  +void dispose()
+  +Widget build()
+}
+
+"smart_traffic_sudan::screens::splash::splash_screen.dart::_SplashScreenState" o-- "flutter::src::animation::animation_controller.dart::AnimationController"
+"smart_traffic_sudan::screens::splash::splash_screen.dart::_SplashScreenState" o-- "flutter::src::animation::animation.dart::Animation<double>"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::splash::splash_screen.dart::_SplashScreenState"
+"flutter::src::widgets::ticker_provider.dart::TickerProviderStateMixin" <|-- "smart_traffic_sudan::screens::splash::splash_screen.dart::_SplashScreenState"
+
+class "smart_traffic_sudan::screens::vehicles::add_vehicle_screen.dart::AddVehicleScreen" {
+  +State<AddVehicleScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::vehicles::add_vehicle_screen.dart::AddVehicleScreen"
+
+class "smart_traffic_sudan::screens::vehicles::add_vehicle_screen.dart::_AddVehicleScreenState" {
+  -GlobalKey<FormState> _formKey
+  -TextEditingController _makeController
+  -TextEditingController _modelController
+  -TextEditingController _plateController
+  -TextEditingController _colorController
+  -TextEditingController _chassisController
+  -File? _certificateImage
+  -bool _isLoading
+  -String _selectedStateCode
+  +void dispose()
+  -dynamic _pickImage()
+  -dynamic _saveVehicle()
+  +Widget build()
+}
+
+"smart_traffic_sudan::screens::vehicles::add_vehicle_screen.dart::_AddVehicleScreenState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"smart_traffic_sudan::screens::vehicles::add_vehicle_screen.dart::_AddVehicleScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"smart_traffic_sudan::screens::vehicles::add_vehicle_screen.dart::_AddVehicleScreenState" o-- "dart::io::File"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::vehicles::add_vehicle_screen.dart::_AddVehicleScreenState"
+
+class "smart_traffic_sudan::screens::vehicles::vehicles_list_screen.dart::VehiclesListScreen" {
+  +State<VehiclesListScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::vehicles::vehicles_list_screen.dart::VehiclesListScreen"
+
+class "smart_traffic_sudan::screens::vehicles::vehicles_list_screen.dart::_VehiclesListScreenState" {
+  -int _selectedFilter
+  -TextEditingController _searchController
+  -String _searchQuery
+  -bool _isLoading
+  +void initState()
+  -void _simulateLoading()
+  -dynamic _handleRefresh()
+  +void dispose()
+  +Widget build()
+  -Widget _buildFilterChip()
+}
+
+"smart_traffic_sudan::screens::vehicles::vehicles_list_screen.dart::_VehiclesListScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::vehicles::vehicles_list_screen.dart::_VehiclesListScreenState"
+
+class "smart_traffic_sudan::screens::vehicles::vehicle_details_screen.dart::VehicleDetailsScreen" {
+  +VehicleModel vehicle
+  +Widget build()
+  -Widget _buildDetailRow()
+  -Widget _buildDocCard()
+}
+
+"smart_traffic_sudan::screens::vehicles::vehicle_details_screen.dart::VehicleDetailsScreen" o-- "smart_traffic_sudan::models::vehicle_model.dart::VehicleModel"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::screens::vehicles::vehicle_details_screen.dart::VehicleDetailsScreen"
+
+class "smart_traffic_sudan::screens::violations::dispute_violation_screen.dart::DisputeViolationScreen" {
+  +ViolationModel violation
+  +State<DisputeViolationScreen> createState()
+}
+
+"smart_traffic_sudan::screens::violations::dispute_violation_screen.dart::DisputeViolationScreen" o-- "smart_traffic_sudan::models::violation_model.dart::ViolationModel"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::violations::dispute_violation_screen.dart::DisputeViolationScreen"
+
+class "smart_traffic_sudan::screens::violations::dispute_violation_screen.dart::_DisputeViolationScreenState" {
+  -GlobalKey<FormState> _formKey
+  -TextEditingController _descriptionController
+  -String _selectedReason
+  -bool _hasAttachedEvidence
+  -bool _agreedToTerms
+  -List<String> _disputeReasons
+  +void dispose()
+  -dynamic _submitDispute()
+  +Widget build()
+}
+
+"smart_traffic_sudan::screens::violations::dispute_violation_screen.dart::_DisputeViolationScreenState" o-- "flutter::src::widgets::framework.dart::GlobalKey<FormState>"
+"smart_traffic_sudan::screens::violations::dispute_violation_screen.dart::_DisputeViolationScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::violations::dispute_violation_screen.dart::_DisputeViolationScreenState"
+
+class "smart_traffic_sudan::screens::violations::violations_list_screen.dart::ViolationsListScreen" {
+  +String? filterPlate
+  +State<ViolationsListScreen> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::screens::violations::violations_list_screen.dart::ViolationsListScreen"
+
+class "smart_traffic_sudan::screens::violations::violations_list_screen.dart::_ViolationsListScreenState" {
+  -int _selectedFilter
+  -TextEditingController _searchController
+  -String _searchQuery
+  -bool _isLoading
+  +void initState()
+  -void _simulateLoading()
+  -dynamic _handleRefresh()
+  +void dispose()
+  +Widget build()
+  -Widget _buildFilterChip()
+}
+
+"smart_traffic_sudan::screens::violations::violations_list_screen.dart::_ViolationsListScreenState" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::screens::violations::violations_list_screen.dart::_ViolationsListScreenState"
+
+class "smart_traffic_sudan::screens::violations::violation_details_screen.dart::ViolationDetailsScreen" {
+  +ViolationModel violation
+  +Widget build()
+  -Widget _buildInfoRow()
+}
+
+"smart_traffic_sudan::screens::violations::violation_details_screen.dart::ViolationDetailsScreen" o-- "smart_traffic_sudan::models::violation_model.dart::ViolationModel"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::screens::violations::violation_details_screen.dart::ViolationDetailsScreen"
+
+class "smart_traffic_sudan::widgets::custom_button.dart::CustomButton" {
+  +String text
+  +void Function()? onPressed
+  +bool isLoading
+  +IconData? icon
+  +bool isOutlined
+  +Color? backgroundColor
+  +Color? textColor
+  +double? width
+  +double height
+  +EdgeInsetsGeometry padding
+  +Widget build()
+}
+
+"smart_traffic_sudan::widgets::custom_button.dart::CustomButton" o-- "dart::ui::void Function()"
+"smart_traffic_sudan::widgets::custom_button.dart::CustomButton" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"smart_traffic_sudan::widgets::custom_button.dart::CustomButton" o-- "dart::ui::Color"
+"smart_traffic_sudan::widgets::custom_button.dart::CustomButton" o-- "flutter::src::painting::edge_insets.dart::EdgeInsetsGeometry"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::widgets::custom_button.dart::CustomButton"
+
+class "smart_traffic_sudan::widgets::custom_text_field.dart::CustomTextField" {
+  +TextEditingController? controller
+  +String label
+  +String? hint
+  +IconData? prefixIcon
+  +Widget? suffixIcon
+  +bool obscureText
+  +TextInputType keyboardType
+  +String? Function(String?)? validator
+  +void Function(String)? onChanged
+  +int maxLines
+  +bool readOnly
+  +void Function()? onTap
+  +Color? textColor
+  +Color? labelColor
+  +Color? fillColor
+  +Widget build()
+}
+
+"smart_traffic_sudan::widgets::custom_text_field.dart::CustomTextField" o-- "flutter::src::widgets::editable_text.dart::TextEditingController"
+"smart_traffic_sudan::widgets::custom_text_field.dart::CustomTextField" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"smart_traffic_sudan::widgets::custom_text_field.dart::CustomTextField" o-- "flutter::src::widgets::framework.dart::Widget"
+"smart_traffic_sudan::widgets::custom_text_field.dart::CustomTextField" o-- "flutter::src::services::text_input.dart::TextInputType"
+"smart_traffic_sudan::widgets::custom_text_field.dart::CustomTextField" o-- "null::String Function(String)"
+"smart_traffic_sudan::widgets::custom_text_field.dart::CustomTextField" o-- "null::void Function(String)"
+"smart_traffic_sudan::widgets::custom_text_field.dart::CustomTextField" o-- "dart::ui::void Function()"
+"smart_traffic_sudan::widgets::custom_text_field.dart::CustomTextField" o-- "dart::ui::Color"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::widgets::custom_text_field.dart::CustomTextField"
+
+class "smart_traffic_sudan::widgets::interactive_map_widget.dart::InteractiveMapWidget" {
+  +String locationName
+  +double latitude
+  +double longitude
+  +State<InteractiveMapWidget> createState()
+}
+
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::widgets::interactive_map_widget.dart::InteractiveMapWidget"
+
+class "smart_traffic_sudan::widgets::interactive_map_widget.dart::_InteractiveMapWidgetState" {
+  -AnimationController _pulseController
+  -Animation<double> _pulseAnimation
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"smart_traffic_sudan::widgets::interactive_map_widget.dart::_InteractiveMapWidgetState" o-- "flutter::src::animation::animation_controller.dart::AnimationController"
+"smart_traffic_sudan::widgets::interactive_map_widget.dart::_InteractiveMapWidgetState" o-- "flutter::src::animation::animation.dart::Animation<double>"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::widgets::interactive_map_widget.dart::_InteractiveMapWidgetState"
+"flutter::src::widgets::ticker_provider.dart::SingleTickerProviderStateMixin" <|-- "smart_traffic_sudan::widgets::interactive_map_widget.dart::_InteractiveMapWidgetState"
+
+class "smart_traffic_sudan::widgets::interactive_map_widget.dart::_MapGridPainter" {
+  +void paint()
+  +bool shouldRepaint()
+}
+
+"flutter::src::rendering::custom_paint.dart::CustomPainter" <|-- "smart_traffic_sudan::widgets::interactive_map_widget.dart::_MapGridPainter"
+
+class "smart_traffic_sudan::widgets::in_app_notification_banner.dart::InAppNotificationListener" {
+  +Widget child
+  +State<InAppNotificationListener> createState()
+}
+
+"smart_traffic_sudan::widgets::in_app_notification_banner.dart::InAppNotificationListener" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::widgets::in_app_notification_banner.dart::InAppNotificationListener"
+
+class "smart_traffic_sudan::widgets::in_app_notification_banner.dart::_InAppNotificationListenerState" {
+  -StreamSubscription<InAppNotification>? _sub
+  -InAppNotification? _current
+  -AnimationController _animController
+  -Animation<Offset> _slideAnim
+  -Timer? _dismissTimer
+  +void initState()
+  -void _showBanner()
+  -void _dismiss()
+  +void dispose()
+  -Color _typeColor()
+  -IconData _typeIcon()
+  +Widget build()
+}
+
+"smart_traffic_sudan::widgets::in_app_notification_banner.dart::_InAppNotificationListenerState" o-- "dart::async::StreamSubscription<InAppNotification>"
+"smart_traffic_sudan::widgets::in_app_notification_banner.dart::_InAppNotificationListenerState" o-- "smart_traffic_sudan::core::services::notification_service.dart::InAppNotification"
+"smart_traffic_sudan::widgets::in_app_notification_banner.dart::_InAppNotificationListenerState" o-- "flutter::src::animation::animation_controller.dart::AnimationController"
+"smart_traffic_sudan::widgets::in_app_notification_banner.dart::_InAppNotificationListenerState" o-- "flutter::src::animation::animation.dart::Animation<Offset>"
+"smart_traffic_sudan::widgets::in_app_notification_banner.dart::_InAppNotificationListenerState" o-- "dart::async::Timer"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::widgets::in_app_notification_banner.dart::_InAppNotificationListenerState"
+"flutter::src::widgets::ticker_provider.dart::SingleTickerProviderStateMixin" <|-- "smart_traffic_sudan::widgets::in_app_notification_banner.dart::_InAppNotificationListenerState"
+
+class "smart_traffic_sudan::widgets::offline_banner.dart::OfflineBanner" {
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::widgets::offline_banner.dart::OfflineBanner"
+
+class "smart_traffic_sudan::widgets::skeleton_loader.dart::SkeletonLoader" {
+  +double width
+  +double height
+  +double borderRadius
+  +BoxShape shape
+  +State<SkeletonLoader> createState()
+  {static} +Widget list()
+}
+
+"smart_traffic_sudan::widgets::skeleton_loader.dart::SkeletonLoader" o-- "flutter::src::painting::box_border.dart::BoxShape"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::widgets::skeleton_loader.dart::SkeletonLoader"
+
+class "smart_traffic_sudan::widgets::skeleton_loader.dart::_SkeletonLoaderState" {
+  -AnimationController _controller
+  -Animation<double> _animation
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"smart_traffic_sudan::widgets::skeleton_loader.dart::_SkeletonLoaderState" o-- "flutter::src::animation::animation_controller.dart::AnimationController"
+"smart_traffic_sudan::widgets::skeleton_loader.dart::_SkeletonLoaderState" o-- "flutter::src::animation::animation.dart::Animation<double>"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::widgets::skeleton_loader.dart::_SkeletonLoaderState"
+"flutter::src::widgets::ticker_provider.dart::SingleTickerProviderStateMixin" <|-- "smart_traffic_sudan::widgets::skeleton_loader.dart::_SkeletonLoaderState"
+
+class "smart_traffic_sudan::widgets::skeleton_loader.dart::_SlidingGradientTransform" {
+  +double value
+  +Matrix4? transform()
+}
+
+"flutter::src::painting::gradient.dart::GradientTransform" <|-- "smart_traffic_sudan::widgets::skeleton_loader.dart::_SlidingGradientTransform"
+
+class "smart_traffic_sudan::widgets::sovereign_badge.dart::SovereignBadge" {
+  +String? title
+  +String? subtitle
+  +Widget? trailing
+  +Widget build()
+}
+
+"smart_traffic_sudan::widgets::sovereign_badge.dart::SovereignBadge" o-- "flutter::src::widgets::framework.dart::Widget"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::widgets::sovereign_badge.dart::SovereignBadge"
+
+class "smart_traffic_sudan::widgets::stat_card.dart::StatCard" {
+  +String title
+  +String value
+  +String? subtitle
+  +IconData icon
+  +Color accentColor
+  +void Function()? onTap
+  +Widget build()
+}
+
+"smart_traffic_sudan::widgets::stat_card.dart::StatCard" o-- "flutter::src::widgets::icon_data.dart::IconData"
+"smart_traffic_sudan::widgets::stat_card.dart::StatCard" o-- "dart::ui::Color"
+"smart_traffic_sudan::widgets::stat_card.dart::StatCard" o-- "dart::ui::void Function()"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::widgets::stat_card.dart::StatCard"
+
+class "smart_traffic_sudan::widgets::success_animation.dart::SuccessCheckmarkAnimation" {
+  +double size
+  +void Function()? onComplete
+  +State<SuccessCheckmarkAnimation> createState()
+}
+
+"smart_traffic_sudan::widgets::success_animation.dart::SuccessCheckmarkAnimation" o-- "dart::ui::void Function()"
+"flutter::src::widgets::framework.dart::StatefulWidget" <|-- "smart_traffic_sudan::widgets::success_animation.dart::SuccessCheckmarkAnimation"
+
+class "smart_traffic_sudan::widgets::success_animation.dart::_SuccessCheckmarkAnimationState" {
+  -AnimationController _controller
+  -Animation<double> _circleAnimation
+  -Animation<double> _checkmarkAnimation
+  +void initState()
+  +void dispose()
+  +Widget build()
+}
+
+"smart_traffic_sudan::widgets::success_animation.dart::_SuccessCheckmarkAnimationState" o-- "flutter::src::animation::animation_controller.dart::AnimationController"
+"smart_traffic_sudan::widgets::success_animation.dart::_SuccessCheckmarkAnimationState" o-- "flutter::src::animation::animation.dart::Animation<double>"
+"flutter::src::widgets::framework.dart::State" <|-- "smart_traffic_sudan::widgets::success_animation.dart::_SuccessCheckmarkAnimationState"
+"flutter::src::widgets::ticker_provider.dart::SingleTickerProviderStateMixin" <|-- "smart_traffic_sudan::widgets::success_animation.dart::_SuccessCheckmarkAnimationState"
+
+class "smart_traffic_sudan::widgets::success_animation.dart::_SuccessCheckmarkPainter" {
+  +double circleProgress
+  +double checkmarkProgress
+  +Color color
+  +void paint()
+  +double lerpDouble()
+  +bool shouldRepaint()
+}
+
+"smart_traffic_sudan::widgets::success_animation.dart::_SuccessCheckmarkPainter" o-- "dart::ui::Color"
+"flutter::src::rendering::custom_paint.dart::CustomPainter" <|-- "smart_traffic_sudan::widgets::success_animation.dart::_SuccessCheckmarkPainter"
+
+class "smart_traffic_sudan::widgets::sudan_plate_widget.dart::SudanPlateWidget" {
+  +String plateNumber
+  +String stateCode
+  +String categoryCode
+  +bool isCompact
+  +Widget build()
+}
+
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::widgets::sudan_plate_widget.dart::SudanPlateWidget"
+
+class "smart_traffic_sudan::widgets::vehicle_card.dart::VehicleCard" {
+  +VehicleModel vehicle
+  +void Function()? onTap
+  +Widget build()
+  -Widget _buildInfoChip()
+}
+
+"smart_traffic_sudan::widgets::vehicle_card.dart::VehicleCard" o-- "smart_traffic_sudan::models::vehicle_model.dart::VehicleModel"
+"smart_traffic_sudan::widgets::vehicle_card.dart::VehicleCard" o-- "dart::ui::void Function()"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::widgets::vehicle_card.dart::VehicleCard"
+
+class "smart_traffic_sudan::widgets::violation_card.dart::ViolationCard" {
+  +ViolationModel violation
+  +void Function()? onTap
+  +void Function()? onPayTap
+  +Widget build()
+}
+
+"smart_traffic_sudan::widgets::violation_card.dart::ViolationCard" o-- "smart_traffic_sudan::models::violation_model.dart::ViolationModel"
+"smart_traffic_sudan::widgets::violation_card.dart::ViolationCard" o-- "dart::ui::void Function()"
+"flutter::src::widgets::framework.dart::StatelessWidget" <|-- "smart_traffic_sudan::widgets::violation_card.dart::ViolationCard"
+
+
+@enduml

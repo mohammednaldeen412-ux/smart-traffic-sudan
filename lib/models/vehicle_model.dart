@@ -1,4 +1,4 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class VehicleModel {
   final String id;
@@ -13,6 +13,7 @@ class VehicleModel {
   final String certificateImageUrl;
   final bool isVerified;
   final bool isWanted;
+  final String? wantedReason;
   final DateTime? licenseExpiryDate;
   final DateTime createdAt;
 
@@ -29,6 +30,7 @@ class VehicleModel {
     required this.certificateImageUrl,
     this.isVerified = false,
     this.isWanted = false,
+    this.wantedReason,
     this.licenseExpiryDate,
     required this.createdAt,
   });
@@ -71,6 +73,7 @@ class VehicleModel {
       certificateImageUrl: cUrl,
       isVerified: json['isVerified'] ?? false,
       isWanted: json['isWanted'] ?? false,
+      wantedReason: json['wantedReason'],
       licenseExpiryDate: expiry,
       createdAt: json['createdAt'] != null
           ? (json['createdAt'] as Timestamp).toDate()
@@ -92,6 +95,7 @@ class VehicleModel {
       'certificateImageUrl': certificateImageUrl,
       'isVerified': isVerified,
       'isWanted': isWanted,
+      if (wantedReason != null) 'wantedReason': wantedReason,
       if (licenseExpiryDate != null)
         'licenseExpiryDate': Timestamp.fromDate(licenseExpiryDate!),
       'createdAt': Timestamp.fromDate(createdAt),
