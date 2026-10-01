@@ -67,7 +67,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                           ),
                           Text(
                             user?.fullName ?? context.tr('citizen'),
-                            style: AppTypography.headlineSmall.copyWith(
+                            style: AppTypography.titleLarge.copyWith(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -114,7 +114,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                           const SizedBox(height: 8),
                           Text(
                             CurrencyFormatter.formatSDG(totalUnpaidAmount),
-                            style: AppTypography.headlineMedium.copyWith(
+                            style: AppTypography.displayMedium.copyWith(
                               color: const Color(0xFFFF8A80),
                               fontWeight: FontWeight.bold,
                             ),

@@ -11,7 +11,8 @@ import 'plate_lookup_screen.dart';
 import 'ticket_issuer_screen.dart';
 
 class OfficerHubScreen extends StatelessWidget {
-  const OfficerHubScreen({super.key});
+  final Function(int)? onNavigateTab;
+  const OfficerHubScreen({super.key, this.onNavigateTab});
 
   @override
   Widget build(BuildContext context) {
@@ -212,7 +213,7 @@ class OfficerHubScreen extends StatelessWidget {
           ],
         ),
         subtitle: Padding(
-          padding: const EdgeInsets.top(6.0),
+          padding: const EdgeInsets.only(top: 6.0),
           child: Text(subtitle, style: const TextStyle(color: Colors.white54, fontSize: 12)),
         ),
         trailing: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white24, size: 16),
