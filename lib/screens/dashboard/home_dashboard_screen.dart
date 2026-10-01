@@ -2,21 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/localization/app_strings.dart';
 import '../../core/services/auth_service.dart';
-import '../../core/services/notification_service.dart';
 import '../../core/services/traffic_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/utils/currency_formatter.dart';
-import '../../widgets/offline_banner.dart';
-import '../../widgets/sovereign_badge.dart';
-import '../../widgets/vehicle_card.dart';
-import '../../widgets/violation_card.dart';
+import '../../widgets/glass_card.dart';
 import '../emergency/emergency_hotline_screen.dart';
 import '../payment/payment_gateway_screen.dart';
-import '../profile/digital_license_screen.dart';
-import '../vehicles/add_vehicle_screen.dart';
-import '../vehicles/vehicle_details_screen.dart';
-import '../violations/violation_details_screen.dart';
 
 class HomeDashboardScreen extends StatefulWidget {
   final Function(int)? onNavigateTab;
@@ -32,16 +24,6 @@ class HomeDashboardScreen extends StatefulWidget {
 
 class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        context.read<NotificationService>().requestNotificationPermission();
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthService>();
     final traffic = context.watch<TrafficService>();
@@ -49,526 +31,185 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
 
     final unpaidViolations = traffic.violations.where((v) => !v.isPaid).toList();
     final totalUnpaidAmount = unpaidViolations.fold(0.0, (sum, v) => sum + v.amount);
+    final hasFines = unpaidViolations.isNotEmpty;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            const OfflineBanner(),
-            Expanded(
-              child: RefreshIndicator(
-                color: AppColors.primary,
-                backgroundColor: Theme.of(context).cardColor,
-                onRefresh: () async {
-                  await Future.delayed(const Duration(milliseconds: 600));
-                },
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
+        children: [
+          // 1. الفخامة تبدأ من الخلفية
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/citizen_header.jpg'),
+                fit: BoxFit.cover,
+                // تعتيم خفيف للخلفية لإبراز الزجاج
+                colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
+              ),
+            ),
+          ),
+          
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // الترحيب بالمواطن
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // User Welcome Bar
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 20,
-                                  backgroundColor: AppColors.primary.withValues(alpha: 0.15),
-                                  backgroundImage: user?.profileImageUrl != null
-                                      ? NetworkImage(user!.profileImageUrl!)
-                                      : null,
-                                  child: user?.profileImageUrl == null
-                                      ? const Icon(Icons.person, color: AppColors.primary, size: 24)
-                                      : null,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            context.tr('welcome'),
-                                            style: AppTypography.bodySmall.copyWith(
-                                              color: AppColors.primary,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 10,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 2),
-                                          const Icon(
-                                            Icons.verified_rounded,
-                                            size: 10,
-                                            color: AppColors.primary,
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        user?.fullName ?? context.tr('citizen'),
-                                        style: AppTypography.titleSmall.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 13,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          // Emergency Call Button
-                          InkWell(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const EmergencyHotlineScreen(),
-                                ),
-                              );
-                            },
-                            borderRadius: BorderRadius.circular(10),
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: AppColors.error.withValues(alpha: 0.12),
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: AppColors.error.withValues(alpha: 0.5),
-                                  width: 1.2,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(
-                                    Icons.emergency_rounded,
-                                    color: AppColors.error,
-                                    size: 14,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    context.tr('emergency_777'),
-                                    style: AppTypography.bodySmall.copyWith(
-                                      color: AppColors.error,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Sovereign Header Badge
-                      const SovereignBadge(),
-
-                      const SizedBox(height: 16),
-
-                      // Main Banner Image
-                      Container(
-                        height: 150,
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.15),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
-                            )
-                          ],
-                          image: const DecorationImage(
-                            image: AssetImage('assets/images/citizen_header.jpg'),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 16),
-
-                      // Summary Stats Box
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Theme.of(context).cardColor,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.cardBorder),
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    context.tr('total_fines'),
-                                    style: AppTypography.bodySmall.copyWith(
-                                      color: AppColors.textSecondary,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    CurrencyFormatter.formatSDG(totalUnpaidAmount),
-                                    style: AppTypography.titleLarge.copyWith(
-                                      color: unpaidViolations.isNotEmpty
-                                          ? AppColors.error
-                                          : AppColors.success,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    ' ${context.tr('unpaid_violations')}',
-                                    style: AppTypography.bodySmall.copyWith(
-                                      fontSize: 10,
-                                      color: AppColors.textMuted,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (unpaidViolations.isNotEmpty)
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => PaymentGatewayScreen(
-                                        violation: unpaidViolations.first,
-                                      ),
-                                    ),
-                                  );
-                                },
-                                icon: const Icon(Icons.payment, size: 16),
-                                label: Text(context.tr('pay_all')),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.primary,
-                                  foregroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Quick Services Section Title
-                      Text(
-                        context.tr('quick_services'),
-                        style: AppTypography.titleMedium.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-
-                      const SizedBox(height: 12),
-
-                      // Quick Services Grid (Clean Responsive Layout)
-                      GridView.count(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 1.05,
-                        children: [
-                          _buildServiceCard(
-                            context: context,
-                            title: context.tr('my_vehicles'),
-                            icon: Icons.directions_car_rounded,
-                            color: Colors.blue,
-                            onTap: () => widget.onNavigateTab?.call(1),
-                          ),
-                          _buildServiceCard(
-                            context: context,
-                            title: context.tr('violations'),
-                            icon: Icons.receipt_long_rounded,
-                            color: Colors.orange,
-                            onTap: () => widget.onNavigateTab?.call(2),
-                          ),
-                          _buildServiceCard(
-                            context: context,
-                            title: context.tr('digital_license'),
-                            icon: Icons.badge_rounded,
-                            color: Colors.teal,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const DigitalLicenseScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          _buildServiceCard(
-                            context: context,
-                            title: context.tr('quick_pay'),
-                            icon: Icons.payment_rounded,
-                            color: Colors.green,
-                            onTap: () {
-                              if (unpaidViolations.isNotEmpty) {
-                                Navigator.of(context).push(
-                                  MaterialPageRoute(
-                                    builder: (_) => PaymentGatewayScreen(
-                                      violation: unpaidViolations.first,
-                                    ),
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(context.tr('all_clear')),
-                                    backgroundColor: AppColors.success,
-                                  ),
-                                );
-                              }
-                            },
-                          ),
-                          _buildServiceCard(
-                            context: context,
-                            title: context.tr('add_vehicle'),
-                            icon: Icons.add_circle_outline_rounded,
-                            color: Colors.purple,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const AddVehicleScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                          _buildServiceCard(
-                            context: context,
-                            title: context.tr('emergency_report'),
-                            icon: Icons.support_agent_rounded,
-                            color: Colors.red,
-                            onTap: () {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const EmergencyHotlineScreen(),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Vehicles Preview Title & Action
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            context.tr('registered_vehicles'),
-                            style: AppTypography.titleMedium.copyWith(
+                            "مرحباً بك،",
+                            style: AppTypography.bodyMedium.copyWith(color: Colors.white70),
+                          ),
+                          Text(
+                            user?.fullName ?? context.tr('citizen'),
+                            style: AppTypography.headlineSmall.copyWith(
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          TextButton(
-                            onPressed: () => widget.onNavigateTab?.call(1),
-                            child: Text(context.tr('view_all')),
-                          ),
                         ],
                       ),
-
-                      const SizedBox(height: 8),
-
-                      if (traffic.vehicles.isEmpty)
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: AppColors.cardBorder),
-                          ),
-                          child: Column(
-                            children: [
-                              const Icon(Icons.directions_car_outlined, size: 40, color: AppColors.textMuted),
-                              const SizedBox(height: 8),
-                              Text(
-                                context.tr('no_vehicles'),
-                                style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary),
-                              ),
-                              const SizedBox(height: 12),
-                              OutlinedButton.icon(
-                                onPressed: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(builder: (_) => const AddVehicleScreen()),
-                                  );
-                                },
-                                icon: const Icon(Icons.add, size: 18),
-                                label: Text(context.tr('add_vehicle_btn')),
-                              ),
-                            ],
-                          ),
-                        )
-                      else
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: traffic.vehicles.length > 2 ? 2 : traffic.vehicles.length,
-                          itemBuilder: (context, index) {
-                            final veh = traffic.vehicles[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: VehicleCard(
-                                vehicle: veh,
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => VehicleDetailsScreen(vehicle: veh),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        ),
-
-                      const SizedBox(height: 16),
-
-                      // Recent Violations Preview
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            context.tr('recent_violations'),
-                            style: AppTypography.titleMedium.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () => widget.onNavigateTab?.call(2),
-                            child: Text(context.tr('view_all')),
-                          ),
-                        ],
+                      CircleAvatar(
+                        radius: 24,
+                        backgroundColor: Colors.white24,
+                        backgroundImage: user?.profileImageUrl != null
+                            ? NetworkImage(user!.profileImageUrl!)
+                            : null,
+                        child: user?.profileImageUrl == null
+                            ? const Icon(Icons.person, color: Colors.white)
+                            : null,
                       ),
-
-                      const SizedBox(height: 8),
-
-                      if (traffic.violations.isEmpty)
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
-                            borderRadius: BorderRadius.circular(14),
-                            border: Border.all(color: AppColors.cardBorder),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Icons.verified_user_rounded, color: AppColors.success, size: 24),
-                              const SizedBox(width: 8),
-                              Text(
-                                context.tr('all_clear'),
-                                style: AppTypography.bodyMedium.copyWith(
-                                  color: AppColors.success,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                      else
-                        ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: traffic.violations.length > 2 ? 2 : traffic.violations.length,
-                          itemBuilder: (context, index) {
-                            final viol = traffic.violations[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 10),
-                              child: ViolationCard(
-                                violation: viol,
-                                onTap: () {
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (_) => ViolationDetailsScreen(violation: viol),
-                                    ),
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        ),
-
-                      const SizedBox(height: 24),
                     ],
                   ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+                  
+                  const Spacer(flex: 1),
 
-  Widget _buildServiceCard({
-    required BuildContext context,
-    required String title,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(14),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.cardBorder),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
+                  // البطاقة الزجاجية الرئيسية (حالة السجل)
+                  GlassCard(
+                    blur: 20.0,
+                    opacity: 0.2,
+                    tintColor: hasFines ? AppColors.error : AppColors.success,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          hasFines ? Icons.warning_amber_rounded : Icons.verified_user_rounded,
+                          size: 64,
+                          color: hasFines ? const Color(0xFFFF8A80) : const Color(0xFF69F0AE),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          hasFines ? "لديك مطالبات مالية" : "سجلك المروري نظيف",
+                          style: AppTypography.titleLarge.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        if (hasFines) ...[
+                          const SizedBox(height: 8),
+                          Text(
+                            CurrencyFormatter.formatSDG(totalUnpaidAmount),
+                            style: AppTypography.headlineMedium.copyWith(
+                              color: const Color(0xFFFF8A80),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: () => widget.onNavigateTab?.call(2), // الانتقال للمخالفات
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                foregroundColor: AppColors.error,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: const Text(
+                                "عرض التفاصيل والسداد",
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                            ),
+                          )
+                        ] else ...[
+                          const SizedBox(height: 8),
+                          const Text(
+                            "نتمنى لك قيادة آمنة، تذكر دائماً ربط حزام الأمان.",
+                            style: TextStyle(color: Colors.white70, fontSize: 14),
+                            textAlign: TextAlign.center,
+                          ),
+                        ]
+                      ],
+                    ),
+                  ),
+
+                  const Spacer(flex: 2),
+
+                  // الأزرار السريعة الزجاجية في الأسفل
+                  Row(
+                    children: [
+                      // زر الطوارئ
+                      Expanded(
+                        child: GlassCard(
+                          blur: 15.0,
+                          opacity: 0.3,
+                          tintColor: Colors.redAccent,
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => const EmergencyHotlineScreen(),
+                              ),
+                            );
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.emergency_share_rounded, color: Colors.white, size: 36),
+                              const SizedBox(height: 12),
+                              Text(
+                                "طوارئ وبلاغات",
+                                style: AppTypography.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      // زر المركبات والمخالفات
+                      Expanded(
+                        child: GlassCard(
+                          blur: 15.0,
+                          opacity: 0.15,
+                          tintColor: Colors.white,
+                          onTap: () => widget.onNavigateTab?.call(1),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.directions_car_rounded, color: Colors.white, size: 36),
+                              const SizedBox(height: 12),
+                              Text(
+                                "مركباتي",
+                                style: AppTypography.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                ],
               ),
-              child: Icon(icon, color: color, size: 24),
             ),
-            const SizedBox(height: 8),
-            Text(
-              title,
-              style: AppTypography.bodySmall.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: 11,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -529,7 +530,7 @@ class TrafficService extends ChangeNotifier {
   }
 
   /// سداد المخالفة (متطلب 19 و 20)
-  Future<PaymentReceiptModel> payViolation({
+  Future<PaymentReceiptModel?> payViolation({
     required String violationId,
     required String paymentMethod,
     required String payerName,
@@ -538,75 +539,39 @@ class TrafficService extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    final violationDoc = await _firestore.collection('violations').doc(violationId).get();
-    if (!violationDoc.exists) {
-      _isLoading = false;
-      notifyListeners();
-      throw Exception('المخالفة غير موجودة');
-    }
-
-    final violationData = violationDoc.data() as Map<String, dynamic>;
-    final transactionId = 'TXN-SD-${DateTime.now().millisecondsSinceEpoch.toString().substring(4)}';
-    final verificationHash = const Uuid().v4().replaceAll('-', '').substring(0, 16).toUpperCase();
-
-    final receipt = PaymentReceiptModel(
-      transactionId: transactionId,
-      violationId: violationId,
-      violationType: violationData['violationType'] as String,
-      amount: (violationData['amount'] as num).toDouble(),
-      paymentMethod: paymentMethod,
-      paymentDate: DateTime.now(),
-      payerName: payerName,
-      payerNationalId: payerNationalId,
-      plateNumber: '${violationData['plateStateCode']} - ${violationData['plateNumber']}',
-      verificationHash: verificationHash,
-    );
-
-    final batch = _firestore.batch();
-    
-    batch.set(_firestore.collection('receipts').doc(transactionId), {
-      ...receipt.toJson(),
-      'userId': _auth.currentUser?.uid,
-    });
-    
-    batch.update(_firestore.collection('violations').doc(violationId), {
-      'isPaid': true,
-      'paidDate': FieldValue.serverTimestamp(),
-      'receiptId': transactionId,
-      'paymentMethod': paymentMethod,
-    });
-
-    await batch.commit();
-
-    // تسجيل العملية الحساسة
-    await logActivity(AuditLogModel(
-      id: const Uuid().v4(),
-      userId: _auth.currentUser?.uid ?? 'system',
-      action: 'PAY_VIOLATION',
-      resourceId: violationId,
-      resourceType: 'Violation',
-      details: {'amount': receipt.amount, 'method': paymentMethod, 'txnId': transactionId},
-    ));
-
-    // إشعار FCM تأكيد الدفع
     try {
-      final uid = _auth.currentUser?.uid ?? '';
-      if (uid.isNotEmpty) {
-        final notifService = NotificationService();
-        await notifService.sendPaymentConfirmedNotification(
-          targetUserId: uid,
-          transactionId: transactionId,
+      // SECURE: Call Cloud Function instead of direct client-side DB writes
+      final callable = FirebaseFunctions.instance.httpsCallable('processPayment');
+      final result = await callable.call({
+        'violationId': violationId,
+        'paymentMethod': paymentMethod,
+        'payerName': payerName,
+        'payerNationalId': payerNationalId,
+      });
+
+      if (result.data['success']) {
+        // Just return a dummy receipt for the UI, the real one is saved securely on the server
+        return PaymentReceiptModel(
+          transactionId: result.data['transactionId'],
           violationId: violationId,
-          amount: receipt.amount,
+          violationType: 'تم السداد',
+          amount: 0, // Not needed for simple UI update
+          paymentMethod: paymentMethod,
+          paymentDate: DateTime.now(),
+          payerName: payerName,
+          payerNationalId: payerNationalId,
+          plateNumber: '---',
+          verificationHash: 'SECURE_HASH',
         );
       }
     } catch (e) {
-      debugPrint('[FCM] Could not send payment notification: $e');
+      debugPrint('Error processing payment: $e');
+      throw Exception('فشلت عملية الدفع، الرجاء المحاولة مرة أخرى');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-
-    _isLoading = false;
-    notifyListeners();
-    return receipt;
+    return null;
   }
 
   ViolationModel? getViolationById(String id) {

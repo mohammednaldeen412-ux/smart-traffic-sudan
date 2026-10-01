@@ -10,7 +10,6 @@ import '../../models/vehicle_model.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/skeleton_loader.dart';
 import '../../widgets/vehicle_card.dart';
-import 'add_vehicle_screen.dart';
 import 'vehicle_details_screen.dart';
 
 class VehiclesListScreen extends StatefulWidget {
@@ -80,19 +79,7 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
       backgroundColor: bg,
       appBar: AppBar(
         title: Text(context.tr('vehicles_management')),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline_rounded, color: AppColors.goldPrimary),
-            tooltip: context.tr('add_vehicle'),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const AddVehicleScreen(),
-                ),
-              );
-            },
-          ),
-        ],
+        actions: [],
       ),
       body: SafeArea(
         child: Padding(
@@ -201,17 +188,11 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
                                           textAlign: TextAlign.center,
                                         ),
                                         const SizedBox(height: 20),
-                                        CustomButton(
-                                          text: context.tr('add_vehicle_btn'),
-                                          icon: Icons.add_rounded,
-                                          width: 220,
-                                          onPressed: () {
-                                            Navigator.of(context).push(
-                                              MaterialPageRoute(
-                                                builder: (_) => const AddVehicleScreen(),
-                                              ),
-                                            );
-                                          },
+                                        // تمت إزالة زر إضافة مركبة بناءً على الهيكلية الجديدة
+                                        Text(
+                                          "يتم إضافة المركبات تلقائياً من نظام المرور",
+                                          style: AppTypography.bodySmall.copyWith(color: AppColors.goldPrimary),
+                                          textAlign: TextAlign.center,
                                         ),
                                       ],
                                     ),

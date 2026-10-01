@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../core/services/auth_service.dart';
-import '../../core/services/traffic_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../models/violation_model.dart';
-import '../../widgets/custom_button.dart';
-import '../../widgets/custom_text_field.dart';
+import '../../widgets/glass_card.dart';
 
 class DisputeViolationScreen extends StatefulWidget {
   final ViolationModel violation;
@@ -22,375 +20,195 @@ class DisputeViolationScreen extends StatefulWidget {
 }
 
 class _DisputeViolationScreenState extends State<DisputeViolationScreen> {
-  final _formKey = GlobalKey<FormState>();
   final _descriptionController = TextEditingController();
-
-  String _selectedReason = 'خطأ في رصد اللوحة (المركبة لم تكن في الموقع)';
-  bool _hasAttachedEvidence = true;
-  bool _agreedToTerms = true;
-
-  final List<String> _disputeReasons = [
-    'خطأ في رصد اللوحة (المركبة لم تكن في الموقع)',
-    'تم بيع ونقل ملكية المركبة قبل تاريخ المخالفة',
-    'حالة طوارئ وإسعاف إنساني قاهرة',
-    'عطل فني في الإشارة أو عدم وضوح اللوحات الإرشادية',
-    'سبب آخر مدعوم بالإثباتات الرسمية',
-  ];
-
-  @override
-  void dispose() {
-    _descriptionController.dispose();
-    super.dispose();
-  }
+  bool _isSubmitting = false;
 
   Future<void> _submitDispute() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    if (!_agreedToTerms) {
+    final text = _descriptionController.text.trim();
+    if (text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('يرجى الإقرار بصحة أسباب ومستندات الاعتراض'),
-          backgroundColor: AppColors.warning,
-        ),
+        const SnackBar(content: Text('الرجاء كتابة سبب الاعتراض'), backgroundColor: Colors.orange),
       );
       return;
     }
 
-    final auth = context.read<AuthService>();
-    final traffic = context.read<TrafficService>();
+    setState(() {
+      _isSubmitting = true;
+    });
 
-    final dispute = await traffic.submitDispute(
-      violationId: widget.violation.id,
-      userId: auth.currentUser?.id ?? 'usr_sudan_001',
-      plateNumber: widget.violation.fullPlateDisplay,
-      reasonCategory: _selectedReason,
-      description: _descriptionController.text.trim(),
-      evidenceAttachment: _hasAttachedEvidence ? 'evidence_attachment.jpg' : null,
-    );
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      
+      // حفظ الاعتراض في قاعدة البيانات ليلتقطه السيرفر
+      await FirebaseFirestore.instance.collection('objections').add({
+        'userId': user?.uid ?? 'unknown',
+        'violationId': widget.violation.id,
+        'plateNumber': widget.violation.fullPlateDisplay,
+        'reason': text,
+        'status': 'pending',
+        'createdAt': FieldValue.serverTimestamp(),
+      });
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppColors.card,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: const BorderSide(color: AppColors.goldPrimary, width: 1.5),
-        ),
-        title: const Center(
-          child: Icon(
-            Icons.task_alt_rounded,
-            color: AppColors.success,
-            size: 54,
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => AlertDialog(
+          backgroundColor: Colors.black87,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: const BorderSide(color: AppColors.goldPrimary),
           ),
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              'تم استلام طلب الاعتراض بنجاح!',
-              style: AppTypography.titleMedium.copyWith(fontWeight: FontWeight.bold),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'رقم طلب الاعتراض السيادي:',
-              style: AppTypography.bodySmall,
-            ),
-            const SizedBox(height: 4),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.surface,
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: AppColors.goldPrimary),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.check_circle_rounded, color: AppColors.success, size: 64),
+              const SizedBox(height: 16),
+              const Text(
+                'تم استلام اعتراضك',
+                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              child: Text(
-                dispute.id,
-                style: const TextStyle(
-                  fontFamily: 'monospace',
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.goldPrimary,
+              const SizedBox(height: 12),
+              const Text(
+                'المخالفة الآن "قيد المراجعة" ولن يتم احتساب غرامات تأخير عليها حتى يتم الرد عليك من الإدارة.',
+                style: TextStyle(color: Colors.white70),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.goldPrimary),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('حسناً', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'سيتم فحص التسجيلات ومراجعة كاميرات المراقبة من قِبل اللجنة الفنية لشرطة المرور والرد خلال 48 ساعة.',
-              style: AppTypography.bodySmall.copyWith(fontSize: 11),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-        actions: [
-          CustomButton(
-            text: 'حسناً، العودة للتفاصيل',
-            onPressed: () {
-              Navigator.of(context).pop();
-              Navigator.of(context).pop();
-            },
+            ],
           ),
-        ],
-      ),
-    );
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('خطأ في الإرسال: $e'), backgroundColor: AppColors.error),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final traffic = context.watch<TrafficService>();
-
     return Scaffold(
-      backgroundColor: AppColors.background,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text('تقديم اعتراض رسمي على المخالفة'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: const Text('تقديم اعتراض', style: TextStyle(color: Colors.white)),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // ملخص المخالفة المعترض عليها
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.card,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.cardBorder),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'بيانات المخالفة المرصودة',
-                            style: AppTypography.titleSmall.copyWith(
-                              color: AppColors.goldPrimary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Text(
-                            CurrencyFormatter.formatSDG(widget.violation.amount),
-                            style: AppTypography.titleSmall.copyWith(
-                              color: AppColors.goldPrimary,
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        widget.violation.violationType,
-                        style: AppTypography.bodyMedium.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'اللوحة: ${widget.violation.fullPlateDisplay}  •  الموقع: ${widget.violation.locationName}',
-                        style: AppTypography.bodySmall,
-                      ),
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                Text(
-                  'سبب الاعتراض القانوني',
-                  style: AppTypography.titleMedium.copyWith(
-                    color: AppColors.goldPrimary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-
-                // قائمة أسباب الاعتراض
-                ..._disputeReasons.map((reason) {
-                  final isSelected = _selectedReason == reason;
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 8),
-                    decoration: BoxDecoration(
-                      color: isSelected ? AppColors.cardElevated : AppColors.card,
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(
-                        color: isSelected ? AppColors.goldPrimary : AppColors.cardBorder,
-                        width: isSelected ? 1.5 : 1,
-                      ),
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: ListTile(
-                        onTap: () {
-                          setState(() {
-                            _selectedReason = reason;
-                          });
-                        },
-                        leading: Icon(
-                          isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-                          color: isSelected ? AppColors.goldPrimary : AppColors.textMuted,
-                          size: 20,
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/citizen_header.jpg'),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(Colors.black87, BlendMode.darken),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GlassCard(
+                    blur: 15,
+                    opacity: 0.2,
+                    tintColor: Colors.white,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'تفاصيل المخالفة',
+                          style: AppTypography.titleSmall.copyWith(color: AppColors.goldPrimary),
                         ),
-                        title: Text(
-                          reason,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                            color: isSelected ? Colors.white : AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-
-                const SizedBox(height: 16),
-
-                // شرح الاعتراض
-                CustomTextField(
-                  controller: _descriptionController,
-                  label: 'شرح وتوضيح حيثيات الاعتراض بالتفصيل',
-                  hint: 'اذكر التفاصيل الدقيقة ومبررات إسقاط المخالفة...',
-                  maxLines: 4,
-                  validator: (val) {
-                    if (val == null || val.trim().length < 10) {
-                      return 'يرجى تقديم شرح وافٍ لا يقل عن 10 أحرف';
-                    }
-                    return null;
-                  },
-                ),
-
-                const SizedBox(height: 16),
-
-                // إرفاق الأدلة والصور
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: AppColors.card,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: _hasAttachedEvidence
-                          ? AppColors.success.withValues(alpha: 0.5)
-                          : AppColors.cardBorder,
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: AppColors.goldPrimary.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: const Icon(
-                          Icons.add_photo_alternate_rounded,
-                          color: AppColors.goldPrimary,
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'إرفاق صور أو مستندات ثبوتية',
-                              style: AppTypography.titleSmall.copyWith(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold,
+                            Expanded(
+                              child: Text(
+                                widget.violation.violationType,
+                                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                               ),
                             ),
-                            const SizedBox(height: 2),
                             Text(
-                              _hasAttachedEvidence
-                                  ? '✅ تم إرفاق صورة/وثيقة إثبات'
-                                  : 'اضغط للرفع من الكاميرا أو المعرض',
-                              style: AppTypography.bodySmall.copyWith(
-                                color: _hasAttachedEvidence ? AppColors.success : AppColors.textMuted,
-                                fontSize: 11,
-                              ),
+                              CurrencyFormatter.formatSDG(widget.violation.amount),
+                              style: const TextStyle(color: AppColors.goldPrimary, fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                      ),
-                      IconButton(
-                        icon: Icon(
-                          _hasAttachedEvidence ? Icons.check_circle : Icons.upload_file_rounded,
-                          color: _hasAttachedEvidence ? AppColors.success : AppColors.goldPrimary,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _hasAttachedEvidence = true;
-                          });
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('تم إرفاق مستند الإثبات بنجاح')),
-                          );
-                        },
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        Text('اللوحة: ${widget.violation.fullPlateDisplay}', style: const TextStyle(color: Colors.white70)),
+                      ],
+                    ),
                   ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // إقرار بصحة البيانات
-                Row(
-                  children: [
-                    SizedBox(
-                      width: 24,
-                      height: 24,
-                      child: Checkbox(
-                        value: _agreedToTerms,
-                        activeColor: AppColors.goldPrimary,
-                        checkColor: AppColors.background,
-                        side: const BorderSide(color: AppColors.cardBorder),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        onChanged: (val) {
-                          setState(() {
-                            _agreedToTerms = val ?? true;
-                          });
-                        },
+                  
+                  const SizedBox(height: 24),
+                  
+                  const Text('سبب الاعتراض', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
+                  
+                  TextField(
+                    controller: _descriptionController,
+                    maxLines: 5,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      hintText: 'اكتب مبررات الاعتراض هنا...',
+                      hintStyle: const TextStyle(color: Colors.white54),
+                      filled: true,
+                      fillColor: Colors.white12,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
                       ),
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'أقر بصحة البيانات المقدمة وأتحمل المسؤولية القانونية في حال تقديم معلومات مضللة',
-                        style: AppTypography.bodySmall.copyWith(
-                          color: AppColors.textSecondary,
-                          fontSize: 11,
-                        ),
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.goldPrimary,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
+                      onPressed: _isSubmitting ? null : _submitDispute,
+                      child: _isSubmitting
+                          ? const CircularProgressIndicator(color: Colors.black)
+                          : const Text('إرسال طلب مراجعة للإدارة', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
                     ),
-                  ],
-                ),
-
-                const SizedBox(height: 24),
-
-                // زر إرسال الاعتراض
-                CustomButton(
-                  text: 'إرسال طلب الاعتراض للجنة الفنية',
-                  icon: Icons.gavel_rounded,
-                  isLoading: traffic.isLoading,
-                  onPressed: _submitDispute,
-                ),
-
-                const SizedBox(height: 24),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

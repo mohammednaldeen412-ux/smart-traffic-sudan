@@ -3,22 +3,16 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // التحقق من تسجيل الدخول
+    // Helper functions
     function isAuth() {
       return request.auth != null;
     }
 
-    // التحقق من الدور (Role)
     function hasRole(role) {
       return isAuth() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == role;
     }
 
-    // التحقق من ملكية البيانات
-    function isOwner(data) {
-      return isAuth() && data.userId == request.auth.uid;
-    }
-
-    // --- مجموعة المستخدمين ---
+    // --- Users ---
     match /users/{userId} {
       allow read: if isAuth();
       allow create: if isAuth() && request.auth.uid == userId;
@@ -26,23 +20,42 @@ service cloud.firestore {
       allow delete: if hasRole('admin');
     }
 
-    // --- مجموعة المركبات ---
+    // --- Vehicles ---
     match /vehicles/{vehicleId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
-      allow update: if isAuth() && (resource.data.userId == request.auth.uid || hasRole('admin'));
+      // Officers/Admins can read all, Citizens can only read their own
+      allow read: if isAuth() && (hasRole('admin') || hasRole('officer') || resource.data.userId == request.auth.uid);
+      allow create: if hasRole('admin') || hasRole('officer');
+      allow update: if hasRole('admin');
       allow delete: if hasRole('admin');
     }
 
-    // --- مجموعة المخالفات ---
+    // --- Violations ---
     match /violations/{violationId} {
-      allow read: if isAuth();
-      allow create: if isAuth();
+      allow read: if isAuth() && (hasRole('admin') || hasRole('officer') || resource.data.userId == request.auth.uid);
+      allow create: if hasRole('admin') || hasRole('officer');
+      // Vulnerability Note: Currently allowing citizens to update violations (e.g. isUnderReview or isPaid) because the client app logic requires it. 
+      // This should be moved to Cloud Functions in a production environment.
       allow update: if isAuth() && (hasRole('admin') || hasRole('officer') || resource.data.userId == request.auth.uid);
       allow delete: if hasRole('admin');
     }
 
-    // --- مجموعة الاعتراضات ---
+    // --- Objections (New Collection) ---
+    match /objections/{objectionId} {
+      allow read: if isAuth() && (hasRole('admin') || resource.data.userId == request.auth.uid);
+      allow create: if isAuth() && request.auth.uid == request.resource.data.userId;
+      allow update: if hasRole('admin');
+      allow delete: if hasRole('admin');
+    }
+
+    // --- Emergencies (New Collection) ---
+    match /emergencies/{emergencyId} {
+      allow read: if hasRole('admin') || hasRole('officer');
+      allow create: if isAuth();
+      allow update: if hasRole('admin') || hasRole('officer');
+      allow delete: if hasRole('admin');
+    }
+
+    // --- Disputes (Legacy) ---
     match /disputes/{disputeId} {
       allow read: if isAuth();
       allow create: if isAuth();
@@ -50,63 +63,35 @@ service cloud.firestore {
       allow delete: if hasRole('admin');
     }
 
-    // --- مجموعة الإيصالات ---
+    // --- Receipts ---
     match /receipts/{receiptId} {
       allow read: if isAuth() && (resource.data.userId == request.auth.uid || hasRole('admin') || hasRole('officer'));
       allow create: if isAuth();
       allow update, delete: if hasRole('admin');
     }
 
-    // --- مجموعة الإشعارات ---
+    // --- Notifications ---
     match /notifications/{notificationId} {
       allow read: if isAuth() && (resource.data.userId == request.auth.uid || hasRole('admin'));
       allow create: if isAuth();
       allow update, delete: if isAuth() && (resource.data.userId == request.auth.uid || hasRole('admin'));
     }
 
-    // --- سجل تعاميم الضباط ---
+    // --- Logs & Announcements ---
     match /announcements_log/{logId} {
       allow read: if isAuth();
       allow create: if isAuth();
     }
 
-    // --- مجموعة الإعلانات ---
     match /announcements/{announcementId} {
-      allow read: if true; // الإعلانات عامة
+      allow read: if true; 
       allow create, update, delete: if hasRole('admin');
     }
 
-    // --- سجل العمليات (Audit Logs) ---
     match /audit_logs/{logId} {
       allow read: if hasRole('admin');
       allow create: if isAuth();
       allow update, delete: if false; 
-    }
-
-    // --- رموز التحقق (OTP) ---
-    match /otp_codes/{email} {
-      allow read, write: if true; // السماح بالوصول لعملية التحقق (يتم التحكم بها عبر الخدمة)
-    }
-
-    // --- حسابات البنك الافتراضي ---
-    match /bank_accounts/{accountId} {
-      allow read, write: if true;
-    }
-
-    // --- معاملات البنك الافتراضي ---
-    match /bank_transactions/{txnId} {
-      allow read, write: if true;
-    }
-
-    // --- إعدادات وتحديثات التطبيق ---
-    match /app_config/{docId} {
-      allow read: if true;
-      allow write: if hasRole('admin') || true;
-    }
-
-    // --- طلبات الدفع ---
-    match /payment_requests/{reqId} {
-      allow read, write: if true;
     }
   }
 }
