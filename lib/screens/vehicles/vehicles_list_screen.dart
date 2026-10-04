@@ -2,14 +2,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/localization/app_strings.dart';
-import '../../core/services/theme_provider.dart';
 import '../../core/services/traffic_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/vehicle_model.dart';
-import '../../widgets/custom_button.dart';
+import '../../widgets/glass_card.dart';
 import '../../widgets/skeleton_loader.dart';
-import '../../widgets/vehicle_card.dart';
 import 'vehicle_details_screen.dart';
 
 class VehiclesListScreen extends StatefulWidget {
@@ -54,12 +52,6 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
   @override
   Widget build(BuildContext context) {
     final traffic = context.watch<TrafficService>();
-    final isDark = context.watch<ThemeProvider>().isDark;
-    
-    final bg = isDark ? AppColors.background : AppColors.lightBackground;
-    final textPrimary = isDark ? AppColors.textPrimary : AppColors.lightTextPrimary;
-    final inputBg = isDark ? AppColors.inputBackground : AppColors.lightInputBackground;
-    final cardBorder = isDark ? AppColors.cardBorder : AppColors.lightCardBorder;
 
     List<VehicleModel> filteredVehicles = traffic.vehicles.where((v) {
       if (_selectedFilter == 1 && !v.isVerified) return false;
@@ -76,197 +68,245 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
     }).toList();
 
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: const Color(0xFF0A0E17),
       appBar: AppBar(
-        title: Text(context.tr('vehicles_management')),
-        actions: [],
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(context.tr('vehicles_management'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-          child: Column(
-            children: [
-              // حقل البحث
-              TextField(
-                controller: _searchController,
-                onChanged: (val) {
-                  setState(() {
-                    _searchQuery = val.trim();
-                  });
-                },
-                style: TextStyle(color: textPrimary),
-                decoration: InputDecoration(
-                  hintText: context.tr('search_vehicles_hint'),
-                  prefixIcon: const Icon(Icons.search_rounded, color: AppColors.goldPrimary),
-                  suffixIcon: _searchQuery.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear, color: AppColors.textMuted),
-                          onPressed: () {
-                            setState(() {
-                              _searchController.clear();
-                              _searchQuery = '';
-                            });
-                          },
-                        )
-                      : null,
-                  filled: true,
-                  fillColor: inputBg,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: cardBorder),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: cardBorder),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.goldPrimary, width: 1.2),
-                  ),
-                ),
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          // خلفية داكنة مع تدرج لوني يعطي طابع الفخامة
+          Container(
+            decoration: const BoxDecoration(
+              gradient: RadialGradient(
+                center: Alignment(-0.8, -0.6),
+                radius: 1.5,
+                colors: [Color(0xFF1E293B), Color(0xFF0A0E17)],
               ),
-
-              const SizedBox(height: 14),
-
-              // فلتر الفئات
-              Row(
+            ),
+          ),
+          
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+              child: Column(
                 children: [
-                  _buildFilterChip('${context.tr('all')} (${traffic.vehicles.length})', 0),
-                  const SizedBox(width: 8),
-                  _buildFilterChip(
-                    '${context.tr('verified')} (${traffic.vehicles.where((v) => v.isVerified).length})',
-                    1,
+                  // حقل البحث الزجاجي
+                  GlassCard(
+                    blur: 10.0,
+                    opacity: 0.1,
+                    tintColor: Colors.white,
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (val) {
+                        setState(() {
+                          _searchQuery = val.trim();
+                        });
+                      },
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: 'ابحث برقم اللوحة أو الموديل...',
+                        hintStyle: const TextStyle(color: Colors.white54),
+                        prefixIcon: const Icon(Icons.search_rounded, color: Colors.white70),
+                        suffixIcon: _searchQuery.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear, color: Colors.white54),
+                                onPressed: () {
+                                  setState(() {
+                                    _searchController.clear();
+                                    _searchQuery = '';
+                                  });
+                                },
+                              )
+                            : null,
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                      ),
+                    ),
                   ),
-                  const SizedBox(width: 8),
-                  _buildFilterChip(
-                    '${context.tr('under_review')} (${traffic.vehicles.where((v) => !v.isVerified).length})',
-                    2,
+
+                  const SizedBox(height: 16),
+
+                  // فلاتر زجاجية
+                  Row(
+                    children: [
+                      _buildGlassFilterChip('الكل (${traffic.vehicles.length})', 0),
+                      const SizedBox(width: 8),
+                      _buildGlassFilterChip('المرخصة (${traffic.vehicles.where((v) => v.isVerified).length})', 1),
+                      const SizedBox(width: 8),
+                      _buildGlassFilterChip('منتهية/مراجعة (${traffic.vehicles.where((v) => !v.isVerified).length})', 2),
+                    ],
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  Expanded(
+                    child: _isLoading
+                        ? SkeletonLoader.list(count: 3)
+                        : RefreshIndicator(
+                            onRefresh: _handleRefresh,
+                            color: Colors.white,
+                            backgroundColor: const Color(0xFF1E293B),
+                            child: filteredVehicles.isEmpty
+                                ? _buildEmptyState()
+                                : ListView.builder(
+                                    physics: const AlwaysScrollableScrollPhysics(),
+                                    itemCount: filteredVehicles.length,
+                                    itemBuilder: (context, index) {
+                                      final vehicle = filteredVehicles[index];
+                                      return Padding(
+                                        padding: const EdgeInsets.only(bottom: 16),
+                                        child: _buildGlassVehicleCard(vehicle, context),
+                                      );
+                                    },
+                                  ),
+                          ),
                   ),
                 ],
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-              const SizedBox(height: 16),
-
-              Expanded(
-                child: _isLoading
-                    ? SkeletonLoader.list(count: 3)
-                    : RefreshIndicator(
-                        onRefresh: _handleRefresh,
-                        color: AppColors.goldPrimary,
-                        backgroundColor: isDark ? AppColors.surface : AppColors.lightSurface,
-                        child: filteredVehicles.isEmpty
-                            ? ListView(
-                                children: [
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-                                  Center(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(20),
-                                          decoration: BoxDecoration(
-                                            color: isDark ? AppColors.card : AppColors.lightCard,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(color: cardBorder),
-                                          ),
-                                          child: const Icon(
-                                            Icons.directions_car_filled_outlined,
-                                            size: 48,
-                                            color: AppColors.goldPrimary,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 16),
-                                        Text(
-                                          context.tr('no_vehicles'),
-                                          style: AppTypography.titleMedium,
-                                        ),
-                                        const SizedBox(height: 8),
-                                        Text(
-                                          context.tr('clean_record_msg'),
-                                          style: AppTypography.bodySmall,
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 20),
-                                        // تمت إزالة زر إضافة مركبة بناءً على الهيكلية الجديدة
-                                        Text(
-                                          "يتم إضافة المركبات تلقائياً من نظام المرور",
-                                          style: AppTypography.bodySmall.copyWith(color: AppColors.goldPrimary),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              )
-                            : ListView.builder(
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                itemCount: filteredVehicles.length,
-                                itemBuilder: (context, index) {
-                                  final vehicle = filteredVehicles[index];
-                                  return Padding(
-                                    padding: const EdgeInsets.only(bottom: 12),
-                                    child: VehicleCard(
-                                      vehicle: vehicle,
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (_) => VehicleDetailsScreen(vehicle: vehicle),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                              ),
-                      ),
+  Widget _buildGlassFilterChip(String label, int index) {
+    final isSelected = _selectedFilter == index;
+    
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _selectedFilter = index;
+          });
+        },
+        child: GlassCard(
+          blur: 10,
+          opacity: isSelected ? 0.3 : 0.05,
+          tintColor: isSelected ? Colors.white : Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? Colors.white : Colors.white70,
               ),
-            ],
+              textAlign: TextAlign.center,
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildFilterChip(String label, int index) {
-    final isSelected = _selectedFilter == index;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    
-    return Expanded(
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            _selectedFilter = index;
-          });
-        },
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? AppColors.goldPrimary.withValues(alpha: 0.18)
-                : (isDark ? AppColors.surface : AppColors.lightSurface),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: isSelected
-                  ? AppColors.goldPrimary
-                  : (isDark ? AppColors.cardBorder : AppColors.lightCardBorder),
-              width: 1.2,
+  Widget _buildEmptyState() {
+    return ListView(
+      children: [
+        SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+        GlassCard(
+          blur: 15,
+          opacity: 0.1,
+          tintColor: Colors.white,
+          child: Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.directions_car_filled_outlined, size: 64, color: Colors.white30),
+                const SizedBox(height: 20),
+                Text(
+                  'لا توجد مركبات',
+                  style: AppTypography.titleMedium.copyWith(color: Colors.white),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'لا توجد مركبات مسجلة بهذا الرقم الوطني في نظام المرور حالياً.',
+                  style: AppTypography.bodySmall.copyWith(color: Colors.white54),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
-          child: Text(
-            label,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-              color: isSelected
-                  ? (isDark ? AppColors.goldPrimary : AppColors.goldDark)
-                  : (isDark ? AppColors.textSecondary : AppColors.lightTextSecondary),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildGlassVehicleCard(VehicleModel vehicle, BuildContext context) {
+    return GlassCard(
+      blur: 15,
+      opacity: 0.15,
+      tintColor: vehicle.isVerified ? const Color(0xFF69F0AE) : const Color(0xFFFF8A80),
+      onTap: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => VehicleDetailsScreen(vehicle: vehicle)),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          children: [
+            // أيقونة المركبة
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.directions_car_rounded, color: Colors.white, size: 28),
             ),
-            textAlign: TextAlign.center,
-          ),
+            const SizedBox(width: 16),
+            
+            // تفاصيل المركبة
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${vehicle.make} ${vehicle.model} - ${vehicle.year}',
+                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: vehicle.isVerified 
+                            ? const Color(0xFF69F0AE).withValues(alpha: 0.2) 
+                            : const Color(0xFFFF8A80).withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          vehicle.isVerified ? 'مرخصة وموثقة' : 'غير مرخصة',
+                          style: TextStyle(
+                            color: vehicle.isVerified ? const Color(0xFF69F0AE) : const Color(0xFFFF8A80),
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const Spacer(),
+                      Text(
+                        vehicle.fullPlateDisplay,
+                        style: const TextStyle(color: Colors.white70, fontFamily: 'monospace', fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white30, size: 16),
+          ],
         ),
       ),
     );
