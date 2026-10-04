@@ -271,7 +271,7 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${vehicle.make} ${vehicle.model} - ${vehicle.year}',
+                    '${vehicle.make} ${vehicle.model}',
                     style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   const SizedBox(height: 4),

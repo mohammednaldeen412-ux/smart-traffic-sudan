@@ -139,7 +139,7 @@ class TrafficService extends ChangeNotifier {
     }
 
     _vehiclesSub = vehiclesQuery.snapshots().listen((snapshot) {
-      _vehicles = snapshot.docs.map((doc) => VehicleModel.fromJson(doc.data())).toList();
+      _vehicles = snapshot.docs.map((doc) => VehicleModel.fromJson(doc.data() as Map<String, dynamic>)).toList();
       _isLoading = false;
       notifyListeners();
     }, onError: (e) {
