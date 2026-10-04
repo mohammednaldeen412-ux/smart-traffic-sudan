@@ -8,7 +8,7 @@
   
   <br>
 
-  [![Download APK](https://img.shields.io/badge/📥_Download_App_(APK)-63_MB-2ea44f?style=for-the-badge)](https://raw.githubusercontent.com/mohammednaldeen412-ux/smart-traffic-sudan/v2-glassmorphism-update/moror-app-v2.apk)
+  [![Download APK](https://img.shields.io/badge/📥_Download_App_(APK)-63_MB-2ea44f?style=for-the-badge)](https://raw.githubusercontent.com/mohammednaldeen412-ux/smart-traffic-sudan/master/docs/moror-app-v2.apk)
   
   <p><i>اضغط على الزر الأخضر أعلاه لتحميل وتثبيت التطبيق مباشرة في هاتفك!</i></p>
 </div>
