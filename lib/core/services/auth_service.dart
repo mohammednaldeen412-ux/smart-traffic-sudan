@@ -345,31 +345,39 @@ class AuthService extends ChangeNotifier {
 
       await _fetchUserProfile(credential.user!.uid);
       
-      // Seed a dummy vehicle for testing purposes tied to this National ID
+      // Seed dummy vehicles for testing purposes tied to this National ID
       try {
         final rand = Random();
         final plates = ['خ 12345', 'ج 9876', 'ن 4567', 'ق 3321'];
         final makes = ['Hyundai', 'Toyota', 'Kia', 'Nissan'];
         final models = ['Tucson', 'Camry', 'Sportage', 'Sunny'];
-        
-        await _firestore.collection('vehicles').add({
-          'userId': credential.user!.uid, // UID for relations
-          'ownerNationalId': nationalId, // Tie vehicle directly to National ID
-          'make': makes[rand.nextInt(makes.length)],
-          'model': models[rand.nextInt(models.length)],
-          'year': 2015 + rand.nextInt(9),
-          'plateNumber': plates[rand.nextInt(plates.length)].split(' ')[1],
-          'plateStateCode': plates[rand.nextInt(plates.length)].split(' ')[0],
-          'plateCategory': 'ملاكي',
-          'chassisNumber': 'KNHM${rand.nextInt(99999999)}',
-          'engineNumber': 'G4KD${rand.nextInt(99999)}',
-          'color': 'أبيض',
-          'isVerified': true,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-        debugPrint('Seeded dummy vehicle for $nationalId');
+        final colors = ['أبيض', 'أسود', 'فضي', 'أحمر'];
+
+        for (int i = 0; i < 2; i++) {
+          final isExpired = i == 1; // الثانية منتهية الترخيص للتجربة
+          final expiryDate = isExpired 
+            ? DateTime.now().subtract(Duration(days: 30 + rand.nextInt(60)))
+            : DateTime.now().add(Duration(days: 90 + rand.nextInt(180)));
+
+          await _firestore.collection('vehicles').add({
+            'userId': credential.user!.uid, // UID for relations
+            'ownerNationalId': nationalId, // Tie vehicle directly to National ID
+            'make': makes[rand.nextInt(makes.length)],
+            'model': models[rand.nextInt(models.length)],
+            'year': 2015 + rand.nextInt(9),
+            'plateNumber': plates[rand.nextInt(plates.length)].split(' ')[1],
+            'plateStateCode': plates[rand.nextInt(plates.length)].split(' ')[0],
+            'plateCategoryCode': 'ملاكي',
+            'chassisNumber': 'KNHM${rand.nextInt(99999999)}',
+            'color': colors[rand.nextInt(colors.length)],
+            'isVerified': true, // موثقة
+            'licenseExpiryDate': Timestamp.fromDate(expiryDate), // تاريخ متفاوت
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+        }
+        debugPrint('Seeded 2 dummy vehicles with varying dates for $nationalId');
       } catch (e) {
-        debugPrint('Failed to seed vehicle: $e');
+        debugPrint('Failed to seed vehicles: $e');
       }
       _isLoading = false;
       notifyListeners();

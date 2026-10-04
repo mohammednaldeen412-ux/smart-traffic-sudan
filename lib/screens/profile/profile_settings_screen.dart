@@ -5,6 +5,7 @@ import '../../core/services/auth_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../widgets/glass_card.dart';
 import '../auth/login_screen.dart';
+import 'driver_license_screen.dart';
 
 class ProfileSettingsScreen extends StatelessWidget {
   const ProfileSettingsScreen({super.key});
@@ -85,6 +86,17 @@ class ProfileSettingsScreen extends StatelessWidget {
                   const SizedBox(height: 24),
 
                   // خيارات الإعدادات
+                  _buildGlassListTile(
+                    icon: Icons.card_membership_rounded,
+                    title: 'الرخصة الرقمية',
+                    subtitle: 'عرض رخصة القيادة ونقاط المرور',
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const DriverLicenseScreen()),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 12),
                   _buildGlassListTile(
                     icon: Icons.language_rounded,
                     title: 'لغة التطبيق',

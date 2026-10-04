@@ -280,15 +280,17 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: vehicle.isVerified 
-                            ? const Color(0xFF69F0AE).withValues(alpha: 0.2) 
-                            : const Color(0xFFFF8A80).withValues(alpha: 0.2),
+                          color: vehicle.isLicenseExpired
+                            ? const Color(0xFFFF8A80).withValues(alpha: 0.2)
+                            : vehicle.isVerified 
+                              ? const Color(0xFF69F0AE).withValues(alpha: 0.2) 
+                              : const Color(0xFFFF8A80).withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
-                          vehicle.isVerified ? 'مرخصة وموثقة' : 'غير مرخصة',
+                          vehicle.isLicenseExpired ? 'منتهية الترخيص' : vehicle.isVerified ? 'مرخصة وموثقة' : 'غير مرخصة',
                           style: TextStyle(
-                            color: vehicle.isVerified ? const Color(0xFF69F0AE) : const Color(0xFFFF8A80),
+                            color: vehicle.isLicenseExpired ? const Color(0xFFFF8A80) : vehicle.isVerified ? const Color(0xFF69F0AE) : const Color(0xFFFF8A80),
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                           ),
