@@ -110,102 +110,102 @@ class DriverLicenseScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildLicenseRow('الاسم:', user.fullName),
-                                const SizedBox(height: 8),
-                                _buildLicenseRow('الرقم الوطني:', user.nationalId),
-                                const SizedBox(height: 8),
-                                _buildLicenseRow('الفئة:', 'ملاكي (عامة)'),
-                                const SizedBox(height: 8),
-                                _buildLicenseRow('تاريخ الإصدار:', issueDate),
-                                const SizedBox(height: 8),
-                                _buildLicenseRow('تاريخ الانتهاء:', expiryDate),
-                              ],
+                                  _buildLicenseRow(context.tr('name_label'), user.fullName),
+                                  const SizedBox(height: 8),
+                                  _buildLicenseRow(context.tr('national_id_label'), user.nationalId),
+                                  const SizedBox(height: 8),
+                                  _buildLicenseRow(context.tr('category_label') ?? 'الفئة:', context.tr('category_private') ?? 'ملاكي (عامة)'),
+                                  const SizedBox(height: 8),
+                                  _buildLicenseRow(context.tr('issue_date') ?? 'تاريخ الإصدار:', issueDate),
+                                  const SizedBox(height: 8),
+                                  _buildLicenseRow(context.tr('expiry_date') ?? 'تاريخ الانتهاء:', expiryDate),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                    
-                    // Footer Bar
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      decoration: const BoxDecoration(
-                        border: Border(top: BorderSide(color: Colors.white12)),
+                      
+                      // Footer Bar
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        decoration: const BoxDecoration(
+                          border: Border(top: BorderSide(color: Colors.white12)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('${context.tr('license_number_label')} ${user.driverLicenseNumber}', style: const TextStyle(color: Colors.white54, fontSize: 11, fontFamily: 'monospace')),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.green.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(4),
+                                border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
+                              ),
+                              child: Text(context.tr('active'), style: const TextStyle(color: Colors.greenAccent, fontSize: 10, fontWeight: FontWeight.bold)),
+                            )
+                          ],
+                        ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ],
+                  ),
+                ),
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Status and Points
+              Row(
+                children: [
+                  Expanded(
+                    child: GlassCard(
+                      child: Column(
                         children: [
-                          Text('الرقم المتسلسل: ${user.driverLicenseNumber}', style: const TextStyle(color: Colors.white54, fontSize: 11, fontFamily: 'monospace')),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.green.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
-                            ),
-                            child: Text(status, style: const TextStyle(color: Colors.greenAccent, fontSize: 10, fontWeight: FontWeight.bold)),
-                          )
+                          const Icon(Icons.speed_rounded, color: Colors.blueAccent, size: 32),
+                          const SizedBox(height: 8),
+                          Text('$points', style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                          Text(context.tr('traffic_points') ?? 'النقاط المرورية', style: const TextStyle(color: Colors.white70, fontSize: 12)),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Status and Points
-            Row(
-              children: [
-                Expanded(
-                  child: GlassCard(
-                    child: Column(
-                      children: [
-                        const Icon(Icons.speed_rounded, color: Colors.blueAccent, size: 32),
-                        const SizedBox(height: 8),
-                        Text('$points', style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-                        const Text('النقاط المرورية', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                      ],
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: GlassCard(
+                      child: Column(
+                        children: [
+                          const Icon(Icons.check_circle_outline_rounded, color: Colors.greenAccent, size: 32),
+                          const SizedBox(height: 8),
+                          Text(context.tr('active'), style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                          Text(context.tr('license_status') ?? 'حالة الرخصة', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: GlassCard(
-                    child: Column(
-                      children: [
-                        const Icon(Icons.check_circle_outline_rounded, color: Colors.greenAccent, size: 32),
-                        const SizedBox(height: 8),
-                        const Text('نشط', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
-                        const Text('حالة الرخصة', style: TextStyle(color: Colors.white70, fontSize: 12)),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            
-            const SizedBox(height: 24),
-            
-            // Renewal Action
-            ElevatedButton.icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('رخصتك سارية المفعول ولا تحتاج لتجديد حالياً')));
-              },
-              icon: const Icon(Icons.autorenew_rounded),
-              label: const Text('طلب تجديد الرخصة', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFD4AF37),
-                foregroundColor: const Color(0xFF0F172A),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                elevation: 0,
+                ],
               ),
-            ),
-          ],
-        ),
-        ),
+              
+              const SizedBox(height: 24),
+              
+              // Renewal Action
+              ElevatedButton.icon(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(context.tr('license_valid_msg') ?? 'رخصتك سارية المفعول ولا تحتاج لتجديد حالياً')));
+                },
+                icon: const Icon(Icons.autorenew_rounded),
+                label: Text(context.tr('renew_license') ?? 'طلب تجديد الرخصة', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFD4AF37),
+                  foregroundColor: const Color(0xFF0F172A),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  elevation: 0,
+                ),
+              ),
+            ],
+          ),
+          ),
       ),
     );
   }

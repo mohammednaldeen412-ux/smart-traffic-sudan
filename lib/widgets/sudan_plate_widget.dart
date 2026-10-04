@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/localization/app_strings.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_typography.dart';
 import '../core/utils/plate_formatter.dart';
@@ -65,7 +66,7 @@ class SudanPlateWidget extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'السودان',
+                  context.isArabic ? 'السودان' : 'SUDAN',
                   style: TextStyle(
                     fontSize: isCompact ? 8 : 10,
                     fontWeight: FontWeight.bold,

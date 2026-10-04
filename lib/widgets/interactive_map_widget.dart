@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/localization/app_strings.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_typography.dart';
 
@@ -191,10 +192,10 @@ class _InteractiveMapWidgetState extends State<InteractiveMapWidget>
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.satellite_alt_rounded, size: 14, color: AppColors.goldPrimary),
+                    Icon(Icons.satellite_alt_rounded, size: 14, color: AppColors.goldPrimary),
                     const SizedBox(width: 4),
                     Text(
-                      'نظام التتبع الجغرافي للمرور',
+                      context.isArabic ? 'نظام التتبع الجغرافي للمرور' : 'Traffic GIS Tracking System',
                       style: AppTypography.bodySmall.copyWith(
                         color: AppColors.textSecondary,
                         fontSize: 10,

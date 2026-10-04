@@ -87,7 +87,7 @@ class VehicleCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 5),
                           Text(
-                            vehicle.isVerified ? 'موثق رسمياً' : 'قيد المراجعة',
+                            vehicle.isVerified ? context.tr('verified') : context.tr('under_review'),
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
@@ -130,7 +130,7 @@ class VehicleCard extends StatelessWidget {
                   children: [
                     _buildInfoChip(Icons.palette_outlined, vehicle.color),
                     _buildInfoChip(
-                        Icons.tag_rounded, 'شاسيه: ${vehicle.chassisNumber.length > 8 ? "${vehicle.chassisNumber.substring(0, 8)}..." : vehicle.chassisNumber}'),
+                        Icons.tag_rounded, '${context.tr('chassis_number').split(' ')[0]}: ${vehicle.chassisNumber.length > 8 ? "${vehicle.chassisNumber.substring(0, 8)}..." : vehicle.chassisNumber}'),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -159,10 +159,10 @@ class VehicleCard extends StatelessWidget {
                         const SizedBox(width: 6),
                         Text(
                           isExpired
-                              ? 'الترخيص منتهي الصلاحية!'
+                              ? context.tr('expired_license')
                               : (daysLeft <= 30
-                                  ? 'ينتهي الترخيص خلال $daysLeft يوم'
-                                  : 'الترخيص سارٍ ($daysLeft يوم)'),
+                                  ? '${context.tr('expires_in')} $daysLeft ${context.tr('days')}'
+                                  : '${context.tr('active')} ($daysLeft ${context.tr('days')})'),
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,

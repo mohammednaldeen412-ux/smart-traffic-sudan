@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../core/localization/app_strings.dart';
 import '../core/services/connectivity_service.dart';
 import '../core/theme/app_colors.dart';
 import '../core/theme/app_typography.dart';
@@ -35,11 +36,14 @@ class OfflineBanner extends StatelessWidget {
                 size: 16,
               ),
               const SizedBox(width: 8),
-              Text(
-                'لا يوجد اتصال بالإنترنت - يتم العمل في الوضع المحلي الآمن',
-                style: AppTypography.bodySmall.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                child: Text(
+                  context.tr('offline_banner_text'),
+                  style: AppTypography.bodySmall.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ),
               const SizedBox(width: 10),
@@ -52,7 +56,7 @@ class OfflineBanner extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    'إعادة المحاولة',
+                    context.tr('retry_btn'),
                     style: AppTypography.bodySmall.copyWith(
                       color: Colors.white,
                       fontSize: 10,

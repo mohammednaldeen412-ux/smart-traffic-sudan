@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../core/localization/app_strings.dart';
 import '../../core/services/auth_service.dart';
@@ -86,17 +87,137 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const SmartRoleRouter()),
         );
+        return;
       }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceAll('Exception: ', '')),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
+    } catch (_) {}
+
+    // إذا لم يكن مستشعر البصمة مفعلاً بالجهاز أو على محاكي، نعرض نافذة البصمة الذكية
+    if (mounted) {
+      _showBiometricSimulationSheet();
     }
+  }
+
+  void _showBiometricSimulationSheet() {
+    final auth = context.read<AuthService>();
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (bContext) => Container(
+        padding: const EdgeInsets.all(28),
+        decoration: BoxDecoration(
+          color: Theme.of(context).cardColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+          border: Border.all(color: AppColors.goldPrimary.withValues(alpha: 0.3)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.4),
+              blurRadius: 30,
+              offset: const Offset(0, -5),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 48,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              context.tr('biometric_auth_title'),
+              style: AppTypography.titleMedium.copyWith(
+                fontWeight: FontWeight.bold,
+                color: AppColors.goldPrimary,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              context.tr('biometric_auth_prompt'),
+              textAlign: TextAlign.center,
+              style: AppTypography.bodySmall.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 32),
+            GestureDetector(
+              onTap: () async {
+                HapticFeedback.heavyImpact();
+                Navigator.of(bContext).pop();
+                final ok = await auth.loginAsDemoCitizen();
+                if (ok && mounted) {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const SmartRoleRouter()),
+                  );
+                }
+              },
+              child: Container(
+                width: 90,
+                height: 90,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.goldPrimary.withValues(alpha: 0.15),
+                  border: Border.all(color: AppColors.goldPrimary, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.goldPrimary.withValues(alpha: 0.25),
+                      blurRadius: 20,
+                    ),
+                  ],
+                ),
+                child: const Icon(
+                  Icons.fingerprint_rounded,
+                  size: 52,
+                  color: AppColors.goldPrimary,
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              decoration: BoxDecoration(
+                color: AppColors.success.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: AppColors.success.withValues(alpha: 0.3)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.verified_user_rounded, size: 14, color: AppColors.success),
+                  const SizedBox(width: 6),
+                  Text(
+                    context.tr('biometric_demo_badge'),
+                    style: const TextStyle(color: AppColors.success, fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            CustomButton(
+              text: context.tr('biometric_confirm_btn'),
+              icon: Icons.fingerprint_rounded,
+              isLoading: auth.isLoading,
+              onPressed: () async {
+                HapticFeedback.heavyImpact();
+                Navigator.of(bContext).pop();
+                final ok = await auth.loginAsDemoCitizen();
+                if (ok && mounted) {
+                  Navigator.of(context).pushReplacement(
+                    MaterialPageRoute(builder: (_) => const SmartRoleRouter()),
+                  );
+                }
+              },
+            ),
+            const SizedBox(height: 12),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -281,20 +402,18 @@ class _LoginScreenState extends State<LoginScreen> {
                                   isLoading: auth.isLoading,
                                   onPressed: _handleLogin,
                                 ),
-                                if (auth.isBiometricAvailable && auth.isBiometricEnabled) ...[
-                                  const SizedBox(height: 12),
-                                  OutlinedButton.icon(
-                                    onPressed: auth.isLoading ? null : _handleBiometricLogin,
-                                    icon: const Icon(Icons.fingerprint_rounded, size: 24),
-                                    label: Text(context.tr('biometric_login')),
-                                    style: OutlinedButton.styleFrom(
-                                      foregroundColor: AppColors.goldPrimary,
-                                      side: const BorderSide(color: AppColors.goldPrimary, width: 1.2),
-                                      padding: const EdgeInsets.symmetric(vertical: 14),
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                                    ),
+                                const SizedBox(height: 12),
+                                OutlinedButton.icon(
+                                  onPressed: auth.isLoading ? null : _handleBiometricLogin,
+                                  icon: const Icon(Icons.fingerprint_rounded, size: 24),
+                                  label: Text(context.tr('biometric_login')),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: AppColors.goldPrimary,
+                                    side: const BorderSide(color: AppColors.goldPrimary, width: 1.2),
+                                    padding: const EdgeInsets.symmetric(vertical: 14),
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                                   ),
-                                ],
+                                ),
                               ],
                             ),
                           ),

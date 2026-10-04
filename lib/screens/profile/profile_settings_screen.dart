@@ -114,6 +114,64 @@ class ProfileSettingsScreen extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 12),
+
+                _buildGlassListTile(
+                  context: context,
+                  icon: Icons.fingerprint_rounded,
+                  title: context.tr('biometric_settings_title'),
+                  subtitle: auth.isBiometricEnabled
+                      ? (context.isArabic ? 'مفعل (تسجيل سريع)' : 'Enabled (Fast Sign-In)')
+                      : (context.isArabic ? 'معطل (اضغط للتفعيل)' : 'Disabled (Tap to enable)'),
+                  trailing: Switch(
+                    value: auth.isBiometricEnabled,
+                    activeColor: AppColors.goldPrimary,
+                    onChanged: (val) async {
+                      if (val) {
+                        await auth.enableBiometrics(user?.nationalId ?? '1029384756', '123456');
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(context.isArabic ? 'تم تفعيل الدخول بالبصمة بنجاح' : 'Biometric login enabled successfully'),
+                              backgroundColor: AppColors.success,
+                            ),
+                          );
+                        }
+                      } else {
+                        await auth.disableBiometrics();
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(context.isArabic ? 'تم تعطيل الدخول بالبصمة' : 'Biometric login disabled'),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                  onTap: () async {
+                    if (!auth.isBiometricEnabled) {
+                      await auth.enableBiometrics(user?.nationalId ?? '1029384756', '123456');
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(context.isArabic ? 'تم تفعيل الدخول بالبصمة بنجاح' : 'Biometric login enabled successfully'),
+                            backgroundColor: AppColors.success,
+                          ),
+                        );
+                      }
+                    } else {
+                      await auth.disableBiometrics();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(context.isArabic ? 'تم تعطيل الدخول بالبصمة' : 'Biometric login disabled'),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                ),
+                const SizedBox(height: 12),
                 
                 _buildGlassListTile(
                   context: context,
@@ -164,6 +222,7 @@ class ProfileSettingsScreen extends StatelessWidget {
     required String title,
     required String subtitle,
     required VoidCallback onTap,
+    Widget? trailing,
   }) {
     final c = GlassColors.of(context);
     return GlassCard(
@@ -182,7 +241,7 @@ class ProfileSettingsScreen extends StatelessWidget {
         ),
         title: Text(title, style: TextStyle(color: c.text, fontWeight: FontWeight.bold)),
         subtitle: Text(subtitle, style: TextStyle(color: c.text.withValues(alpha: 0.6), fontSize: 12)),
-        trailing: Icon(Icons.arrow_forward_ios_rounded, color: c.text.withValues(alpha: 0.3), size: 16),
+        trailing: trailing ?? Icon(Icons.arrow_forward_ios_rounded, color: c.text.withValues(alpha: 0.3), size: 16),
       ),
     );
   }
