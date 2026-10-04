@@ -51,8 +51,8 @@ class DriverLicenseScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                   gradient: LinearGradient(
                     colors: [
-                      const Color(0xFF1E293B).withOpacity(0.8),
-                      const Color(0xFF0F172A).withOpacity(0.9),
+                      const Color(0xFF1E293B).withValues(alpha: 0.8),
+                      const Color(0xFF0F172A).withValues(alpha: 0.9),
                     ],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
@@ -64,7 +64,7 @@ class DriverLicenseScreen extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFD4AF37).withOpacity(0.15),
+                        color: const Color(0xFFD4AF37).withValues(alpha: 0.15),
                         border: const Border(bottom: BorderSide(color: Colors.white12)),
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
                       ),
@@ -101,7 +101,7 @@ class DriverLicenseScreen extends StatelessWidget {
                             height: 100,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: const Color(0xFFD4AF37).withOpacity(0.5)),
+                              border: Border.all(color: const Color(0xFFD4AF37).withValues(alpha: 0.5)),
                               image: DecorationImage(
                                 image: NetworkImage(user.profileImageUrl ?? 'https://ui-avatars.com/api/?name=${user.fullName}&background=random'),
                                 fit: BoxFit.cover,
@@ -144,9 +144,9 @@ class DriverLicenseScreen extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
-                              color: Colors.green.withOpacity(0.2),
+                              color: Colors.green.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(4),
-                              border: Border.all(color: Colors.green.withOpacity(0.5)),
+                              border: Border.all(color: Colors.green.withValues(alpha: 0.5)),
                             ),
                             child: Text(status, style: const TextStyle(color: Colors.greenAccent, fontSize: 10, fontWeight: FontWeight.bold)),
                           )
@@ -182,7 +182,7 @@ class DriverLicenseScreen extends StatelessWidget {
                       children: [
                         const Icon(Icons.check_circle_outline_rounded, color: Colors.greenAccent, size: 32),
                         const SizedBox(height: 8),
-                        const Text('نشط', style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
+                        const Text('نشط', style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold)),
                         const Text('حالة الرخصة', style: TextStyle(color: Colors.white70, fontSize: 12)),
                       ],
                     ),

@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/localization/app_strings.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
@@ -8,6 +9,7 @@ import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/offline_banner.dart';
 import '../../widgets/sovereign_badge.dart';
+import '../../widgets/auth_top_bar.dart';
 import '../../models/user_model.dart';
 import '../dashboard/smart_role_router.dart';
 import 'activation_screen.dart';
@@ -150,6 +152,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
+                          const SizedBox(height: 4),
+                          const Align(
+                            alignment: AlignmentDirectional.centerEnd,
+                            child: AuthTopBar(),
+                          ),
                           const SizedBox(height: 12),
                           const SovereignBadge(),
                           const SizedBox(height: 32),
@@ -174,25 +181,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           const SizedBox(height: 14),
                           Text(
-                            'مـرورك',
+                            context.tr('app_name'),
                             style: AppTypography.displayMedium.copyWith(fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.goldPrimary),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'خدمات المرور بين يديك',
+                            context.tr('app_tagline'),
                             style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w500),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 20),
                           Text(
-                            'تسجيل الدخول',
+                            context.tr('login'),
                             style: AppTypography.displayMedium.copyWith(fontSize: 20, fontWeight: FontWeight.bold),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'بوابة المواطن للخدمات المرورية',
+                            context.tr('citizen_portal'),
                             style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
                             textAlign: TextAlign.center,
                           ),
@@ -217,20 +224,20 @@ class _LoginScreenState extends State<LoginScreen> {
                               children: [
                                 CustomTextField(
                                   controller: _identifierController,
-                                  label: 'الرقم الوطني (11 رقم)',
-                                  hint: 'أدخل الرقم الوطني الخاص بك',
+                                  label: context.tr('national_id_11'),
+                                  hint: context.tr('national_id_enter'),
                                   prefixIcon: Icons.badge_outlined,
                                   keyboardType: TextInputType.number,
                                   validator: (val) {
-                                    if (val == null || val.trim().isEmpty) return 'يرجى إدخال الرقم الوطني';
-                                    if (val.trim().length != 11) return 'الرقم الوطني يجب أن يتكون من 11 رقم';
+                                    if (val == null || val.trim().isEmpty) return context.tr('national_id_required');
+                                    if (val.trim().length != 11) return context.tr('national_id_invalid');
                                     return null;
                                   },
                                 ),
                                 const SizedBox(height: 18),
                                 CustomTextField(
                                   controller: _passwordController,
-                                  label: 'كلمة المرور',
+                                  label: context.tr('password'),
                                   hint: '',
                                   prefixIcon: Icons.lock_outline_rounded,
                                   obscureText: _obscurePassword,
@@ -239,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                                   ),
                                   validator: (val) {
-                                    if (val == null || val.length < 6) return 'كلمة المرور يجب أن لا تقل عن 6 أحرف';
+                                    if (val == null || val.length < 6) return context.tr('password_short');
                                     return null;
                                   },
                                 ),
@@ -261,15 +268,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                         ),
                                         const SizedBox(width: 8),
-                                        Text('تذكرني', style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
+                                        Text(context.tr('remember_me'), style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
                                       ],
                                     ),
-                                    TextButton(onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ForgotPasswordScreen())), child: Text('نسيت كلمة المرور؟', style: AppTypography.bodySmall.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold))),
+                                    TextButton(onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ForgotPasswordScreen())), child: Text(context.tr('forgot_password'), style: AppTypography.bodySmall.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold))),
                                   ],
                                 ),
                                 const SizedBox(height: 24),
                                 CustomButton(
-                                  text: 'تسجيل الدخول',
+                                  text: context.tr('login'),
                                   icon: Icons.login_rounded,
                                   isLoading: auth.isLoading,
                                   onPressed: _handleLogin,
@@ -279,7 +286,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   OutlinedButton.icon(
                                     onPressed: auth.isLoading ? null : _handleBiometricLogin,
                                     icon: const Icon(Icons.fingerprint_rounded, size: 24),
-                                    label: const Text('الدخول بالبصمة'),
+                                    label: Text(context.tr('biometric_login')),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: AppColors.goldPrimary,
                                       side: const BorderSide(color: AppColors.goldPrimary, width: 1.2),
@@ -293,7 +300,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 24),
                           CustomButton(
-                            text: 'تفعيل الحساب الذكي',
+                            text: context.tr('smart_activation'),
                             isOutlined: true,
                             icon: Icons.vpn_key_rounded,
                             onPressed: () {
@@ -307,7 +314,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             icon: const Icon(Icons.local_police, color: AppColors.goldPrimary),
                             label: Text(
-                              'بوابة دخول ضباط وأفراد المرور',
+                              context.tr('officer_portal_btn'),
                               style: AppTypography.bodyMedium.copyWith(color: AppColors.goldPrimary, fontWeight: FontWeight.bold),
                             ),
                           ),

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../core/services/auth_service.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
+import '../../widgets/auth_top_bar.dart';
 import '../../models/user_model.dart';
 import '../officer/officer_navigation_wrapper.dart';
 
@@ -62,6 +63,12 @@ class _OfficerLoginScreenState extends State<OfficerLoginScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: const BackButton(color: Colors.white),
+        actions: const [
+          Padding(
+            padding: EdgeInsetsDirectional.only(end: 12),
+            child: Center(child: AuthTopBar(forceLight: true)),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(

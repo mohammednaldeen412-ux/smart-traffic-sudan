@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../core/localization/app_strings.dart';
 import '../../core/services/auth_service.dart';
-import '../../core/theme/app_colors.dart';
+import '../../core/services/locale_provider.dart';
 import '../../core/theme/app_typography.dart';
+import '../../widgets/app_background.dart';
+import '../../widgets/auth_top_bar.dart';
 import '../../widgets/custom_button.dart';
 import '../../widgets/custom_text_field.dart';
 import '../../widgets/glass_card.dart';
@@ -20,7 +23,7 @@ class _ActivationScreenState extends State<ActivationScreen> {
   final _nationalIdController = TextEditingController();
   final _otpController = TextEditingController();
   final _passwordController = TextEditingController();
-  
+
   bool _isLoading = false;
 
   @override
@@ -31,22 +34,29 @@ class _ActivationScreenState extends State<ActivationScreen> {
     super.dispose();
   }
 
+  /// ترجمة خارج build (بدون watch)
+  String _t(String key) => AppStrings.tr(key, context.read<LocaleProvider>().languageCode);
+
+  void _showError(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
   void _nextStep() {
     if (_currentStep == 0) {
-      if (_nationalIdController.text.length != 11) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('الرقم الوطني يجب أن يكون 11 رقماً')));
+      if (_nationalIdController.text.trim().length != 11) {
+        _showError(_t('national_id_invalid'));
         return;
       }
       setState(() => _currentStep++);
     } else if (_currentStep == 1) {
-      if (_otpController.text != '1234') {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('رمز التحقق غير صحيح (أدخل 1234 للتجربة)')));
+      if (_otpController.text.trim() != '1234') {
+        _showError(_t('otp_invalid'));
         return;
       }
       setState(() => _currentStep++);
     } else if (_currentStep == 2) {
       if (_passwordController.text.length < 6) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('كلمة المرور يجب أن لا تقل عن 6 أحرف')));
+        _showError(_t('password_short'));
         return;
       }
       _activateAccount();
@@ -69,113 +79,95 @@ class _ActivationScreenState extends State<ActivationScreen> {
         );
       }
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-      }
+      if (mounted) _showError(e.toString().replaceAll('Exception: ', ''));
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final c = GlassColors.of(context);
+    const gold = Color(0xFFD4AF37);
+
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: Colors.transparent,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          // Background Gradient
-          Container(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(-0.8, -0.6),
-                radius: 1.5,
-                colors: [Color(0xFF1E293B), Color(0xFF0A0E17)],
-              ),
-            ),
+        iconTheme: IconThemeData(color: c.text),
+        actions: const [
+          Padding(
+            padding: EdgeInsetsDirectional.only(end: 12),
+            child: Center(child: AuthTopBar()),
           ),
-          
-          SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
+        ],
+      ),
+      body: AppBackground(
+        role: AppRole.auth,
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: GlassCard(
+                blur: 15,
+                opacity: c.glassOpacity,
+                tintColor: c.glassTint,
                 padding: const EdgeInsets.all(24.0),
-                child: GlassCard(
-                  blur: 15,
-                  opacity: 0.1,
-                  tintColor: Colors.white,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(Icons.verified_user_rounded, size: 64, color: Color(0xFFD4AF37)),
-                        const SizedBox(height: 16),
-                        Text(
-                          'تفعيل الحساب الذكي',
-                          style: AppTypography.titleLarge.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          _getStepSubtitle(),
-                          style: const TextStyle(color: Colors.white70, fontSize: 13),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 32),
-                        
-                        // Steps content
-                        if (_currentStep == 0) _buildStep1(),
-                        if (_currentStep == 1) _buildStep2(),
-                        if (_currentStep == 2) _buildStep3(),
-                        
-                        const SizedBox(height: 32),
-                        
-                        _isLoading
-                            ? const CircularProgressIndicator(color: Color(0xFFD4AF37))
-                            : CustomButton(
-                                text: _currentStep == 2 ? 'تأكيد وتفعيل الحساب' : 'التالي',
-                                onPressed: _nextStep,
-                                backgroundColor: const Color(0xFFD4AF37),
-                                textColor: const Color(0xFF0F172A),
-                              ),
-                      ],
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.verified_user_rounded, size: 64, color: gold),
+                    const SizedBox(height: 16),
+                    Text(
+                      context.tr('smart_activation'),
+                      textAlign: TextAlign.center,
+                      style: AppTypography.titleLarge.copyWith(color: c.text, fontWeight: FontWeight.bold),
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      context.tr('activation_step${_currentStep + 1}'),
+                      style: TextStyle(color: c.textMuted, fontSize: 13),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+                    _StepDots(current: _currentStep, color: gold, inactive: c.textFaint),
+                    const SizedBox(height: 24),
+
+                    if (_currentStep == 0) _buildStep1(),
+                    if (_currentStep == 1) _buildStep2(c),
+                    if (_currentStep == 2) _buildStep3(),
+
+                    const SizedBox(height: 32),
+
+                    _isLoading
+                        ? const CircularProgressIndicator(color: gold)
+                        : CustomButton(
+                            text: context.tr(_currentStep == 2 ? 'confirm_activate' : 'next'),
+                            onPressed: _nextStep,
+                          ),
+                  ],
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
-  }
-
-  String _getStepSubtitle() {
-    switch (_currentStep) {
-      case 0: return 'أدخل رقمك الوطني للبحث عن بياناتك في السجل المدني والمرور.';
-      case 1: return 'تم العثور على بياناتك. أدخل رمز التحقق OTP المرسل إلى هاتفك.';
-      case 2: return 'قم بتعيين كلمة مرور جديدة لتأمين حسابك الذكي.';
-      default: return '';
-    }
   }
 
   Widget _buildStep1() {
     return CustomTextField(
       controller: _nationalIdController,
-      label: 'الرقم الوطني',
-      hint: 'أدخل 11 رقماً',
+      label: context.tr('national_id'),
+      hint: context.tr('national_id_hint'),
       keyboardType: TextInputType.number,
       prefixIcon: Icons.badge_outlined,
     );
   }
 
-  Widget _buildStep2() {
+  Widget _buildStep2(GlassColors c) {
     return Column(
       children: [
         Container(
@@ -185,14 +177,14 @@ class _ActivationScreenState extends State<ActivationScreen> {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              Icon(Icons.check_circle_outline, color: Colors.green),
-              SizedBox(width: 8),
+              const Icon(Icons.check_circle_outline, color: Colors.green),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'تم إرسال رمز OTP إلى رقم هاتفك المسجل لدى إدارة المرور (091****123).',
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                  context.tr('otp_sent_msg'),
+                  style: TextStyle(color: c.textMuted, fontSize: 12),
                 ),
               ),
             ],
@@ -201,8 +193,8 @@ class _ActivationScreenState extends State<ActivationScreen> {
         const SizedBox(height: 16),
         CustomTextField(
           controller: _otpController,
-          label: 'رمز التحقق OTP',
-          hint: 'أدخل 1234 للتجربة',
+          label: context.tr('otp_label'),
+          hint: context.tr('otp_hint'),
           keyboardType: TextInputType.number,
           prefixIcon: Icons.message_outlined,
         ),
@@ -213,10 +205,38 @@ class _ActivationScreenState extends State<ActivationScreen> {
   Widget _buildStep3() {
     return CustomTextField(
       controller: _passwordController,
-      label: 'كلمة المرور الجديدة',
-      hint: 'أدخل 6 أحرف أو أكثر',
+      label: context.tr('new_password'),
+      hint: context.tr('new_password_hint'),
       obscureText: true,
       prefixIcon: Icons.lock_outline,
+    );
+  }
+}
+
+/// مؤشر الخطوات (3 نقاط)
+class _StepDots extends StatelessWidget {
+  final int current;
+  final Color color;
+  final Color inactive;
+  const _StepDots({required this.current, required this.color, required this.inactive});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(3, (i) {
+        final active = i <= current;
+        return AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          width: i == current ? 28 : 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: active ? color : inactive.withValues(alpha: 0.4),
+            borderRadius: BorderRadius.circular(5),
+          ),
+        );
+      }),
     );
   }
 }

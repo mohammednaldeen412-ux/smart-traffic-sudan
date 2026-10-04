@@ -3,8 +3,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_typography.dart';
 import '../../widgets/glass_card.dart';
+import '../../widgets/app_background.dart';
+import '../../core/localization/app_strings.dart';
 
 class EmergencyHotlineScreen extends StatefulWidget {
   const EmergencyHotlineScreen({super.key});
@@ -29,7 +30,8 @@ class _EmergencyHotlineScreenState extends State<EmergencyHotlineScreen> {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          throw Exception('يجب تفعيل خدمات الموقع الجغرافي للاستجابة السريعة.');
+          if (!mounted) return;
+          throw Exception(context.tr('location_error'));
         }
       }
       
@@ -65,13 +67,13 @@ class _EmergencyHotlineScreenState extends State<EmergencyHotlineScreen> {
                 size: 28,
               ),
               const SizedBox(width: 8),
-              const Text('تم استلام البلاغ'),
+              Text(context.tr('report_received')),
             ],
           ),
           content: Text(
             urgencyLevel == 'urgent' 
-                ? 'تم استلام بلاغك الطارئ! تم إرسال إحداثيات موقعك فوراً لغرفة التحكم والنجدة في طريقها إليك.'
-                : 'شكراً لتعاونك. تم تسجيل ملاحظتك المرورية وسيتم مراجعتها من قبل الإدارة.',
+                ? context.tr('urgent_report_msg')
+                : context.tr('cold_report_msg'),
             style: const TextStyle(height: 1.5),
           ),
           actions: [
@@ -80,14 +82,14 @@ class _EmergencyHotlineScreenState extends State<EmergencyHotlineScreen> {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
-              child: const Text('حسناً', style: TextStyle(color: AppColors.goldPrimary)),
+              child: Text(context.tr('ok_btn'), style: const TextStyle(color: AppColors.goldPrimary)),
             ),
           ],
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('حدث خطأ: $e'), backgroundColor: AppColors.error),
+        SnackBar(content: Text('${context.tr('error_prefix')} $e'), backgroundColor: AppColors.error),
       );
     } finally {
       if (mounted) {
@@ -115,9 +117,9 @@ class _EmergencyHotlineScreenState extends State<EmergencyHotlineScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'إبلاغ عن حالة مرورية',
-                style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              Text(
+                context.tr('cold_report'),
+                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
               TextField(
@@ -125,7 +127,7 @@ class _EmergencyHotlineScreenState extends State<EmergencyHotlineScreen> {
                 style: const TextStyle(color: Colors.white),
                 maxLines: 3,
                 decoration: InputDecoration(
-                  hintText: 'وصف الحالة (مثال: زحام شديد، إشارة معطلة...)',
+                  hintText: context.tr('describe_case_hint'),
                   hintStyle: const TextStyle(color: Colors.white54),
                   filled: true,
                   fillColor: Colors.white12,
@@ -146,7 +148,7 @@ class _EmergencyHotlineScreenState extends State<EmergencyHotlineScreen> {
                     Navigator.pop(context);
                     _submitReport('cold', controller.text.trim());
                   },
-                  child: const Text('إرسال البلاغ', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  child: Text(context.tr('send_report'), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                 ),
               ),
               const SizedBox(height: 20),
@@ -159,99 +161,86 @@ class _EmergencyHotlineScreenState extends State<EmergencyHotlineScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final c = GlassColors.of(context);
     return Scaffold(
+      backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text('الطوارئ والبلاغات', style: TextStyle(color: Colors.white)),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        title: Text(context.tr('emergency_and_reports'), style: TextStyle(color: c.text)),
+        iconTheme: IconThemeData(color: c.text),
       ),
-      body: Stack(
-        children: [
-          // خلفية داكنة فخمة للطوارئ
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/citizen_header.jpg'),
-                fit: BoxFit.cover,
-                colorFilter: ColorFilter.mode(Colors.black87, BlendMode.darken),
-              ),
-            ),
-          ),
-          
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (_isSubmitting)
-                    const Center(child: CircularProgressIndicator(color: AppColors.error))
-                  else ...[
-                    // زر الحالة المستعجلة (Urgent SOS)
-                    GestureDetector(
-                      onTap: () => _submitReport('urgent', 'حالة طوارئ مستعجلة (تم إرسال الموقع)'),
-                      child: GlassCard(
-                        blur: 25,
-                        opacity: 0.25,
-                        tintColor: Colors.redAccent,
-                        child: const Column(
-                          children: [
-                            Icon(Icons.sos_rounded, color: Colors.redAccent, size: 80),
-                            SizedBox(height: 16),
-                            Text(
-                              'طوارئ مستعجلة',
-                              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'حادث سير، إصابات، حرائق\nسيتم إرسال موقعك الجغرافي فوراً وتوجيه أقرب دورية',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white70, fontSize: 14),
-                            ),
-                          ],
-                        ),
+      body: AppBackground(
+        role: AppRole.citizen,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (_isSubmitting)
+                  const Center(child: CircularProgressIndicator(color: AppColors.error))
+                else ...[
+                  // زر الحالة المستعجلة (Urgent SOS)
+                  GestureDetector(
+                    onTap: () => _submitReport('urgent', context.tr('urgent_emergency_sent')),
+                    child: GlassCard(
+                      blur: 25,
+                      opacity: c.isDark ? 0.25 : 0.8,
+                      tintColor: Colors.redAccent,
+                      child: Column(
+                        children: [
+                          const Icon(Icons.sos_rounded, color: Colors.white, size: 80),
+                          const SizedBox(height: 16),
+                          Text(
+                            context.tr('urgent_emergency'),
+                            style: const TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            context.tr('urgent_emergency_desc'),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 14),
+                          ),
+                        ],
                       ),
                     ),
+                  ),
 
-                    const SizedBox(height: 32),
+                  const SizedBox(height: 32),
 
-                    // زر الحالة الباردة (Cold Report)
-                    GestureDetector(
-                      onTap: _showColdReportSheet,
-                      child: GlassCard(
-                        blur: 15,
-                        opacity: 0.15,
-                        tintColor: Colors.amber,
-                        child: const Column(
-                          children: [
-                            Icon(Icons.traffic_rounded, color: Colors.amber, size: 48),
-                            SizedBox(height: 12),
-                            Text(
-                              'إبلاغ عن حالة مرورية',
-                              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              'زحام خانق، إشارة معطلة، عائق في الطريق',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: Colors.white70, fontSize: 14),
-                            ),
-                          ],
-                        ),
+                  // زر الحالة الباردة (Cold Report)
+                  GestureDetector(
+                    onTap: _showColdReportSheet,
+                    child: GlassCard(
+                      blur: 15,
+                      opacity: c.isDark ? 0.15 : 0.6,
+                      tintColor: Colors.amber.shade700,
+                      child: Column(
+                        children: [
+                          const Icon(Icons.traffic_rounded, color: Colors.white, size: 48),
+                          const SizedBox(height: 12),
+                          Text(
+                            context.tr('cold_report'),
+                            style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            context.tr('cold_report_desc'),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.9), fontSize: 14),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
+                  ),
                 ],
-              ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }

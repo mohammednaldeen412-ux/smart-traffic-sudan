@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/localization/app_strings.dart';
 import '../../core/services/traffic_service.dart';
-import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/vehicle_model.dart';
 import '../../widgets/glass_card.dart';

@@ -7,9 +7,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../widgets/glass_card.dart';
+import '../../widgets/app_background.dart';
 import '../emergency/emergency_hotline_screen.dart';
-import '../payment/payment_gateway_screen.dart';
-
 class HomeDashboardScreen extends StatefulWidget {
   final Function(int)? onNavigateTab;
 
@@ -28,186 +27,187 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     final auth = context.watch<AuthService>();
     final traffic = context.watch<TrafficService>();
     final user = auth.currentUser;
+    final c = GlassColors.of(context);
 
     final unpaidViolations = traffic.violations.where((v) => !v.isPaid).toList();
     final totalUnpaidAmount = unpaidViolations.fold(0.0, (sum, v) => sum + v.amount);
     final hasFines = unpaidViolations.isNotEmpty;
 
+    final alertColor = hasFines
+        ? (c.isDark ? const Color(0xFFFF8A80) : const Color(0xFFDC2626))
+        : (c.isDark ? const Color(0xFF69F0AE) : const Color(0xFF059669));
+
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(-0.8, -0.6),
-                radius: 1.5,
-                colors: [Color(0xFF1E293B), Color(0xFF0A0E17)],
-              ),
-            ),
-          ),
-          
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // الترحيب بالمواطن
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
+      backgroundColor: Colors.transparent,
+      body: AppBackground(
+        role: AppRole.citizen,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // الترحيب بالمواطن حسب الوقت
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "مرحباً بك،",
-                            style: AppTypography.bodyMedium.copyWith(color: Colors.white70),
+                            context.tr(AppStrings.greetingKey()),
+                            style: AppTypography.bodyMedium.copyWith(color: c.textMuted),
                           ),
                           Text(
                             user?.fullName ?? context.tr('citizen'),
+                            overflow: TextOverflow.ellipsis,
                             style: AppTypography.titleLarge.copyWith(
-                              color: Colors.white,
+                              color: c.text,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                         ],
                       ),
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.white24,
-                        backgroundImage: user?.profileImageUrl != null
-                            ? NetworkImage(user!.profileImageUrl!)
-                            : null,
-                        child: user?.profileImageUrl == null
-                            ? const Icon(Icons.person, color: Colors.white)
-                            : null,
-                      ),
-                    ],
-                  ),
-                  
-                  const Spacer(flex: 1),
+                    ),
+                    CircleAvatar(
+                      radius: 24,
+                      backgroundColor: c.glassTint.withValues(alpha: 0.15),
+                      backgroundImage: user?.profileImageUrl != null
+                          ? NetworkImage(user!.profileImageUrl!)
+                          : null,
+                      child: user?.profileImageUrl == null
+                          ? Icon(Icons.person, color: c.iconOnGlass)
+                          : null,
+                    ),
+                  ],
+                ),
 
-                  // البطاقة الزجاجية الرئيسية (حالة السجل)
-                  GlassCard(
-                    blur: 20.0,
-                    opacity: 0.2,
-                    tintColor: hasFines ? AppColors.error : AppColors.success,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          hasFines ? Icons.warning_amber_rounded : Icons.verified_user_rounded,
-                          size: 64,
-                          color: hasFines ? const Color(0xFFFF8A80) : const Color(0xFF69F0AE),
+                const Spacer(flex: 1),
+
+                // البطاقة الزجاجية الرئيسية (حالة السجل)
+                GlassCard(
+                  blur: 20.0,
+                  opacity: c.isDark ? 0.2 : 0.12,
+                  tintColor: hasFines ? AppColors.error : AppColors.success,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        hasFines ? Icons.warning_amber_rounded : Icons.verified_user_rounded,
+                        size: 64,
+                        color: alertColor,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        context.tr(hasFines ? 'fines_due' : 'clean_record'),
+                        textAlign: TextAlign.center,
+                        style: AppTypography.titleLarge.copyWith(
+                          color: c.text,
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(height: 16),
+                      ),
+                      if (hasFines) ...[
+                        const SizedBox(height: 8),
                         Text(
-                          hasFines ? "لديك مطالبات مالية" : "سجلك المروري نظيف",
-                          style: AppTypography.titleLarge.copyWith(
-                            color: Colors.white,
+                          CurrencyFormatter.formatSDG(totalUnpaidAmount),
+                          style: AppTypography.displayMedium.copyWith(
+                            color: alertColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        if (hasFines) ...[
-                          const SizedBox(height: 8),
-                          Text(
-                            CurrencyFormatter.formatSDG(totalUnpaidAmount),
-                            style: AppTypography.displayMedium.copyWith(
-                              color: const Color(0xFFFF8A80),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              onPressed: () => widget.onNavigateTab?.call(2), // الانتقال للمخالفات
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: AppColors.error,
-                                padding: const EdgeInsets.symmetric(vertical: 14),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: const Text(
-                                "عرض التفاصيل والسداد",
-                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        const SizedBox(height: 20),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () => widget.onNavigateTab?.call(2), // الانتقال للمخالفات
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: c.isDark ? Colors.white : AppColors.error,
+                              foregroundColor: c.isDark ? AppColors.error : Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
                             ),
-                          )
-                        ] else ...[
-                          const SizedBox(height: 8),
-                          const Text(
-                            "نتمنى لك قيادة آمنة، تذكر دائماً ربط حزام الأمان.",
-                            style: TextStyle(color: Colors.white70, fontSize: 14),
-                            textAlign: TextAlign.center,
+                            child: Text(
+                              context.tr('view_and_pay'),
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
                           ),
-                        ]
-                      ],
-                    ),
-                  ),
-
-                  const Spacer(flex: 2),
-
-                  // الأزرار السريعة الزجاجية في الأسفل
-                  Row(
-                    children: [
-                      // زر الطوارئ
-                      Expanded(
-                        child: GlassCard(
-                          blur: 15.0,
-                          opacity: 0.3,
-                          tintColor: Colors.redAccent,
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => const EmergencyHotlineScreen(),
-                              ),
-                            );
-                          },
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.emergency_share_rounded, color: Colors.white, size: 36),
-                              const SizedBox(height: 12),
-                              Text(
-                                "طوارئ وبلاغات",
-                                style: AppTypography.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
+                        )
+                      ] else ...[
+                        const SizedBox(height: 8),
+                        Text(
+                          context.tr('safe_drive_tip'),
+                          style: TextStyle(color: c.textMuted, fontSize: 14),
+                          textAlign: TextAlign.center,
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      // زر المركبات والمخالفات
-                      Expanded(
-                        child: GlassCard(
-                          blur: 15.0,
-                          opacity: 0.15,
-                          tintColor: Colors.white,
-                          onTap: () => widget.onNavigateTab?.call(1),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Icon(Icons.directions_car_rounded, color: Colors.white, size: 36),
-                              const SizedBox(height: 12),
-                              Text(
-                                "مركباتي",
-                                style: AppTypography.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      ]
                     ],
                   ),
-                  const SizedBox(height: 20),
-                ],
-              ),
+                ),
+
+                const Spacer(flex: 2),
+
+                // الأزرار السريعة الزجاجية في الأسفل
+                Row(
+                  children: [
+                    // زر الطوارئ
+                    Expanded(
+                      child: GlassCard(
+                        blur: 15.0,
+                        opacity: c.isDark ? 0.3 : 0.85,
+                        tintColor: Colors.redAccent,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const EmergencyHotlineScreen(),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.emergency_share_rounded, color: Colors.white, size: 36),
+                            const SizedBox(height: 12),
+                            Text(
+                              context.tr('emergency_and_reports'),
+                              textAlign: TextAlign.center,
+                              style: AppTypography.titleSmall.copyWith(color: Colors.white, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // زر المركبات
+                    Expanded(
+                      child: GlassCard(
+                        blur: 15.0,
+                        opacity: c.glassOpacity + 0.03,
+                        tintColor: c.glassTint,
+                        onTap: () => widget.onNavigateTab?.call(1),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.directions_car_rounded, color: c.iconOnGlass, size: 36),
+                            const SizedBox(height: 12),
+                            Text(
+                              context.tr('my_vehicles'),
+                              textAlign: TextAlign.center,
+                              style: AppTypography.titleSmall.copyWith(color: c.text, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 90), // مساحة لشريط التنقل السفلي
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
