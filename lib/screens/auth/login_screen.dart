@@ -10,7 +10,7 @@ import '../../widgets/offline_banner.dart';
 import '../../widgets/sovereign_badge.dart';
 import '../../models/user_model.dart';
 import '../dashboard/smart_role_router.dart';
-import 'register_screen.dart';
+import 'activation_screen.dart';
 import 'forgot_password_screen.dart';
 import 'officer_login_screen.dart';
 
@@ -293,11 +293,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: 24),
                           CustomButton(
-                            text: 'تسجيل حساب مواطن جديد',
+                            text: 'تفعيل الحساب الذكي',
                             isOutlined: true,
-                            icon: Icons.person_add_alt_1_rounded,
+                            icon: Icons.vpn_key_rounded,
                             onPressed: () {
-                              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RegisterScreen()));
+                              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ActivationScreen()));
                             },
                           ),
                           const SizedBox(height: 16),

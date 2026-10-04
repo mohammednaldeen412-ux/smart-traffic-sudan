@@ -554,6 +554,100 @@ class AuthService extends ChangeNotifier {
   }
 
   /// تسجيل الخروج
+  /// تفعيل الحساب الذكي عن طريق الرقم الوطني (نظام OTP)
+  Future<bool> activateAccount({
+    required String nationalId,
+    required String password,
+  }) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final email = '$nationalId@citizen.moror.sd';
+      UserCredential credential;
+      
+      try {
+        credential = await _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+      } catch (e) {
+        // إذا كان الحساب موجوداً مسبقاً، نسجل الدخول مباشرة (أو يمكن إعادة تعيين كلمة السر في نظام حقيقي)
+        credential = await _auth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+      }
+
+      // إنشاء بيانات وهمية للمواطن كأنه مسجل مسبقاً في السجل المدني
+      final newUser = UserModel(
+        id: credential.user!.uid,
+        fullName: 'مواطن مسجل (معماري)',
+        nationalId: nationalId,
+        phoneNumber: '0912345678',
+        email: email,
+        state: 'الخرطوم',
+        city: 'الخرطوم',
+        address: 'بيانات مستوردة من السجل المدني',
+        driverLicenseNumber: 'DL-${Random().nextInt(999999)}',
+        profileImageUrl: null,
+      );
+
+      // في حال كان هذا تفعيلاً لأول مرة
+      await _firestore.collection('users').doc(newUser.id).set(newUser.toJson(), SetOptions(merge: true));
+      await _fetchUserProfile(credential.user!.uid);
+      
+      // توليد سيارات وهمية لاختبار النظام
+      try {
+        final rand = Random();
+        final plates = ['خ 12345', 'ج 9876', 'ن 4567', 'ق 3321'];
+        final makes = ['Hyundai', 'Toyota', 'Kia', 'Nissan'];
+        final models = ['Tucson', 'Camry', 'Sportage', 'Sunny'];
+        final colors = ['أبيض', 'أسود', 'فضي', 'أحمر'];
+
+        for (int i = 0; i < 2; i++) {
+          final isExpired = i == 1; // الثانية منتهية الترخيص للتجربة
+          final expiryDate = isExpired 
+            ? DateTime.now().subtract(Duration(days: 30 + rand.nextInt(60)))
+            : DateTime.now().add(Duration(days: 90 + rand.nextInt(180)));
+
+          await _firestore.collection('vehicles').add({
+            'userId': credential.user!.uid, // UID for relations
+            'ownerNationalId': nationalId, // Tie vehicle directly to National ID
+            'make': makes[rand.nextInt(makes.length)],
+            'model': models[rand.nextInt(models.length)],
+            'plateNumber': plates[rand.nextInt(plates.length)].split(' ')[1],
+            'plateStateCode': plates[rand.nextInt(plates.length)].split(' ')[0],
+            'plateCategoryCode': 'ملاكي',
+            'chassisNumber': 'KNHM${rand.nextInt(99999999)}',
+            'color': colors[rand.nextInt(colors.length)],
+            'isVerified': true, // موثقة
+            'licenseExpiryDate': Timestamp.fromDate(expiryDate), // تاريخ متفاوت
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+        }
+        debugPrint('Seeded 2 dummy vehicles with varying dates for $nationalId during activation');
+      } catch (e) {
+        debugPrint('Failed to seed vehicles: $e');
+      }
+
+      _isLoading = false;
+      notifyListeners();
+      return true;
+    } on FirebaseAuthException catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      String message = 'حدث خطأ في التفعيل';
+      if (e.code == 'weak-password') {
+        message = 'كلمة المرور ضعيفة جداً';
+      }
+      throw Exception(message);
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      throw Exception('فشل الاتصال بخوادم السجل المدني');
+    }
+  }
+
   Future<void> logout() async {
     try {
       await _auth.signOut();
