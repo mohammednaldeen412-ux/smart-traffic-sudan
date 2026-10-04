@@ -48,9 +48,7 @@ class PaymentService extends ChangeNotifier {
   // ─── بذر الحسابات الافتراضية للبنك إن لم تكن موجودة ────────────────────────
   Future<void> seedDefaultBankAccountsIfEmpty() async {
     try {
-      final snap = await _firestore.collection('bank_accounts').limit(1).get();
-      if (snap.docs.isEmpty) {
-        final defaultAccounts = [
+      final defaultAccounts = [
           {
             'id': 'usr_001',
             'name': 'أحمد المنصور',
@@ -110,8 +108,7 @@ class PaymentService extends ChangeNotifier {
               .doc(acc['id'] as String)
               .set(acc, SetOptions(merge: true));
         }
-        debugPrint('[PaymentService] ✅ Seeded default bank accounts in Firestore');
-      }
+        debugPrint('[PaymentService] ✅ Updated bank accounts in Firestore to 1,000,000 SDG');
     } catch (e) {
       debugPrint('[PaymentService] Error seeding default bank accounts: $e');
     }

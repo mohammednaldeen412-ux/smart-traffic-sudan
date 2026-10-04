@@ -36,14 +36,12 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // 1. الفخامة تبدأ من الخلفية
           Container(
             decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/citizen_header.jpg'),
-                fit: BoxFit.cover,
-                // تعتيم خفيف للخلفية لإبراز الزجاج
-                colorFilter: ColorFilter.mode(Colors.black54, BlendMode.darken),
+              gradient: RadialGradient(
+                center: Alignment(-0.8, -0.6),
+                radius: 1.5,
+                colors: [Color(0xFF1E293B), Color(0xFF0A0E17)],
               ),
             ),
           ),
