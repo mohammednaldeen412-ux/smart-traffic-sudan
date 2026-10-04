@@ -82,7 +82,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         fullName: _fullNameController.text.trim(),
         nationalId: _nationalIdController.text.trim(),
         phoneNumber: _phoneController.text.trim(),
-        email: _emailController.text.trim(),
+        email: '${_nationalIdController.text.trim()}@citizen.moror.sd',
         state: _selectedState,
         city: _cityController.text.trim().isEmpty ? _selectedState : _cityController.text.trim(),
         address: _addressController.text.trim(),
@@ -266,15 +266,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               isActive: _currentStep >= 2,
               content: Column(
                 children: [
-                  CustomTextField(
-                    controller: _emailController,
-                    label: 'البريد الإلكتروني',
-                    hint: '',
-                    keyboardType: TextInputType.emailAddress,
-                    prefixIcon: Icons.email_outlined,
-                    validator: (v) => v!.contains('@') ? null : 'بريد غير صحيح',
-                  ),
-                  const SizedBox(height: 16),
+
                   CustomTextField(
                     controller: _passwordController,
                     label: 'كلمة المرور',

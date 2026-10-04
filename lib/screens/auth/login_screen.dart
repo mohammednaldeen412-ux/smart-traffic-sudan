@@ -217,12 +217,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               children: [
                                 CustomTextField(
                                   controller: _identifierController,
-                                  label: 'الرقم الوطني / البريد الإلكتروني',
-                                  hint: '',
+                                  label: 'الرقم الوطني (11 رقم)',
+                                  hint: 'أدخل الرقم الوطني الخاص بك',
                                   prefixIcon: Icons.badge_outlined,
-                                  keyboardType: TextInputType.emailAddress,
+                                  keyboardType: TextInputType.number,
                                   validator: (val) {
-                                    if (val == null || val.trim().isEmpty) return 'يرجى إدخال الرقم الوطني أو الإيميل';
+                                    if (val == null || val.trim().isEmpty) return 'يرجى إدخال الرقم الوطني';
+                                    if (val.trim().length != 11) return 'الرقم الوطني يجب أن يتكون من 11 رقم';
                                     return null;
                                   },
                                 ),

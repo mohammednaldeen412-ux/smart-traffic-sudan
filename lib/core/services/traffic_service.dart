@@ -111,6 +111,7 @@ class TrafficService extends ChangeNotifier {
 
     // التحقق من صلاحيات المستخدم (ضابط أو مسؤول) لتحميل البيانات المناسبة
     String? officerBadge;
+    String? citizenNationalId;
     bool isAdmin = false;
     try {
       final userDoc = await _firestore.collection('users').doc(user.uid).get();
@@ -121,17 +122,23 @@ class TrafficService extends ChangeNotifier {
           officerBadge = data?['officerBadgeNumber'];
         } else if (role == 'admin') {
           isAdmin = true;
+        } else {
+          citizenNationalId = data?['nationalId'];
         }
       }
     } catch (e) {
       debugPrint('Error fetching user profile in TrafficService: $e');
     }
 
-    // الاستماع لمركبات المواطن
-    _vehiclesSub = _firestore.collection('vehicles')
-        .where('userId', isEqualTo: user.uid)
-        .snapshots()
-        .listen((snapshot) {
+    // الاستماع لمركبات المواطن (نبحث بالرقم الوطني أو بالـ userId كاحتياطي)
+    Query vehiclesQuery = _firestore.collection('vehicles');
+    if (citizenNationalId != null && citizenNationalId.isNotEmpty) {
+      vehiclesQuery = vehiclesQuery.where('ownerNationalId', isEqualTo: citizenNationalId);
+    } else {
+      vehiclesQuery = vehiclesQuery.where('userId', isEqualTo: user.uid);
+    }
+
+    _vehiclesSub = vehiclesQuery.snapshots().listen((snapshot) {
       _vehicles = snapshot.docs.map((doc) => VehicleModel.fromJson(doc.data())).toList();
       _isLoading = false;
       notifyListeners();
