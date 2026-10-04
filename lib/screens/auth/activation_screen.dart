@@ -172,7 +172,6 @@ class _ActivationScreenState extends State<ActivationScreen> {
       hint: 'أدخل 11 رقماً',
       keyboardType: TextInputType.number,
       prefixIcon: Icons.badge_outlined,
-      maxLength: 11,
     );
   }
 
@@ -206,8 +205,6 @@ class _ActivationScreenState extends State<ActivationScreen> {
           hint: 'أدخل 1234 للتجربة',
           keyboardType: TextInputType.number,
           prefixIcon: Icons.message_outlined,
-          maxLength: 4,
-          textAlign: TextAlign.center,
         ),
       ],
     );
@@ -218,7 +215,7 @@ class _ActivationScreenState extends State<ActivationScreen> {
       controller: _passwordController,
       label: 'كلمة المرور الجديدة',
       hint: 'أدخل 6 أحرف أو أكثر',
-      isPassword: true,
+      obscureText: true,
       prefixIcon: Icons.lock_outline,
     );
   }
