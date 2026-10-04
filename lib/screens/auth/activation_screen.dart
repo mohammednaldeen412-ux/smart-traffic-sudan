@@ -4,9 +4,9 @@ import '../../core/services/auth_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../widgets/custom_button.dart';
-import '../../widgets/custom_textfield.dart';
+import '../../widgets/custom_text_field.dart';
 import '../../widgets/glass_card.dart';
-import '../dashboard/citizen_dashboard_screen.dart';
+import '../dashboard/smart_role_router.dart';
 
 class ActivationScreen extends StatefulWidget {
   const ActivationScreen({super.key});
@@ -64,7 +64,7 @@ class _ActivationScreenState extends State<ActivationScreen> {
 
       if (success && mounted) {
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const CitizenDashboardScreen()),
+          MaterialPageRoute(builder: (_) => const SmartRoleRouter()),
           (route) => false,
         );
       }
