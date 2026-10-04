@@ -6,6 +6,7 @@ import '../../core/services/traffic_service.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/vehicle_model.dart';
 import '../../widgets/glass_card.dart';
+import '../../widgets/app_background.dart';
 import '../../widgets/skeleton_loader.dart';
 import 'vehicle_details_screen.dart';
 
@@ -67,114 +68,103 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
     }).toList();
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Text(context.tr('vehicles_management'), style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(context.tr('vehicles_management'), style: TextStyle(color: GlassColors.of(context).text, fontWeight: FontWeight.bold)),
+        iconTheme: IconThemeData(color: GlassColors.of(context).text),
       ),
       extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          // خلفية داكنة مع تدرج لوني يعطي طابع الفخامة
-          Container(
-            decoration: const BoxDecoration(
-              gradient: RadialGradient(
-                center: Alignment(-0.8, -0.6),
-                radius: 1.5,
-                colors: [Color(0xFF1E293B), Color(0xFF0A0E17)],
-              ),
-            ),
-          ),
-          
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-              child: Column(
-                children: [
-                  // حقل البحث الزجاجي
-                  GlassCard(
-                    blur: 10.0,
-                    opacity: 0.1,
-                    tintColor: Colors.white,
-                    child: TextField(
-                      controller: _searchController,
-                      onChanged: (val) {
-                        setState(() {
-                          _searchQuery = val.trim();
-                        });
-                      },
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        hintText: 'ابحث برقم اللوحة أو الموديل...',
-                        hintStyle: const TextStyle(color: Colors.white54),
-                        prefixIcon: const Icon(Icons.search_rounded, color: Colors.white70),
-                        suffixIcon: _searchQuery.isNotEmpty
-                            ? IconButton(
-                                icon: const Icon(Icons.clear, color: Colors.white54),
-                                onPressed: () {
-                                  setState(() {
-                                    _searchController.clear();
-                                    _searchQuery = '';
-                                  });
-                                },
-                              )
-                            : null,
-                        border: InputBorder.none,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                      ),
+      body: AppBackground(
+        role: AppRole.citizen,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+            child: Column(
+              children: [
+                // حقل البحث الزجاجي
+                GlassCard(
+                  blur: 10.0,
+                  opacity: GlassColors.of(context).isDark ? 0.1 : 0.4,
+                  tintColor: GlassColors.of(context).isDark ? Colors.white : Colors.black,
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (val) {
+                      setState(() {
+                        _searchQuery = val.trim();
+                      });
+                    },
+                    style: TextStyle(color: GlassColors.of(context).text),
+                    decoration: InputDecoration(
+                      hintText: context.tr('search_vehicles_hint'),
+                      hintStyle: TextStyle(color: GlassColors.of(context).text.withValues(alpha: 0.5)),
+                      prefixIcon: Icon(Icons.search_rounded, color: GlassColors.of(context).text.withValues(alpha: 0.7)),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(Icons.clear, color: GlassColors.of(context).text.withValues(alpha: 0.5)),
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.clear();
+                                  _searchQuery = '';
+                                });
+                              },
+                            )
+                          : null,
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     ),
                   ),
+                ),
 
-                  const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-                  // فلاتر زجاجية
-                  Row(
-                    children: [
-                      _buildGlassFilterChip('الكل (${traffic.vehicles.length})', 0),
-                      const SizedBox(width: 8),
-                      _buildGlassFilterChip('المرخصة (${traffic.vehicles.where((v) => v.isVerified).length})', 1),
-                      const SizedBox(width: 8),
-                      _buildGlassFilterChip('منتهية/مراجعة (${traffic.vehicles.where((v) => !v.isVerified).length})', 2),
-                    ],
-                  ),
+                // فلاتر زجاجية
+                Row(
+                  children: [
+                    _buildGlassFilterChip('${context.tr('all')} (${traffic.vehicles.length})', 0),
+                    const SizedBox(width: 8),
+                    _buildGlassFilterChip('${context.tr('verified')} (${traffic.vehicles.where((v) => v.isVerified).length})', 1),
+                    const SizedBox(width: 8),
+                    _buildGlassFilterChip('${context.tr('under_review')} (${traffic.vehicles.where((v) => !v.isVerified).length})', 2),
+                  ],
+                ),
 
-                  const SizedBox(height: 20),
+                const SizedBox(height: 20),
 
-                  Expanded(
-                    child: _isLoading
-                        ? SkeletonLoader.list(count: 3)
-                        : RefreshIndicator(
-                            onRefresh: _handleRefresh,
-                            color: Colors.white,
-                            backgroundColor: const Color(0xFF1E293B),
-                            child: filteredVehicles.isEmpty
-                                ? _buildEmptyState()
-                                : ListView.builder(
-                                    physics: const AlwaysScrollableScrollPhysics(),
-                                    itemCount: filteredVehicles.length,
-                                    itemBuilder: (context, index) {
-                                      final vehicle = filteredVehicles[index];
-                                      return Padding(
-                                        padding: const EdgeInsets.only(bottom: 16),
-                                        child: _buildGlassVehicleCard(vehicle, context),
-                                      );
-                                    },
-                                  ),
-                          ),
-                  ),
-                ],
-              ),
+                Expanded(
+                  child: _isLoading
+                      ? SkeletonLoader.list(count: 3)
+                      : RefreshIndicator(
+                          onRefresh: _handleRefresh,
+                          color: GlassColors.of(context).text,
+                          backgroundColor: Colors.transparent,
+                          child: filteredVehicles.isEmpty
+                              ? _buildEmptyState()
+                              : ListView.builder(
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  itemCount: filteredVehicles.length,
+                                  itemBuilder: (context, index) {
+                                    final vehicle = filteredVehicles[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 16),
+                                      child: _buildGlassVehicleCard(vehicle, context),
+                                    );
+                                  },
+                                ),
+                        ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 
   Widget _buildGlassFilterChip(String label, int index) {
     final isSelected = _selectedFilter == index;
+    final c = GlassColors.of(context);
     
     return Expanded(
       child: GestureDetector(
@@ -185,8 +175,8 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
         },
         child: GlassCard(
           blur: 10,
-          opacity: isSelected ? 0.3 : 0.05,
-          tintColor: isSelected ? Colors.white : Colors.transparent,
+          opacity: isSelected ? (c.isDark ? 0.3 : 0.6) : (c.isDark ? 0.05 : 0.2),
+          tintColor: isSelected ? (c.isDark ? Colors.white : Colors.black) : Colors.transparent,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 10),
             child: Text(
@@ -196,7 +186,7 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? Colors.white : Colors.white70,
+                color: isSelected ? (c.isDark ? Colors.white : Colors.white) : c.text.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),
@@ -207,28 +197,29 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
   }
 
   Widget _buildEmptyState() {
+    final c = GlassColors.of(context);
     return ListView(
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.15),
         GlassCard(
           blur: 15,
-          opacity: 0.1,
-          tintColor: Colors.white,
+          opacity: c.isDark ? 0.1 : 0.4,
+          tintColor: c.isDark ? Colors.white : Colors.black,
           child: Padding(
             padding: const EdgeInsets.all(30.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.directions_car_filled_outlined, size: 64, color: Colors.white30),
+                Icon(Icons.directions_car_filled_outlined, size: 64, color: c.text.withValues(alpha: 0.3)),
                 const SizedBox(height: 20),
                 Text(
-                  'لا توجد مركبات',
-                  style: AppTypography.titleMedium.copyWith(color: Colors.white),
+                  context.tr('no_vehicles'),
+                  style: AppTypography.titleMedium.copyWith(color: c.text),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'لا توجد مركبات مسجلة بهذا الرقم الوطني في نظام المرور حالياً.',
-                  style: AppTypography.bodySmall.copyWith(color: Colors.white54),
+                  context.tr('no_vehicles_desc'),
+                  style: AppTypography.bodySmall.copyWith(color: c.text.withValues(alpha: 0.6)),
                   textAlign: TextAlign.center,
                 ),
               ],

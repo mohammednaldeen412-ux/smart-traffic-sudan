@@ -10,6 +10,8 @@ import '../../core/utils/currency_formatter.dart';
 import '../../models/violation_model.dart';
 import '../../widgets/skeleton_loader.dart';
 import '../../widgets/violation_card.dart';
+import '../../widgets/app_background.dart';
+import '../../widgets/glass_card.dart';
 import '../payment/payment_gateway_screen.dart';
 import 'violation_details_screen.dart';
 
@@ -64,14 +66,7 @@ class _ViolationsListScreenState extends State<ViolationsListScreen> {
   @override
   Widget build(BuildContext context) {
     final traffic = context.watch<TrafficService>();
-    final isDark = context.watch<ThemeProvider>().isDark;
-
-    final bg = isDark ? AppColors.background : AppColors.lightBackground;
-    final textPrimary = isDark ? AppColors.textPrimary : AppColors.lightTextPrimary;
-    final textSecondary = isDark ? AppColors.textSecondary : AppColors.lightTextSecondary;
-    final surfaceColor = isDark ? AppColors.surface : AppColors.lightSurface;
-    final inputBg = isDark ? AppColors.inputBackground : AppColors.lightInputBackground;
-    final cardBorder = isDark ? AppColors.cardBorder : AppColors.lightCardBorder;
+    final c = GlassColors.of(context);
 
     final List<ViolationModel> filtered = traffic.violations.where((v) {
       if (_selectedFilter == 1 && v.isPaid) return false;
@@ -88,222 +83,214 @@ class _ViolationsListScreenState extends State<ViolationsListScreen> {
     }).toList();
 
     return Scaffold(
-      backgroundColor: bg,
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: Text(context.tr('violations_record')),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(context.tr('violations_record'), style: TextStyle(color: c.text, fontWeight: FontWeight.bold)),
+        iconTheme: IconThemeData(color: c.text),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-          child: Column(
-            children: [
-              // حقل البحث المتكيف مع الثيم
-              TextField(
-                controller: _searchController,
-                onChanged: (val) {
-                  setState(() {
-                    _searchQuery = val.trim();
-                  });
-                },
-                style: TextStyle(color: textPrimary),
-                decoration: InputDecoration(
-                  hintText: context.tr('search_violations_hint'),
-                  prefixIcon: const Icon(Icons.search_rounded, color: AppColors.goldPrimary),
-                  suffixIcon: _searchQuery.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear, color: AppColors.textMuted),
-                          onPressed: () {
-                            setState(() {
-                              _searchController.clear();
-                              _searchQuery = '';
-                            });
-                          },
-                        )
-                      : null,
-                  filled: true,
-                  fillColor: inputBg,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: cardBorder),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: cardBorder),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: AppColors.goldPrimary, width: 1.2),
+      extendBodyBehindAppBar: true,
+      body: AppBackground(
+        role: AppRole.citizen,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+            child: Column(
+              children: [
+                // حقل البحث المتكيف مع الثيم
+                GlassCard(
+                  blur: 10.0,
+                  opacity: c.isDark ? 0.1 : 0.4,
+                  tintColor: c.isDark ? Colors.white : Colors.black,
+                  child: TextField(
+                    controller: _searchController,
+                    onChanged: (val) {
+                      setState(() {
+                        _searchQuery = val.trim();
+                      });
+                    },
+                    style: TextStyle(color: c.text),
+                    decoration: InputDecoration(
+                      hintText: context.tr('search_violations_hint'),
+                      hintStyle: TextStyle(color: c.text.withValues(alpha: 0.5)),
+                      prefixIcon: Icon(Icons.search_rounded, color: c.text.withValues(alpha: 0.7)),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: Icon(Icons.clear, color: c.text.withValues(alpha: 0.5)),
+                              onPressed: () {
+                                setState(() {
+                                  _searchController.clear();
+                                  _searchQuery = '';
+                                });
+                              },
+                            )
+                          : null,
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    ),
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 14),
+                const SizedBox(height: 14),
 
-              // بطاقة الإجمالي المستحق السريعة
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: surfaceColor,
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: cardBorder),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
+                // بطاقة الإجمالي المستحق السريعة
+                GlassCard(
+                  blur: 10,
+                  opacity: c.isDark ? 0.15 : 0.5,
+                  tintColor: c.isDark ? AppColors.goldPrimary : AppColors.goldDark,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Icon(
-                          Icons.account_balance_wallet_outlined,
-                          color: AppColors.goldPrimary,
-                          size: 18,
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.account_balance_wallet_outlined,
+                              color: c.text,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              context.tr('total_unpaid'),
+                              style: AppTypography.bodySmall.copyWith(color: c.text.withValues(alpha: 0.8)),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
                         Text(
-                          context.tr('total_unpaid'),
-                          style: AppTypography.bodySmall.copyWith(color: textSecondary),
+                          CurrencyFormatter.formatSDG(traffic.totalUnpaidAmount),
+                          style: AppTypography.titleSmall.copyWith(
+                            color: c.isDark ? AppColors.goldPrimary : AppColors.goldDark,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ],
                     ),
-                    Text(
-                      CurrencyFormatter.formatSDG(traffic.totalUnpaidAmount),
-                      style: AppTypography.titleSmall.copyWith(
-                        color: isDark ? AppColors.goldPrimary : AppColors.goldDark,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // أزرار الفلترة (الكل / غير مسددة / مسددة)
+                Row(
+                  children: [
+                    _buildFilterChip('${context.tr('all')} (${traffic.violations.length})', 0, c),
+                    const SizedBox(width: 8),
+                    _buildFilterChip('${context.tr('unpaid')} (${traffic.unpaidViolationsCount})', 1, c),
+                    const SizedBox(width: 8),
+                    _buildFilterChip('${context.tr('paid')} (${traffic.paidViolationsCount})', 2, c),
                   ],
                 ),
-              ),
 
-              const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
-              // أزرار الفلترة (الكل / غير مسددة / مسددة)
-              Row(
-                children: [
-                  _buildFilterChip('${context.tr('all')} (${traffic.violations.length})', 0),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('${context.tr('unpaid')} (${traffic.unpaidViolationsCount})', 1),
-                  const SizedBox(width: 8),
-                  _buildFilterChip('${context.tr('paid')} (${traffic.paidViolationsCount})', 2),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // قائمة المخالفات مع دعم شاشة التحميل الهيكلية والرفع للتحديث
-              Expanded(
-                child: _isLoading
-                    ? SkeletonLoader.list(count: 3)
-                    : RefreshIndicator(
-                        onRefresh: _handleRefresh,
-                        color: AppColors.goldPrimary,
-                        backgroundColor: surfaceColor,
-                        child: filtered.isEmpty
-                            ? ListView(
-                                children: [
-                                  SizedBox(height: MediaQuery.of(context).size.height * 0.1),
-                                  Center(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          padding: const EdgeInsets.all(20),
-                                          decoration: BoxDecoration(
-                                            color: isDark ? AppColors.card : AppColors.lightCard,
-                                            shape: BoxShape.circle,
-                                            border: Border.all(color: cardBorder),
-                                          ),
-                                          child: const Icon(
-                                            Icons.check_circle_outline_rounded,
-                                            size: 48,
-                                            color: AppColors.success,
-                                          ),
+                // قائمة المخالفات
+                Expanded(
+                  child: _isLoading
+                      ? SkeletonLoader.list(count: 3)
+                      : RefreshIndicator(
+                          onRefresh: _handleRefresh,
+                          color: c.text,
+                          backgroundColor: Colors.transparent,
+                          child: filtered.isEmpty
+                              ? ListView(
+                                  children: [
+                                    SizedBox(height: MediaQuery.of(context).size.height * 0.1),
+                                    GlassCard(
+                                      blur: 15,
+                                      opacity: c.isDark ? 0.1 : 0.3,
+                                      tintColor: c.isDark ? Colors.white : Colors.black,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(30),
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Icon(
+                                              Icons.check_circle_outline_rounded,
+                                              size: 64,
+                                              color: c.isDark ? AppColors.success : Colors.green[700],
+                                            ),
+                                            const SizedBox(height: 20),
+                                            Text(
+                                              context.tr('no_violations_category'),
+                                              style: AppTypography.titleMedium.copyWith(color: c.text),
+                                            ),
+                                            const SizedBox(height: 6),
+                                            Text(
+                                              context.tr('clean_record_msg'),
+                                              style: AppTypography.bodySmall.copyWith(color: c.text.withValues(alpha: 0.7)),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ],
                                         ),
-                                        const SizedBox(height: 16),
-                                        Text(
-                                          context.tr('no_violations_category'),
-                                          style: AppTypography.titleMedium,
-                                        ),
-                                        const SizedBox(height: 6),
-                                        Text(
-                                          context.tr('clean_record_msg'),
-                                          style: AppTypography.bodySmall,
-                                        ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                ],
-                              )
-                            : ListView.builder(
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                itemCount: filtered.length,
-                                itemBuilder: (context, index) {
-                                  final vio = filtered[index];
-                                  return ViolationCard(
-                                    violation: vio,
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (_) => ViolationDetailsScreen(violation: vio),
-                                        ),
-                                      );
-                                    },
-                                    onPayTap: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (_) => PaymentGatewayScreen(violation: vio),
-                                        ),
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                      ),
-              ),
-            ],
+                                  ],
+                                )
+                              : ListView.builder(
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  itemCount: filtered.length,
+                                  itemBuilder: (context, index) {
+                                    final vio = filtered[index];
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 12.0),
+                                      child: ViolationCard(
+                                        violation: vio,
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) => ViolationDetailsScreen(violation: vio),
+                                            ),
+                                          );
+                                        },
+                                        onPayTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) => PaymentGatewayScreen(violation: vio),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                        ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildFilterChip(String label, int index) {
+  Widget _buildFilterChip(String label, int index, GlassColors c) {
     final isSelected = _selectedFilter == index;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
     return Expanded(
-      child: InkWell(
+      child: GestureDetector(
         onTap: () {
           setState(() {
             _selectedFilter = index;
           });
         },
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          decoration: BoxDecoration(
-            color: isSelected
-                ? AppColors.goldPrimary.withValues(alpha: 0.18)
-                : (isDark ? AppColors.surface : AppColors.lightSurface),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: isSelected
-                  ? AppColors.goldPrimary
-                  : (isDark ? AppColors.cardBorder : AppColors.lightCardBorder),
-              width: 1.2,
+        child: GlassCard(
+          blur: 10,
+          opacity: isSelected ? (c.isDark ? 0.3 : 0.6) : (c.isDark ? 0.05 : 0.2),
+          tintColor: isSelected ? (c.isDark ? Colors.white : Colors.black) : Colors.transparent,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                color: isSelected ? (c.isDark ? Colors.white : Colors.white) : c.text.withValues(alpha: 0.7),
+              ),
+              textAlign: TextAlign.center,
             ),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-              color: isSelected
-                  ? (isDark ? AppColors.goldPrimary : AppColors.goldDark)
-                  : (isDark ? AppColors.textSecondary : AppColors.lightTextSecondary),
-            ),
-            textAlign: TextAlign.center,
           ),
         ),
       ),

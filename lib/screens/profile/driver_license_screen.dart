@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/services/auth_service.dart';
+import '../../core/localization/app_strings.dart';
+import '../../widgets/app_background.dart';
 import '../../widgets/glass_card.dart';
 
 class DriverLicenseScreen extends StatelessWidget {
@@ -22,28 +24,21 @@ class DriverLicenseScreen extends StatelessWidget {
     final status = 'سارية المفعول';
     
     return Scaffold(
-      backgroundColor: const Color(0xFF0A0E17),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        title: const Text('الرخصة الرقمية', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: Text(context.tr('digital_license_full'), style: TextStyle(color: GlassColors.of(context).text, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Color(0xFFD4AF37)),
+        iconTheme: IconThemeData(color: GlassColors.of(context).text),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment(-0.8, -0.6),
-            radius: 1.5,
-            colors: [
-              Color(0xFF1E293B),
-              Color(0xFF0A0E17),
-            ],
-          ),
-        ),
-        child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: [
-            // The Digital License Card
+      extendBodyBehindAppBar: true,
+      body: AppBackground(
+        role: AppRole.citizen,
+        child: SafeArea(
+          child: ListView(
+            padding: const EdgeInsets.all(24),
+            children: [
+              // The Digital License Card
             GlassCard(
               padding: EdgeInsets.zero,
               child: Container(
@@ -209,6 +204,7 @@ class DriverLicenseScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
