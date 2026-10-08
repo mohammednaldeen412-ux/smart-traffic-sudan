@@ -141,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
               context.tr('biometric_auth_prompt'),
               textAlign: TextAlign.center,
               style: AppTypography.bodySmall.copyWith(
-                color: AppColors.textSecondary,
+                color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
               ),
             ),
             const SizedBox(height: 32),
@@ -309,7 +309,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 4),
                           Text(
                             context.tr('app_tagline'),
-                            style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary, fontWeight: FontWeight.w500),
+                            style: AppTypography.bodySmall.copyWith(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary), fontWeight: FontWeight.w500),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 20),
@@ -321,7 +321,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           const SizedBox(height: 4),
                           Text(
                             context.tr('citizen_portal'),
-                            style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary),
+                            style: AppTypography.bodySmall.copyWith(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary)),
                             textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 28),
@@ -363,7 +363,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   prefixIcon: Icons.lock_outline_rounded,
                                   obscureText: _obscurePassword,
                                   suffixIcon: IconButton(
-                                    icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppColors.textSecondary, size: 20),
+                                    icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary), size: 20),
                                     onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                                   ),
                                   validator: (val) {
@@ -382,14 +382,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                           child: Checkbox(
                                             value: _rememberMe,
                                             activeColor: AppColors.goldPrimary,
-                                            checkColor: AppColors.background,
-                                            side: const BorderSide(color: AppColors.cardBorder),
+                                            checkColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground),
+                                            side: const BorderSide(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)),
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                                             onChanged: (val) => setState(() => _rememberMe = val ?? true),
                                           ),
                                         ),
                                         const SizedBox(width: 8),
-                                        Text(context.tr('remember_me'), style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary)),
+                                        Text(context.tr('remember_me'), style: AppTypography.bodySmall.copyWith(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary))),
                                       ],
                                     ),
                                     TextButton(onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ForgotPasswordScreen())), child: Text(context.tr('forgot_password'), style: AppTypography.bodySmall.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold))),

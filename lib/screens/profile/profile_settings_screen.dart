@@ -5,6 +5,8 @@ import '../../core/services/auth_service.dart';
 import '../../core/services/theme_provider.dart';
 import '../../core/services/locale_provider.dart';
 import '../../core/theme/app_colors.dart';
+import 'about_us_screen.dart';
+
 import '../../widgets/glass_card.dart';
 import '../../widgets/app_background.dart';
 import '../auth/login_screen.dart';
@@ -169,6 +171,19 @@ class ProfileSettingsScreen extends StatelessWidget {
                         );
                       }
                     }
+                  },
+                ),
+                const SizedBox(height: 12),
+                
+                _buildGlassListTile(
+                  context: context,
+                  icon: Icons.info_outline_rounded,
+                  title: 'التوثيق والدعم (About)',
+                  subtitle: 'معلومات النظام وفريق المطورين',
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const AboutUsScreen()),
+                    );
                   },
                 ),
                 const SizedBox(height: 12),

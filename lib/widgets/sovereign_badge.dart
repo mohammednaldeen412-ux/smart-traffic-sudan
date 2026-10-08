@@ -23,7 +23,7 @@ class SovereignBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(color: AppColors.primary.withValues(alpha: 0.3), width: 1.2),
         boxShadow: [
@@ -52,7 +52,7 @@ class SovereignBadge extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   displaySubtitle,
-                  style: AppTypography.bodySmall.copyWith(color: AppColors.textSecondary, fontSize: 11),
+                  style: AppTypography.bodySmall.copyWith(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary), fontSize: 11),
                 ),
               ],
             ),

@@ -78,7 +78,7 @@ class _PlateLookupScreenState extends State<PlateLookupScreen> {
               decoration: BoxDecoration(
                 color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.cardBorder),
+                border: Border.all(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)),
               ),
               child: Column(
                 children: [
@@ -119,7 +119,7 @@ class _PlateLookupScreenState extends State<PlateLookupScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.cardBorder),
+        border: Border.all(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)),
       ),
       child: const Column(
         children: [
@@ -314,7 +314,7 @@ class _PlateLookupScreenState extends State<PlateLookupScreen> {
       children: [
         Icon(icon, size: 20, color: color ?? AppColors.primary),
         const SizedBox(width: 10),
-        Text('$label: ', style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary)),
+        Text('$label: ', style: AppTypography.bodyMedium.copyWith(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary))),
         Expanded(child: Text(value, style: AppTypography.bodyMedium.copyWith(fontWeight: FontWeight.bold, color: color))),
       ],
     );

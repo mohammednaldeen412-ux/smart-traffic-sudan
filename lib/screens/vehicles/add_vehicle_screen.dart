@@ -123,7 +123,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground),
       appBar: AppBar(
         title: const Text(
           'إضافة مركبة جديدة',
@@ -142,9 +142,9 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.card,
+                  color: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.cardBorder),
+                  border: Border.all(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -195,7 +195,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                         Text(
                           'ولاية الترخيص',
                           style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
+                            color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -205,15 +205,15 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                           decoration: BoxDecoration(
                             color: AppColors.surface,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.cardBorder),
+                            border: Border.all(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)),
                           ),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
                               value: _selectedStateCode,
                               isExpanded: true,
-                              dropdownColor: AppColors.card,
+                              dropdownColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
                               style: AppTypography.bodyMedium.copyWith(
-                                color: AppColors.textPrimary,
+                                color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textPrimary : AppColors.lightTextPrimary),
                               ),
                               icon: const Icon(Icons.keyboard_arrow_down_rounded,
                                   color: AppColors.goldPrimary),
@@ -223,7 +223,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                   child: Text(
                                     '${state['name']} (${state['code']})',
                                     style: AppTypography.bodySmall.copyWith(
-                                      color: AppColors.textPrimary,
+                                      color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textPrimary : AppColors.lightTextPrimary),
                                     ),
                                   ),
                                 );
@@ -264,9 +264,9 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.card,
+                  color: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.cardBorder),
+                  border: Border.all(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,7 +306,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                     Text(
                       'يمكنك إضافة صورة الشهادة الآن أو لاحقاً من تفاصيل المركبة',
                       style: AppTypography.bodySmall
-                          .copyWith(color: AppColors.textMuted),
+                          .copyWith(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted)),
                     ),
                     const SizedBox(height: 12),
                     GestureDetector(
@@ -319,7 +319,7 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                           border: Border.all(
                             color: _certificateImage != null
                                 ? AppColors.success
-                                : AppColors.cardBorder,
+                                : (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder),
                             width: _certificateImage != null ? 2 : 1,
                           ),
                           image: _certificateImage != null
@@ -343,14 +343,14 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
                                   Text(
                                     'اضغط لاختيار صورة شهادة البحث',
                                     style: AppTypography.bodySmall.copyWith(
-                                      color: AppColors.textSecondary,
+                                      color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
                                     ),
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
                                     'من المعرض أو الكاميرا',
                                     style: AppTypography.bodySmall.copyWith(
-                                      color: AppColors.textMuted,
+                                      color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
                                       fontSize: 10,
                                     ),
                                   ),

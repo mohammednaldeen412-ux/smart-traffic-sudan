@@ -48,7 +48,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
   @override
   Widget build(BuildContext context) {
     final isDark = context.watch<ThemeProvider>().isDark;
-    final bg = isDark ? AppColors.background : AppColors.lightBackground;
+    final bg = isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground) : AppColors.lightBackground;
     final navbarBg = isDark
         ? AppColors.surface.withValues(alpha: 0.75)
         : AppColors.lightSurface.withValues(alpha: 0.85);
@@ -56,7 +56,7 @@ class _MainNavigationWrapperState extends State<MainNavigationWrapper> {
         ? AppColors.goldPrimary.withValues(alpha: 0.25)
         : AppColors.goldDark.withValues(alpha: 0.20);
     final activeColor = isDark ? AppColors.goldPrimary : AppColors.goldDark;
-    final inactiveColor = isDark ? AppColors.textMuted : AppColors.lightTextMuted;
+    final inactiveColor = isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted) : AppColors.lightTextMuted;
 
     final List<Widget> screens = [
       HomeDashboardScreen(onNavigateTab: _onTabTapped),

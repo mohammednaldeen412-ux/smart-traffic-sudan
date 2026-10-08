@@ -78,7 +78,7 @@ class SudanPlateWidget extends StatelessWidget {
                   style: TextStyle(
                     fontSize: isCompact ? 8 : 10,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.textSecondary,
+                    color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
                   ),
                 ),
               ],

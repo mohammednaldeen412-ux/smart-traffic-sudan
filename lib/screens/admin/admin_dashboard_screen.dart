@@ -201,7 +201,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                   decoration: BoxDecoration(
                     color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: isDark ? AppColors.cardBorder : AppColors.lightCardBorder),
+                    border: Border.all(color: isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder) : AppColors.lightCardBorder),
                   ),
                   child: ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -218,7 +218,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     ),
                     subtitle: Text(
                       '${violation.locality} • ${violation.officerName}',
-                      style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+                      style: const TextStyle(fontSize: 11, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted)),
                     ),
                     trailing: Text(
                       violation.isPaid ? 'مُسددة' : 'غير مسددة',
@@ -251,7 +251,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.cardBorder : AppColors.lightCardBorder),
+        border: Border.all(color: isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder) : AppColors.lightCardBorder),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -265,7 +265,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
           const SizedBox(height: 4),
           Text(
             title,
-            style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted),
+            style: AppTypography.bodySmall.copyWith(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted)),
           ),
         ],
       ),

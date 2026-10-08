@@ -90,7 +90,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
-          backgroundColor: AppColors.card,
+          backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
             side: const BorderSide(color: AppColors.goldPrimary, width: 1.5),
@@ -112,7 +112,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.surface,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColors.cardBorder),
+                    border: Border.all(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -122,7 +122,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                         children: [
                           Text(
                             'رقم الإشعار السيادي:',
-                            style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted, fontSize: 10),
+                            style: AppTypography.bodySmall.copyWith(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted), fontSize: 10),
                           ),
                           Text(
                             newTicket.id,
@@ -172,7 +172,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                     Expanded(
                       child: Text(
                         'تم التزامن السحابي اللحظي وإشعار المواطن فوراً.',
-                        style: AppTypography.bodySmall.copyWith(fontSize: 9, color: AppColors.textSecondary),
+                        style: AppTypography.bodySmall.copyWith(fontSize: 9, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary)),
                       ),
                     ),
                   ],
@@ -199,7 +199,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          backgroundColor: AppColors.card,
+          backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
             side: const BorderSide(color: AppColors.error, width: 1.5),
@@ -234,7 +234,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
     final selectedVio = _violationTypes[_selectedViolationIndex];
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground),
       appBar: AppBar(
         title: const Text('محرر المخالفات والضبط الميداني'),
         leading: IconButton(
@@ -269,7 +269,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                         decoration: BoxDecoration(
                           color: AppColors.inputBackground,
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: AppColors.cardBorder),
+                          border: Border.all(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)),
                         ),
                         child: DropdownButtonHideUnderline(
                           child: DropdownButton<String>(
@@ -342,10 +342,10 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                   return Container(
                     margin: const EdgeInsets.only(bottom: 8),
                     decoration: BoxDecoration(
-                      color: isSelected ? AppColors.cardElevated : AppColors.card,
+                      color: isSelected ? AppColors.cardElevated : (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(
-                        color: isSelected ? AppColors.error : AppColors.cardBorder,
+                        color: isSelected ? AppColors.error : (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder),
                         width: isSelected ? 1.6 : 1,
                       ),
                     ),
@@ -365,7 +365,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                           ),
                           child: Icon(
                             item['icon'] as IconData,
-                            color: isSelected ? AppColors.error : AppColors.textMuted,
+                            color: isSelected ? AppColors.error : (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
                             size: 20,
                           ),
                         ),
@@ -374,7 +374,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                            color: isSelected ? Colors.white : AppColors.textSecondary,
+                            color: isSelected ? Colors.white : (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
                           ),
                         ),
                         trailing: Text(
@@ -382,7 +382,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: isSelected ? AppColors.goldPrimary : AppColors.textMuted,
+                            color: isSelected ? AppColors.goldPrimary : (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
                           ),
                         ),
                       ),
@@ -405,9 +405,9 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppColors.cardBorder),
+                    border: Border.all(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)),
                   ),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton<String>(
@@ -433,9 +433,9 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: AppColors.card,
+                    color: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
                     borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: AppColors.cardBorder),
+                    border: Border.all(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)),
                   ),
                   child: Row(
                     children: [
@@ -449,7 +449,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                             const SizedBox(height: 2),
                             Text(
                               'إحداثيات الضبط: $_latitude, $_longitude',
-                              style: const TextStyle(fontSize: 10, color: AppColors.textMuted, fontFamily: 'monospace'),
+                              style: const TextStyle(fontSize: 10, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted), fontFamily: 'monospace'),
                             ),
                           ],
                         ),
@@ -474,7 +474,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('إجمالي قيمة الغرامة:', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                          const Text('إجمالي قيمة الغرامة:', style: TextStyle(fontSize: 11, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary))),
                           Text(
                             CurrencyFormatter.formatSDG(selectedVio['amount'] as double),
                             style: AppTypography.titleMedium.copyWith(

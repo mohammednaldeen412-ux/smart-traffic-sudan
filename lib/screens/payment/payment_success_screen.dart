@@ -23,7 +23,7 @@ class PaymentSuccessScreen extends StatelessWidget {
     final formattedDate = dateFormat.format(receipt.paymentDate);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
@@ -51,7 +51,7 @@ class PaymentSuccessScreen extends StatelessWidget {
               Text(
                 'تم تسجيل السداد فـورياً في السجل السيادي للإدارة العامة للمرور',
                 style: AppTypography.bodySmall.copyWith(
-                  color: AppColors.textSecondary,
+                  color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -62,7 +62,7 @@ class PaymentSuccessScreen extends StatelessWidget {
               Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: AppColors.card,
+                  color: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                     color: AppColors.goldPrimary.withValues(alpha: 0.4),
@@ -112,7 +112,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                           Text(
                             'جمهورية السودان',
                             style: AppTypography.bodySmall.copyWith(
-                              color: AppColors.textMuted,
+                              color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
                             ),
                           ),
                         ],
@@ -187,7 +187,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                           Text(
                             'امسح الرمز للتأكد من صحة الإيصال السيادي',
                             style: AppTypography.bodySmall.copyWith(
-                              color: AppColors.textMuted,
+                              color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
                               fontSize: 10,
                             ),
                           ),
@@ -272,7 +272,7 @@ class PaymentSuccessScreen extends StatelessWidget {
           Text(
             label,
             style: AppTypography.bodySmall.copyWith(
-              color: AppColors.textSecondary,
+              color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
               fontSize: 11,
             ),
           ),

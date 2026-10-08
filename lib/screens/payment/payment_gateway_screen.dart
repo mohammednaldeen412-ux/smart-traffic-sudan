@@ -423,7 +423,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.card,
+        backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: const BorderSide(color: AppColors.goldPrimary, width: 1.5),
@@ -462,7 +462,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
                 counterText: '',
                 hintText: '------',
                 hintStyle:
-                    TextStyle(color: AppColors.textMuted, letterSpacing: 8),
+                    TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted), letterSpacing: 8),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12)),
               ),
@@ -481,7 +481,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
             child: const Text('إلغاء',
-                style: TextStyle(color: AppColors.textMuted)),
+                style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted))),
           ),
           ElevatedButton(
             onPressed: () {
@@ -578,7 +578,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppColors.card,
+        backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: const BorderSide(color: AppColors.error, width: 1.5),
@@ -610,7 +610,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
     final double totalAmount = widget.violation.amount + serviceFee;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground),
       appBar: AppBar(
         title: const Text('بوابة الدفع الإلكتروني'),
         leading: IconButton(
@@ -655,7 +655,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
                           const SizedBox(height: 8),
                           _buildPriceRow(
                               'رسوم الخدمة الإلكترونية', serviceFee,
-                              color: AppColors.textSecondary),
+                              color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary)),
                           const Divider(
                               height: 20, color: AppColors.divider),
                           _buildPriceRow('إجمالي المستحق', totalAmount,
@@ -690,12 +690,12 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
                           decoration: BoxDecoration(
                             color: isSelected
                                 ? AppColors.cardElevated
-                                : AppColors.card,
+                                : (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
                               color: isSelected
                                   ? AppColors.goldPrimary
-                                  : AppColors.cardBorder,
+                                  : (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder),
                               width: isSelected ? 1.8 : 1,
                             ),
                           ),
@@ -726,7 +726,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
                                               : FontWeight.w500,
                                           color: isSelected
                                               ? Colors.white
-                                              : AppColors.textSecondary,
+                                              : (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
                                           fontSize: 13,
                                         )),
                                     Text(method['subtitle'] as String,
@@ -740,7 +740,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
                                     : Icons.radio_button_off_rounded,
                                 color: isSelected
                                     ? AppColors.goldPrimary
-                                    : AppColors.textMuted,
+                                    : (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
                                 size: 22,
                               ),
                             ],
@@ -873,7 +873,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
                           Text(
                             'مشفر بالتشفير السيادي 256-bit',
                             style: AppTypography.bodySmall.copyWith(
-                              color: AppColors.textMuted,
+                              color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
                               fontSize: 11,
                             ),
                           ),
@@ -944,7 +944,7 @@ class _PaymentGatewayScreenState extends State<PaymentGatewayScreen>
             Text(
               _processingStep,
               style: AppTypography.bodySmall
-                  .copyWith(color: AppColors.textSecondary),
+                  .copyWith(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary)),
               textAlign: TextAlign.center,
             ),
           ],

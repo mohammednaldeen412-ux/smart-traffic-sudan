@@ -41,9 +41,9 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final primaryTextColor = textColor ?? (isDark ? AppColors.textPrimary : AppColors.lightTextPrimary);
-    final primaryLabelColor = labelColor ?? textColor ?? (isDark ? AppColors.textPrimary : AppColors.lightTextPrimary);
-    final secondaryTextColor = isDark ? AppColors.textSecondary : AppColors.lightTextSecondary;
+    final primaryTextColor = textColor ?? (isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.textPrimary : AppColors.lightTextPrimary) : AppColors.lightTextPrimary);
+    final primaryLabelColor = labelColor ?? textColor ?? (isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.textPrimary : AppColors.lightTextPrimary) : AppColors.lightTextPrimary);
+    final secondaryTextColor = isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary) : AppColors.lightTextSecondary;
     final fieldBg = fillColor ?? (isDark ? AppColors.inputBackground : AppColors.lightInputBackground);
 
     return Column(
@@ -87,11 +87,11 @@ class CustomTextField extends StatelessWidget {
             errorMaxLines: 2,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: isDark ? AppColors.cardBorder : AppColors.lightCardBorder),
+              borderSide: BorderSide(color: isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder) : AppColors.lightCardBorder),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),
-              borderSide: BorderSide(color: isDark ? AppColors.cardBorder : AppColors.lightCardBorder),
+              borderSide: BorderSide(color: isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder) : AppColors.lightCardBorder),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(14),

@@ -54,7 +54,7 @@ class _EmergencyHotlineScreenState extends State<EmergencyHotlineScreen> {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
-          backgroundColor: AppColors.card,
+          backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(18),
             side: const BorderSide(color: AppColors.goldPrimary),

@@ -85,7 +85,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             const SizedBox(height: 12),
             Text(
               'أدخل بريدك الإلكتروني أدناه، وسنقوم بإرسال رابط آمن ومباشر لإعادة تعيين كلمة المرور الخاصة بك.',
-              style: AppTypography.bodyMedium.copyWith(color: AppColors.textSecondary),
+              style: AppTypography.bodyMedium.copyWith(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary)),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),

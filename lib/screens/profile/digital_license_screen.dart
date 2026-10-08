@@ -60,7 +60,7 @@ class _DigitalLicenseScreenState extends State<DigitalLicenseScreen> {
                   children: [
                     const Icon(Icons.touch_app_rounded, size: 14, color: AppColors.primary),
                     const SizedBox(width: 6),
-                    Text(context.tr('tap_to_flip'), style: AppTypography.bodySmall.copyWith(color: AppColors.textMuted, fontSize: 11)),
+                    Text(context.tr('tap_to_flip'), style: AppTypography.bodySmall.copyWith(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted), fontSize: 11)),
                   ],
                 ),
               ),
@@ -70,7 +70,7 @@ class _DigitalLicenseScreenState extends State<DigitalLicenseScreen> {
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.cardBorder),
+                  border: Border.all(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)),
                 ),
                 child: Row(
                   children: [

@@ -110,13 +110,13 @@ class _OnboardingScreenState extends State<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = context.watch<ThemeProvider>().isDark;
-    final bg = isDark ? AppColors.background : AppColors.lightBackground;
+    final bg = isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground) : AppColors.lightBackground;
     final textPrimary =
-        isDark ? AppColors.textPrimary : AppColors.lightTextPrimary;
+        isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.textPrimary : AppColors.lightTextPrimary) : AppColors.lightTextPrimary;
     final textSecondary =
-        isDark ? AppColors.textSecondary : AppColors.lightTextSecondary;
-    final cardColor = isDark ? AppColors.card : AppColors.lightCard;
-    final borderColor = isDark ? AppColors.cardBorder : AppColors.lightCardBorder;
+        isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary) : AppColors.lightTextSecondary;
+    final cardColor = isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard) : AppColors.lightCard;
+    final borderColor = isDark ? (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder) : AppColors.lightCardBorder;
     final goldAccent = isDark ? AppColors.goldPrimary : AppColors.goldDark;
 
     return Scaffold(
@@ -163,7 +163,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         padding: const EdgeInsets.all(6),
                         decoration: BoxDecoration(
                           color: isDark
-                              ? AppColors.card.withValues(alpha: 0.85)
+                              ? (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard).withValues(alpha: 0.85)
                               : AppColors.lightCard.withValues(alpha: 0.9),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: borderColor),
@@ -271,7 +271,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                                   colors: [
                                     Colors.transparent,
                                     (isDark
-                                            ? AppColors.background
+                                            ? (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground)
                                             : AppColors.lightBackground)
                                         .withValues(alpha: 0.8),
                                   ],

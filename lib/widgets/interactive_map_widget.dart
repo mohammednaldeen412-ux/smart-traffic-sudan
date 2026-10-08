@@ -50,7 +50,7 @@ class _InteractiveMapWidgetState extends State<InteractiveMapWidget>
       decoration: BoxDecoration(
         color: const Color(0xFF090D16),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.cardBorder, width: 1.2),
+        border: Border.all(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder), width: 1.2),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.5),
@@ -197,7 +197,7 @@ class _InteractiveMapWidgetState extends State<InteractiveMapWidget>
                     Text(
                       context.isArabic ? 'نظام التتبع الجغرافي للمرور' : 'Traffic GIS Tracking System',
                       style: AppTypography.bodySmall.copyWith(
-                        color: AppColors.textSecondary,
+                        color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
                         fontSize: 10,
                       ),
                     ),

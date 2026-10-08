@@ -45,12 +45,12 @@ class SkeletonLoader extends StatefulWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Theme.of(context).brightness == Brightness.dark
-                ? AppColors.card
+                ? (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard)
                 : AppColors.lightCard,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: Theme.of(context).brightness == Brightness.dark
-                  ? AppColors.cardBorder
+                  ? (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)
                   : AppColors.lightCardBorder,
             ),
           ),

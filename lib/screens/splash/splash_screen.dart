@@ -117,7 +117,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground),
       body: Stack(
         children: [
           // Background Glows
@@ -191,7 +191,7 @@ class _SplashScreenState extends State<SplashScreen>
                                   height: 110,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: AppColors.card,
+                                    color: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
                                     border: Border.all(
                                       color: AppColors.goldPrimary,
                                       width: 2.0,
@@ -251,7 +251,7 @@ class _SplashScreenState extends State<SplashScreen>
                         Text(
                           'خدمات المرور بين يديك',
                           style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textMuted,
+                            color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -274,7 +274,7 @@ class _SplashScreenState extends State<SplashScreen>
                               width: 180,
                               child: LinearProgressIndicator(
                                 value: _progressValue.value,
-                                backgroundColor: AppColors.cardBorder,
+                                backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder),
                                 valueColor: const AlwaysStoppedAnimation<Color>(
                                     AppColors.goldPrimary),
                               ),
@@ -284,7 +284,7 @@ class _SplashScreenState extends State<SplashScreen>
                           Text(
                             _statusText,
                             style: AppTypography.bodySmall.copyWith(
-                              color: AppColors.textMuted,
+                              color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
                               fontSize: 11,
                             ),
                           ),
@@ -297,7 +297,7 @@ class _SplashScreenState extends State<SplashScreen>
                   Text(
                     'الإدارة العامة للمرور © 2026',
                     style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textMuted.withValues(alpha: 0.5),
+                      color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted).withValues(alpha: 0.5),
                       fontSize: 10,
                     ),
                   ),

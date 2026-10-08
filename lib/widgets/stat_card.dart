@@ -24,7 +24,7 @@ class StatCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: accentColor.withValues(alpha: 0.2),
@@ -64,7 +64,7 @@ class StatCard extends StatelessWidget {
                       Icon(
                         Icons.arrow_back_ios_new,
                         size: 13,
-                        color: AppColors.textMuted,
+                        color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
                       ),
                   ],
                 ),
@@ -72,7 +72,7 @@ class StatCard extends StatelessWidget {
                 Text(
                   value,
                   style: AppTypography.titleLarge.copyWith(
-                    color: AppColors.textPrimary,
+                    color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textPrimary : AppColors.lightTextPrimary),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -80,7 +80,7 @@ class StatCard extends StatelessWidget {
                 Text(
                   title,
                   style: AppTypography.bodySmall.copyWith(
-                    color: AppColors.textSecondary,
+                    color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
                     fontWeight: FontWeight.w600,
                   ),
                 ),

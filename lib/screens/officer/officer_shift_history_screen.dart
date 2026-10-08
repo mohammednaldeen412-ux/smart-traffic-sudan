@@ -22,7 +22,7 @@ class OfficerShiftHistoryScreen extends StatelessWidget {
     final totalFinesAmount = shiftTickets.fold(0.0, (sum, v) => sum + v.amount);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground),
       appBar: AppBar(
         title: const Text('سجل الميدان ونوبة العمل'),
         leading: IconButton(
@@ -58,7 +58,7 @@ class OfficerShiftHistoryScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        const Text('مخالفة محررة', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                        const Text('مخالفة محررة', style: TextStyle(fontSize: 11, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary))),
                       ],
                     ),
                     Container(width: 1, height: 40, color: AppColors.divider),
@@ -73,7 +73,7 @@ class OfficerShiftHistoryScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 2),
-                        const Text('إجمالي الغرامات (ج.س)', style: TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                        const Text('إجمالي الغرامات (ج.س)', style: TextStyle(fontSize: 11, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary))),
                       ],
                     ),
                   ],

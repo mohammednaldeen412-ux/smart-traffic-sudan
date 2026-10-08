@@ -22,11 +22,11 @@ class VehicleCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: AppColors.card,
+        color: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: vehicle.isVerified
-              ? AppColors.cardBorder
+              ? (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)
               : AppColors.warning.withValues(alpha: 0.5),
           width: 1.2,
         ),
@@ -116,7 +116,7 @@ class VehicleCard extends StatelessWidget {
                       '${vehicle.make} - ${vehicle.model}',
                       style: AppTypography.titleMedium.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textPrimary : AppColors.lightTextPrimary),
                       ),
                     ),
                   ],
@@ -170,7 +170,7 @@ class VehicleCard extends StatelessWidget {
                                 ? AppColors.error
                                 : (daysLeft <= 30
                                     ? AppColors.warning
-                                    : AppColors.textSecondary),
+                                    : (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary)),
                           ),
                         ),
                       ],
@@ -196,18 +196,18 @@ class VehicleCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.cardBorder, width: 0.8),
+        border: Border.all(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder), width: 0.8),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 12, color: AppColors.textMuted),
+          Icon(icon, size: 12, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted)),
           const SizedBox(width: 4),
           Text(
             label,
             style: const TextStyle(
               fontSize: 11,
-              color: AppColors.textSecondary,
+              color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
             ),
           ),
         ],

@@ -174,7 +174,7 @@ class _InAppNotificationListenerState
                                 Text(
                                   _current!.body,
                                   style: AppTypography.bodySmall.copyWith(
-                                    color: AppColors.textSecondary,
+                                    color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
                                     fontSize: 11,
                                   ),
                                   maxLines: 2,
@@ -188,7 +188,7 @@ class _InAppNotificationListenerState
                         Icon(
                           Icons.close_rounded,
                           size: 18,
-                          color: AppColors.textMuted,
+                          color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
                         ),
                       ],
                     ),
