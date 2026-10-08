@@ -8,14 +8,11 @@
 ## 📲 تحميل التطبيق (النسخة الحالية V3)
 
 <div align="center">
-
-<a href="https://github.com/mohammednaldeen412-ux/smart-traffic-sudan/releases/latest/download/app-release.apk">
-  <img src="https://img.shields.io/badge/📥_تحميل_تطبيق_المرور_الآن-Android_APK-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="تحميل التطبيق" height="48" />
-</a>
-<br /><br />
-**[ 📥 اضغط هنا لتحميل النسخة الأحدث من التطبيق مباشرة ](https://github.com/mohammednaldeen412-ux/smart-traffic-sudan/releases/latest/download/app-release.apk)**
-*(للمطور: هذا الرابط يسحب آخر نسخة يتم رفعها في قسم Releases في GitHub تلقائياً، يمكنك استبداله برابط Google Drive الخاص بك إذا رغبت)*
-
+  <br />
+  <a href="https://github.com/mohammednaldeen412-ux/smart-traffic-sudan/releases/latest/download/app-release.apk">
+    <img src="https://img.shields.io/badge/📥_تحميل_تطبيق_المرور_الآن-Android_APK-2ea44f?style=for-the-badge&logo=android&logoColor=white" alt="تحميل التطبيق" height="75" />
+  </a>
+  <br /><br />
 </div>
 
 ---
