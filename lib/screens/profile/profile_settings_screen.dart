@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../core/services/image_upload_service.dart';
+import '../../models/user_model.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 import '../../core/services/image_upload_service.dart';
 import 'package:provider/provider.dart';
 import '../../core/localization/app_strings.dart';
