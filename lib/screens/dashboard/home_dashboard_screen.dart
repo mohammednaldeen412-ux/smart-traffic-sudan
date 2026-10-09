@@ -113,17 +113,17 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                     enlargeCenterPage: true,
                     viewportFraction: 1.0,
                   ),
-                  items: [
+                                    items: [
                     {
-                      'img': 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=600',
+                      'img': 'assets/images/banner1.jpg',
                       'text': 'احذر السرعة الزائدة، حياتك أهم'
                     },
                     {
-                      'img': 'https://images.unsplash.com/photo-1596703991206-896df7078332?auto=format&fit=crop&q=80&w=600',
+                      'img': 'assets/images/banner2.jpg',
                       'text': 'أسبوع المرور العربي - معاً لطرق آمنة'
                     },
                     {
-                      'img': 'https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?auto=format&fit=crop&q=80&w=600',
+                      'img': 'assets/images/banner3.jpg',
                       'text': 'تجنب استخدام الهاتف أثناء القيادة'
                     },
                   ].map((item) {
@@ -134,7 +134,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
                             image: DecorationImage(
-                              image: NetworkImage(item['img']!),
+                              image: AssetImage(item['img']!),
                               fit: BoxFit.cover,
                               colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
                             ),
