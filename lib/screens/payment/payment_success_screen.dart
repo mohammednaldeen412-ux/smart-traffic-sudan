@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'dart:ui' as ui;
+import 'dart:typed_data';
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../core/services/image_upload_service.dart';
 import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import '../../core/theme/app_colors.dart';
