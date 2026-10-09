@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
 import '../../core/theme/app_colors.dart';
 import '../../widgets/app_background.dart';
 import '../../widgets/glass_card.dart';
@@ -32,7 +32,7 @@ class NotificationsScreen extends StatelessWidget {
               : StreamBuilder<QuerySnapshot>(
                   stream: FirebaseFirestore.instance
                       .collection('notifications')
-                      .where('userId', isEqualTo: user.uid)
+                      .where('userId', whereIn: [user.uid, 'global'])
                       .orderBy('createdAt', descending: true)
                       .snapshots(),
                   builder: (context, snapshot) {
@@ -84,10 +84,13 @@ class NotificationsScreen extends StatelessWidget {
                                             contentPadding: EdgeInsets.zero,
                                             content: ClipRRect(
                                               borderRadius: BorderRadius.circular(16),
-                                              child: CachedNetworkImage(
-                                                imageUrl: imageUrl,
-                                                placeholder: (context, url) => const Center(child: CircularProgressIndicator()),
-                                                errorWidget: (context, url, error) => const Icon(Icons.error, color: Colors.red),
+                                              child: Image.network(
+                                                imageUrl,
+                                                loadingBuilder: (context, child, loadingProgress) {
+                                                  if (loadingProgress == null) return child;
+                                                  return const Center(child: CircularProgressIndicator());
+                                                },
+                                                errorBuilder: (context, error, stackTrace) => const Icon(Icons.error, color: Colors.red),
                                               ),
                                             ),
                                           ),
@@ -95,11 +98,16 @@ class NotificationsScreen extends StatelessWidget {
                                       },
                                       child: ClipRRect(
                                         borderRadius: BorderRadius.circular(8),
-                                        child: CachedNetworkImage(
-                                          imageUrl: imageUrl,
+                                        child: Image.network(
+                                          imageUrl,
                                           height: 120,
                                           width: double.infinity,
                                           fit: BoxFit.cover,
+                                          loadingBuilder: (context, child, loadingProgress) {
+                                            if (loadingProgress == null) return child;
+                                            return const Center(child: CircularProgressIndicator());
+                                          },
+                                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.error, color: Colors.red),
                                         ),
                                       ),
                                     ),
