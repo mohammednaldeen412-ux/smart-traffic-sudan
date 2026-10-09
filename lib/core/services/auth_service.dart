@@ -590,7 +590,7 @@ class AuthService extends ChangeNotifier {
       // إنشاء بيانات وهمية للمواطن كأنه مسجل مسبقاً في السجل المدني
       final newUser = UserModel(
         id: credential.user!.uid,
-        fullName: 'مواطن مسجل (معماري)',
+        fullName: 'أحمد عبد الله',
         nationalId: nationalId,
         phoneNumber: '0912345678',
         email: email,
