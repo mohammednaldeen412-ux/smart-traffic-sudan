@@ -11,6 +11,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../models/user_model.dart';
 
 class AuthService extends ChangeNotifier {
+  String _generateRandomArabicName() {
+    final firstNames = ['أحمد', 'محمد', 'عمر', 'علي', 'عثمان', 'خالد', 'حسن', 'عبد الرحمن'];
+    final lastNames = ['عبد الله', 'إبراهيم', 'الزين', 'الفاضل', 'عثمان', 'البشير', 'عوض'];
+    final random = Random();
+    return '${firstNames[random.nextInt(firstNames.length)]} ${lastNames[random.nextInt(lastNames.length)]}';
+  }
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final LocalAuthentication _localAuth = LocalAuthentication();
@@ -590,7 +597,7 @@ class AuthService extends ChangeNotifier {
       // إنشاء بيانات وهمية للمواطن كأنه مسجل مسبقاً في السجل المدني
       final newUser = UserModel(
         id: credential.user!.uid,
-        fullName: 'أحمد عبد الله',
+        fullName: _generateRandomArabicName(),
         nationalId: nationalId,
         phoneNumber: '0912345678',
         email: email,

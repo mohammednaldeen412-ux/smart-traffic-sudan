@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/services/image_upload_service.dart';
 import '../../models/user_model.dart';
+import 'notifications_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../core/services/image_upload_service.dart';
@@ -318,28 +319,9 @@ class ProfileSettingsScreen extends StatelessWidget {
                   icon: Icons.notifications_active_rounded,
                   title: context.tr('notifications_title'),
                   subtitle: context.tr('notifications_subtitle'),
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        backgroundColor: c.isDark ? AppColors.card : AppColors.lightCard,
-                        title: Row(
-                          children: [
-                            const Icon(Icons.notifications_active, color: AppColors.goldPrimary),
-                            const SizedBox(width: 8),
-                            Text(context.isArabic ? 'سجل الإشعارات' : 'Notifications'),
-                          ],
-                        ),
-                        content: Text(context.isArabic ? 'لا توجد إشعارات جديدة حالياً.' : 'No new notifications right now.'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx),
-                            child: Text(context.isArabic ? 'حسناً' : 'OK', style: const TextStyle(color: AppColors.goldPrimary)),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                                      onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsScreen()));
+                    },
                 ),
                 const SizedBox(height: 32),
 
