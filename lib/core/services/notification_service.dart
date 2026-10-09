@@ -221,11 +221,11 @@ class NotificationService extends ChangeNotifier {
     );
     const NotificationDetails platformDetails = NotificationDetails(android: androidDetails);
 
-    await _localNotifications.show(
-      DateTime.now().millisecond,
-      title,
-      body,
-      platformDetails,
+        await _localNotifications.show(
+      id: DateTime.now().millisecond,
+      title: title,
+      body: body,
+      notificationDetails: platformDetails,
     );
   }
 
