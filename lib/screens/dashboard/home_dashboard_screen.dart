@@ -104,60 +104,7 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                 ),
 
                 
-                const SizedBox(height: 16),
-                CarouselSlider(
-                  options: CarouselOptions(
-                    height: 120.0,
-                    autoPlay: true,
-                    autoPlayInterval: const Duration(seconds: 4),
-                    enlargeCenterPage: true,
-                    viewportFraction: 1.0,
-                  ),
-                                    items: [
-                    {
-                      'img': 'assets/images/banner1.jpg',
-                      'text': 'احذر السرعة الزائدة، حياتك أهم'
-                    },
-                    {
-                      'img': 'assets/images/banner2.jpg',
-                      'text': 'أسبوع المرور العربي - معاً لطرق آمنة'
-                    },
-                    {
-                      'img': 'assets/images/banner3.jpg',
-                      'text': 'تجنب استخدام الهاتف أثناء القيادة'
-                    },
-                  ].map((item) {
-                    return Builder(
-                      builder: (BuildContext context) {
-                        return Container(
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(16),
-                            image: DecorationImage(
-                              image: AssetImage(item['img']!),
-                              fit: BoxFit.cover,
-                              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
-                            ),
-                          ),
-                          child: Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Text(
-                                item['text']!,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  }).toList(),
-                ),
+
                 const Spacer(flex: 1),
 
 

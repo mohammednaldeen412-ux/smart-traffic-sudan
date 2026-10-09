@@ -36,10 +36,7 @@ class _ViolationsListScreenState extends State<ViolationsListScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.filterPlate != null) {
-      _searchQuery = widget.filterPlate!;
-      _searchController.text = widget.filterPlate!;
-    }
+    
     _simulateLoading();
   }
 
@@ -72,13 +69,7 @@ class _ViolationsListScreenState extends State<ViolationsListScreen> {
       if (_selectedFilter == 1 && v.isPaid) return false;
       if (_selectedFilter == 2 && !v.isPaid) return false;
 
-      if (_searchQuery.isNotEmpty) {
-        final q = _searchQuery.toLowerCase();
-        final matchPlate = v.plateNumber.contains(q) || v.fullPlateDisplay.contains(q);
-        final matchType = v.violationType.toLowerCase().contains(q);
-        final matchLoc = v.locationName.toLowerCase().contains(q);
-        return matchPlate || matchType || matchLoc;
-      }
+      
       return true;
     }).toList();
 
