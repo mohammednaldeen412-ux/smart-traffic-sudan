@@ -110,7 +110,7 @@ class CustomButton extends StatelessWidget {
                       height: 22,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.5,
-                        valueColor: AlwaysStoppedAnimation<Color>((Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground)),
+                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.background),
                       ),
                     )
                   : Row(
@@ -121,7 +121,7 @@ class CustomButton extends StatelessWidget {
                           Icon(
                             icon,
                             size: 20,
-                            color: textColor ?? (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground),
+                            color: textColor ?? AppColors.background,
                           ),
                           const SizedBox(width: 8),
                         ],
@@ -130,7 +130,7 @@ class CustomButton extends StatelessWidget {
                             text,
                             overflow: TextOverflow.ellipsis,
                             style: AppTypography.buttonText.copyWith(
-                              color: textColor ?? (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground),
+                              color: textColor ?? AppColors.background,
                               fontSize: 16,
                             ),
                           ),

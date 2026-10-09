@@ -26,11 +26,11 @@ class ViolationCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: (Theme.of(context).brightness == Brightness.dark ? AppColors.card : AppColors.lightCard),
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: violation.isPaid
-              ? (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)
+              ? AppColors.cardBorder
               : AppColors.error.withValues(alpha: 0.35),
           width: 1.2,
         ),
@@ -146,7 +146,7 @@ class ViolationCard extends StatelessWidget {
                           Text(
                             violation.violationType,
                             style: AppTypography.titleSmall.copyWith(
-                              color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textPrimary : AppColors.lightTextPrimary),
+                              color: AppColors.textPrimary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -156,14 +156,14 @@ class ViolationCard extends StatelessWidget {
                               const Icon(
                                 Icons.location_on_outlined,
                                 size: 14,
-                                color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
+                                color: AppColors.textMuted,
                               ),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   violation.locationName,
                                   style: AppTypography.bodySmall.copyWith(
-                                    color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
+                                    color: AppColors.textSecondary,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -182,7 +182,7 @@ class ViolationCard extends StatelessWidget {
                           CurrencyFormatter.formatSDG(violation.amount),
                           style: AppTypography.titleMedium.copyWith(
                             color: violation.isPaid
-                                ? (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary)
+                                ? AppColors.textSecondary
                                 : AppColors.goldPrimary,
                             fontWeight: FontWeight.w900,
                           ),
@@ -190,7 +190,7 @@ class ViolationCard extends StatelessWidget {
                         Text(
                           context.tr('fine_amount'),
                           style: AppTypography.bodySmall.copyWith(
-                            color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
+                            color: AppColors.textMuted,
                             fontSize: 10,
                           ),
                         ),
@@ -212,13 +212,13 @@ class ViolationCard extends StatelessWidget {
                         const Icon(
                           Icons.access_time_rounded,
                           size: 14,
-                          color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
+                          color: AppColors.textMuted,
                         ),
                         const SizedBox(width: 5),
                         Text(
                           formattedDate,
                           style: AppTypography.bodySmall.copyWith(
-                            color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted),
+                            color: AppColors.textMuted,
                           ),
                         ),
                       ],
@@ -239,13 +239,13 @@ class ViolationCard extends StatelessWidget {
                               const Icon(
                                 Icons.payment_rounded,
                                 size: 14,
-                                color: (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground),
+                                color: AppColors.background,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 context.tr('pay_now'),
                                 style: AppTypography.bodySmall.copyWith(
-                                  color: (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground),
+                                  color: AppColors.background,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

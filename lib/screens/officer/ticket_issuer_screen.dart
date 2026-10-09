@@ -449,7 +449,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                             const SizedBox(height: 2),
                             Text(
                               'إحداثيات الضبط: $_latitude, $_longitude',
-                              style: const TextStyle(fontSize: 10, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted), fontFamily: 'monospace'),
+                              style: TextStyle(fontSize: 10, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted), fontFamily: 'monospace'),
                             ),
                           ],
                         ),
@@ -474,7 +474,7 @@ class _TicketIssuerScreenState extends State<TicketIssuerScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('إجمالي قيمة الغرامة:', style: TextStyle(fontSize: 11, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary))),
+                          Text('إجمالي قيمة الغرامة:', style: TextStyle(fontSize: 11, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary))),
                           Text(
                             CurrencyFormatter.formatSDG(selectedVio['amount'] as double),
                             style: AppTypography.titleMedium.copyWith(

@@ -174,7 +174,7 @@ class AppUpdateService extends ChangeNotifier {
                     Text(
                       info.releaseNotes,
                       style: AppTypography.bodySmall.copyWith(
-                        color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
+                        color: AppColors.textSecondary,
                         height: 1.4,
                       ),
                     ),
@@ -209,7 +209,7 @@ class AppUpdateService extends ChangeNotifier {
                   onPressed: () => Navigator.of(ctx).pop(),
                   child: const Text(
                     'تذكيري لاحقاً',
-                    style: TextStyle(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted)),
+                    style: TextStyle(color: AppColors.textMuted),
                   ),
                 ),
               ],

@@ -218,7 +218,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     ),
                     subtitle: Text(
                       '${violation.locality} • ${violation.officerName}',
-                      style: const TextStyle(fontSize: 11, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted)),
+                      style: TextStyle(fontSize: 11, color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textMuted : AppColors.lightTextMuted)),
                     ),
                     trailing: Text(
                       violation.isPaid ? 'مُسددة' : 'غير مسددة',

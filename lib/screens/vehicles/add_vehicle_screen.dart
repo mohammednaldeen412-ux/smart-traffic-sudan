@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/constants/sudan_locations.dart';
 import '../../core/services/auth_service.dart';
+import '../../core/services/image_upload_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../models/vehicle_model.dart';
@@ -73,8 +74,15 @@ class _AddVehicleScreenState extends State<AddVehicleScreen> {
 
       // 2. استخدام placeholder بدل Firebase Storage (مؤقتاً)
       // الصورة تظهر محلياً على الشاشة ولكن يُحفظ placeholder في قاعدة البيانات
-      const String imageUrl =
-          'https://placehold.co/400x300/1a2942/d4af37?text=شهادة+البحث';
+      String imageUrl = 'https://placehold.co/400x300/1a2942/d4af37?text=Placeholder';
+      if (_certificateImage != null) {
+        final uploaded = await ImageUploadService.uploadImage(_certificateImage!);
+        if (uploaded != null) {
+          imageUrl = uploaded;
+        } else {
+          throw Exception('فشل في رفع الصورة، يرجى المحاولة مرة أخرى.');
+        }
+      }
 
       // 3. حفظ بيانات المركبة في Firestore
       final docId = db.collection('vehicles').doc().id;

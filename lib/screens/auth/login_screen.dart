@@ -383,7 +383,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             value: _rememberMe,
                                             activeColor: AppColors.goldPrimary,
                                             checkColor: (Theme.of(context).brightness == Brightness.dark ? AppColors.background : AppColors.lightBackground),
-                                            side: const BorderSide(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)),
+                                            side: BorderSide(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder)),
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                                             onChanged: (val) => setState(() => _rememberMe = val ?? true),
                                           ),

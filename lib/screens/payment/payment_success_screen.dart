@@ -51,7 +51,7 @@ class PaymentSuccessScreen extends StatelessWidget {
               Text(
                 'تم تسجيل السداد فـورياً في السجل السيادي للإدارة العامة للمرور',
                 style: AppTypography.bodySmall.copyWith(
-                  color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
+                  color: AppColors.textSecondary,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -272,7 +272,7 @@ class PaymentSuccessScreen extends StatelessWidget {
           Text(
             label,
             style: AppTypography.bodySmall.copyWith(
-              color: (Theme.of(context).brightness == Brightness.dark ? AppColors.textSecondary : AppColors.lightTextSecondary),
+              color: AppColors.textSecondary,
               fontSize: 11,
             ),
           ),

@@ -21,6 +21,7 @@ class AboutUsScreen extends StatelessWidget {
         iconTheme: IconThemeData(color: textColor),
       ),
       body: AppBackground(
+        role: AppRole.citizen,
         child: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(20),

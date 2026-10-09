@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'image_upload_service.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../models/user_model.dart';
@@ -321,6 +322,12 @@ class AuthService extends ChangeNotifier {
 
       // 2. تجهيز البيانات
       String? profileImageUrl = 'https://ui-avatars.com/api/?name=$fullName&background=random&size=200';
+      if (profileImage != null) {
+        final uploadedUrl = await ImageUploadService.uploadImage(profileImage);
+        if (uploadedUrl != null) {
+          profileImageUrl = uploadedUrl;
+        }
+      }
       
       final newUser = UserModel(
         id: credential.user!.uid,
@@ -402,21 +409,23 @@ class AuthService extends ChangeNotifier {
   /// رفع صورة الملف الشخصي - تم التعطيل حالياً لتفادي أخطاء Firebase Storage
   Future<String?> uploadProfileImage(File imageFile) async {
     if (_auth.currentUser == null) return null;
-    final dummyUrl = 'https://ui-avatars.com/api/?name=${_currentUser?.fullName ?? 'User'}&background=random&size=200';
-    
-    try {
-      await _firestore.collection('users').doc(_auth.currentUser!.uid).update({
-        'profileImageUrl': dummyUrl,
-      });
-      
-      if (_currentUser != null) {
-        _currentUser = _currentUser!.copyWith(profileImageUrl: dummyUrl);
-        notifyListeners();
+    final uploadedUrl = await ImageUploadService.uploadImage(imageFile);
+    if (uploadedUrl != null) {
+      try {
+        await _firestore.collection('users').doc(_auth.currentUser!.uid).update({
+          'profileImageUrl': uploadedUrl,
+        });
+        
+        if (_currentUser != null) {
+          _currentUser = _currentUser!.copyWith(profileImageUrl: uploadedUrl);
+          notifyListeners();
+        }
+      } catch (e) {
+        debugPrint('Error updating profile image: $e');
       }
-    } catch (e) {
-      debugPrint('Error updating dummy profile image: $e');
+      return uploadedUrl;
     }
-    return dummyUrl;
+    return null;
   }
 
   /// رفع مستند - تم التعطيل حالياً لتفادي أخطاء Firebase Storage
