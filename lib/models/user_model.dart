@@ -11,6 +11,7 @@ class UserModel {
   final String fullName;
   final String nationalId; // الرقم الوطني (11 رقم)
   final String phoneNumber;
+  final String? secondaryPhoneNumber;
   final String email;
   final bool isEmailVerified;
   final String state; // الولاية
@@ -34,6 +35,7 @@ class UserModel {
     required this.fullName,
     required this.nationalId,
     required this.phoneNumber,
+    this.secondaryPhoneNumber,
     required this.email,
     this.isEmailVerified = false,
     required this.state,
@@ -59,6 +61,7 @@ class UserModel {
         'fullName': fullName,
         'nationalId': nationalId,
         'phoneNumber': phoneNumber,
+      'secondaryPhoneNumber': secondaryPhoneNumber,
         'email': email,
         'isEmailVerified': isEmailVerified,
         'state': state,
@@ -121,6 +124,7 @@ class UserModel {
     String? fullName,
     String? nationalId,
     String? phoneNumber,
+    String? secondaryPhoneNumber,
     String? email,
     bool? isEmailVerified,
     String? state,
@@ -140,6 +144,7 @@ class UserModel {
       fullName: fullName ?? this.fullName,
       nationalId: nationalId ?? this.nationalId,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      secondaryPhoneNumber: secondaryPhoneNumber ?? this.secondaryPhoneNumber,
       email: email ?? this.email,
       isEmailVerified: isEmailVerified ?? this.isEmailVerified,
       state: state ?? this.state,

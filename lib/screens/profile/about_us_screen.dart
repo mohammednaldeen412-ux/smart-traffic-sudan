@@ -94,7 +94,7 @@ class AboutUsScreen extends StatelessWidget {
                   child: ListTile(
                     leading: const Icon(Icons.email_rounded, color: AppColors.goldPrimary),
                     title: Text('البريد الإلكتروني للدعم', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
-                    subtitle: Text('support@smart-traffic.sd', style: TextStyle(color: textMuted)),
+                    subtitle: Text('mohammednaldeen412@gmail.com', style: TextStyle(color: textMuted)),
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -102,7 +102,7 @@ class AboutUsScreen extends StatelessWidget {
                   child: ListTile(
                     leading: const Icon(Icons.bug_report_rounded, color: Colors.redAccent),
                     title: Text('الإبلاغ عن مشكلة (Report a Bug)', style: TextStyle(color: textColor, fontWeight: FontWeight.bold)),
-                    subtitle: Text('GitHub Issues', style: TextStyle(color: textMuted)),
+                    subtitle: Text('mohammednaldeen412@gmail.com', style: TextStyle(color: textMuted)),
                   ),
                 ),
                 const SizedBox(height: 40),
