@@ -29,8 +29,8 @@ class ViolationsListScreen extends StatefulWidget {
 
 class _ViolationsListScreenState extends State<ViolationsListScreen> {
   int _selectedFilter = 0; // 0: الكل, 1: غير مسددة, 2: مسددة
-  final _searchController = TextEditingController();
-  String _searchQuery = '';
+  
+  
   bool _isLoading = true;
 
   @override
@@ -59,7 +59,7 @@ class _ViolationsListScreenState extends State<ViolationsListScreen> {
 
   @override
   void dispose() {
-    _searchController.dispose();
+    
     super.dispose();
   }
 
@@ -99,40 +99,7 @@ class _ViolationsListScreenState extends State<ViolationsListScreen> {
             child: Column(
               children: [
                 // حقل البحث المتكيف مع الثيم
-                GlassCard(
-                  blur: 10.0,
-                  opacity: c.isDark ? 0.1 : 0.4,
-                  tintColor: c.isDark ? Colors.white : Colors.black,
-                  child: TextField(
-                    controller: _searchController,
-                    onChanged: (val) {
-                      setState(() {
-                        _searchQuery = val.trim();
-                      });
-                    },
-                    style: TextStyle(color: c.text),
-                    decoration: InputDecoration(
-                      hintText: context.tr('search_violations_hint'),
-                      hintStyle: TextStyle(color: c.text.withValues(alpha: 0.5)),
-                      prefixIcon: Icon(Icons.search_rounded, color: c.text.withValues(alpha: 0.7)),
-                      suffixIcon: _searchQuery.isNotEmpty
-                          ? IconButton(
-                              icon: Icon(Icons.clear, color: c.text.withValues(alpha: 0.5)),
-                              onPressed: () {
-                                setState(() {
-                                  _searchController.clear();
-                                  _searchQuery = '';
-                                });
-                              },
-                            )
-                          : null,
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 14),
+                
 
                 // بطاقة الإجمالي المستحق السريعة
                 GlassCard(
@@ -183,7 +150,7 @@ class _ViolationsListScreenState extends State<ViolationsListScreen> {
                   ],
                 ),
 
-                const SizedBox(height: 16),
+                
 
                 // قائمة المخالفات
                 Expanded(

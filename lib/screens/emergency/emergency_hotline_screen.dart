@@ -222,7 +222,49 @@ class _EmergencyHotlineScreenState extends State<EmergencyHotlineScreen> {
                 else ...[
                   // زر الحالة المستعجلة (Urgent SOS)
                   GestureDetector(
-                    onTap: () => _submitReport('urgent', context.tr('urgent_emergency_sent')),
+                                          onTap: () {
+                        // Open dialog for emergency details
+                        showDialog(
+                          context: context,
+                          builder: (ctx) {
+                            final descController = TextEditingController();
+                            return AlertDialog(
+                              backgroundColor: Theme.of(context).cardColor,
+                              title: Row(
+                                children: [
+                                  const Icon(Icons.warning_amber_rounded, color: Colors.red),
+                                  const SizedBox(width: 8),
+                                  Text(context.isArabic ? 'تفاصيل الطوارئ' : 'Emergency Details', style: const TextStyle(fontSize: 18)),
+                                ],
+                              ),
+                              content: TextField(
+                                controller: descController,
+                                decoration: InputDecoration(
+                                  hintText: context.isArabic ? 'حدد نوع الطوارئ (حادث، حريق، إصابة...)' : 'Specify emergency type...',
+                                  border: const OutlineInputBorder(),
+                                ),
+                                maxLines: 2,
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx),
+                                  child: Text(context.isArabic ? 'إلغاء' : 'Cancel'),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                                  onPressed: () {
+                                    final desc = descController.text.trim();
+                                    if (desc.isEmpty) return;
+                                    Navigator.pop(ctx);
+                                    _submitReport('urgent', desc);
+                                  },
+                                  child: Text(context.isArabic ? 'إرسال البلاغ' : 'Submit', style: const TextStyle(color: Colors.white)),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
                     child: GlassCard(
                       blur: 25,
                       opacity: c.isDark ? 0.25 : 0.8,

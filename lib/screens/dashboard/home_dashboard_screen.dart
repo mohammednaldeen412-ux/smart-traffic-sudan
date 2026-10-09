@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:carousel_slider/carousel_slider.dart';
+
 import '../../core/localization/app_strings.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/traffic_service.dart';

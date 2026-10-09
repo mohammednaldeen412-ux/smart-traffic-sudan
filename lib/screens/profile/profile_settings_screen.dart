@@ -28,12 +28,14 @@ class ProfileSettingsScreen extends StatelessWidget {
   void _showEditProfileSheet(BuildContext context, UserModel user, AuthService auth) {
     final c = GlassColors.of(context);
     final secPhoneCtrl = TextEditingController(text: user.secondaryPhoneNumber ?? '');
+    String? newImageUrl;
+    bool isUploading = false;
     
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (ctx) => Padding(
+      builder: (ctx) => StatefulBuilder(builder: (ctx, setState) => Padding(
         padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
         child: GlassCard(
           blur: 20,
@@ -250,54 +252,46 @@ class ProfileSettingsScreen extends StatelessWidget {
                   subtitle: auth.isBiometricEnabled
                       ? (context.isArabic ? 'مفعل (تسجيل سريع)' : 'Enabled (Fast Sign-In)')
                       : (context.isArabic ? 'معطل (اضغط للتفعيل)' : 'Disabled (Tap to enable)'),
-                  trailing: Switch(
-                    value: auth.isBiometricEnabled,
-                    activeColor: AppColors.goldPrimary,
-                    onChanged: (val) async {
-                      if (val) {
-                        await auth.enableBiometrics(user?.nationalId ?? '1029384756', '123456');
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(context.isArabic ? 'تم تفعيل الدخول بالبصمة بنجاح' : 'Biometric login enabled successfully'),
-                              backgroundColor: AppColors.success,
-                            ),
-                          );
+                                      trailing: Switch(
+                      value: auth.isBiometricEnabled,
+                      activeColor: AppColors.goldPrimary,
+                      onChanged: (val) async {
+                        if (val) {
+                          // Prompt for actual biometric before enabling
+                          final success = await auth.loginWithBiometrics();
+                          if (success) {
+                            await auth.enableBiometrics(user?.nationalId ?? '1029384756', '123456');
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(context.isArabic ? 'تم تفعيل الدخول بالبصمة بنجاح' : 'Biometric login enabled successfully'),
+                                  backgroundColor: AppColors.success,
+                                ),
+                              );
+                            }
+                          } else {
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(context.isArabic ? 'فشل التحقق من البصمة' : 'Biometric verification failed'),
+                                  backgroundColor: AppColors.error,
+                                ),
+                              );
+                            }
+                          }
+                        } else {
+                          await auth.disableBiometrics();
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(context.isArabic ? 'تم تعطيل الدخول بالبصمة' : 'Biometric login disabled'),
+                              ),
+                            );
+                          }
                         }
-                      } else {
-                        await auth.disableBiometrics();
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(context.isArabic ? 'تم تعطيل الدخول بالبصمة' : 'Biometric login disabled'),
-                            ),
-                          );
-                        }
-                      }
-                    },
-                  ),
-                  onTap: () async {
-                    if (!auth.isBiometricEnabled) {
-                      await auth.enableBiometrics(user?.nationalId ?? '1029384756', '123456');
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(context.isArabic ? 'تم تفعيل الدخول بالبصمة بنجاح' : 'Biometric login enabled successfully'),
-                            backgroundColor: AppColors.success,
-                          ),
-                        );
-                      }
-                    } else {
-                      await auth.disableBiometrics();
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(context.isArabic ? 'تم تعطيل الدخول بالبصمة' : 'Biometric login disabled'),
-                          ),
-                        );
-                      }
-                    }
-                  },
+                      },
+                    ),
+                    onTap: () {},
                 ),
                 const SizedBox(height: 12),
                 
