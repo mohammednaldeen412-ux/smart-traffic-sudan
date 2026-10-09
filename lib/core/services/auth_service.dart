@@ -24,6 +24,7 @@ class AuthService extends ChangeNotifier {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   UserModel? _currentUser;
+  String? _currentPassword;
   bool _isLoading = false;
   bool _isInitialized = false;
   bool _isBiometricAvailable = false;
@@ -697,7 +698,8 @@ class AuthService extends ChangeNotifier {
     }
   }
 
-  Future<void> enableBiometrics(String identifier, String password) async {
+  Future<void> enableBiometrics(String identifier, [String? password]) async {
+    password ??= _currentPassword;
     await _secureStorage.write(key: 'user_identifier', value: identifier);
     await _secureStorage.write(key: 'user_password', value: password);
     await _secureStorage.write(key: 'biometric_enabled', value: 'true');

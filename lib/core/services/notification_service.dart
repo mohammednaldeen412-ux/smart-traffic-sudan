@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -27,6 +28,7 @@ class InAppNotification {
 class NotificationService extends ChangeNotifier {
   final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final StreamController<RemoteMessage> _notificationClickController =
@@ -206,6 +208,27 @@ class NotificationService extends ChangeNotifier {
 
   // ─── الإشعارات الداخلية (In-App trigger) ────────────────────────────────
   /// يُطلق إشعاراً داخلياً مباشرة بدون FCM (للتغييرات المحلية الفورية)
+    Future<void> _showSystemNotification(String title, String body) async {
+    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+      'moror_channel_id',
+      'Moror Notifications',
+      channelDescription: 'Smart Traffic Sudan App Notifications',
+      importance: Importance.max,
+      priority: Priority.high,
+      icon: '@mipmap/ic_launcher',
+      playSound: true,
+      enableVibration: true,
+    );
+    const NotificationDetails platformDetails = NotificationDetails(android: androidDetails);
+
+    await _localNotifications.show(
+      DateTime.now().millisecond,
+      title,
+      body,
+      platformDetails,
+    );
+  }
+
   void triggerInAppNotification({
     required String title,
     required String body,
@@ -222,6 +245,7 @@ class NotificationService extends ChangeNotifier {
     if (_recentNotifications.length > 20) _recentNotifications.removeLast();
     _inAppController.add(notif);
     notifyListeners();
+    _showSystemNotification(title, body);
   }
 
   // ─── إشعار: قيد مخالفة جديدة على المواطن ───────────────────────────────

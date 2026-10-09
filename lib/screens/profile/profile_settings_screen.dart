@@ -168,19 +168,37 @@ class ProfileSettingsScreen extends StatelessWidget {
             child: Column(
               children: [
                 // كرت الهوية الزجاجي
-                GlassCard(
-                  blur: 15,
-                  opacity: c.isDark ? 0.15 : 0.6,
-                  tintColor: c.isDark ? Colors.white : Colors.black,
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: Column(
-                      children: [
-                        CircleAvatar(
-                          radius: 40,
-                          backgroundColor: c.text.withValues(alpha: 0.1),
-                          child: Icon(Icons.person, color: c.text, size: 40),
-                        ),
+                GestureDetector(
+                  onTap: () {
+                    if (user != null) _showEditProfileSheet(context, user, auth);
+                  },
+                  child: GlassCard(
+                    blur: 15,
+                    opacity: c.isDark ? 0.15 : 0.6,
+                    tintColor: c.isDark ? Colors.white : Colors.black,
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        children: [
+                          Stack(
+                            alignment: Alignment.bottomRight,
+                            children: [
+                              CircleAvatar(
+                                radius: 40,
+                                backgroundColor: c.text.withValues(alpha: 0.1),
+                                backgroundImage: user?.profileImageUrl != null ? NetworkImage(user!.profileImageUrl!) : null,
+                                child: user?.profileImageUrl == null ? Icon(Icons.person, color: c.text, size: 40) : null,
+                              ),
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: AppColors.goldPrimary,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.edit, size: 12, color: Colors.black),
+                              ),
+                            ],
+                          ),
                         const SizedBox(height: 16),
                         Text(
                           user?.fullName ?? context.tr('citizen'),
@@ -207,6 +225,7 @@ class ProfileSettingsScreen extends StatelessWidget {
                     ),
                   ),
                 ),
+                ), // End GestureDetector
 
                 const SizedBox(height: 24),
 
@@ -260,7 +279,7 @@ class ProfileSettingsScreen extends StatelessWidget {
                           // Prompt for actual biometric before enabling
                           final success = await auth.loginWithBiometrics();
                           if (success) {
-                            await auth.enableBiometrics(user?.nationalId ?? '1029384756', '123456');
+                            await auth.enableBiometrics(user?.nationalId ?? '1029384756');
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
