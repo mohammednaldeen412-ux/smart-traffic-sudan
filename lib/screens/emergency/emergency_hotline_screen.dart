@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import '../../core/services/image_upload_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../widgets/glass_card.dart';
 import '../../widgets/app_background.dart';
@@ -17,7 +20,7 @@ class EmergencyHotlineScreen extends StatefulWidget {
 class _EmergencyHotlineScreenState extends State<EmergencyHotlineScreen> {
   bool _isSubmitting = false;
 
-  Future<void> _submitReport(String urgencyLevel, String description) async {
+  Future<void> _submitReport(String urgencyLevel, String description, {String? imageUrl}) async {
     setState(() {
       _isSubmitting = true;
     });
@@ -44,6 +47,7 @@ class _EmergencyHotlineScreenState extends State<EmergencyHotlineScreen> {
         'userId': user?.uid ?? 'unknown',
         'urgencyLevel': urgencyLevel,
         'description': description,
+        'imageUrl': imageUrl,
         'location': GeoPoint(position.latitude, position.longitude), 
         'status': 'new',
         'createdAt': FieldValue.serverTimestamp(),
@@ -100,64 +104,97 @@ class _EmergencyHotlineScreenState extends State<EmergencyHotlineScreen> {
     }
   }
 
+
   void _showColdReportSheet() {
     final controller = TextEditingController();
+    File? selectedImage;
+    
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-        child: GlassCard(
-          blur: 20,
-          opacity: 0.3,
-          tintColor: Colors.black,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                context.tr('cold_report'),
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: controller,
-                style: const TextStyle(color: Colors.white),
-                maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: context.tr('describe_case_hint'),
-                  hintStyle: const TextStyle(color: Colors.white54),
-                  filled: true,
-                  fillColor: Colors.white12,
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return Padding(
+              padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+              child: GlassCard(
+                blur: 20,
+                opacity: 0.8,
+                tintColor: Colors.black87,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      'الإبلاغ عن حالة مرورية',
+                      style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: controller,
+                      style: const TextStyle(color: Colors.white),
+                      maxLines: 3,
+                      decoration: InputDecoration(
+                        hintText: 'صف الحالة المرورية (زحام، حادث، إغلاق طريق...)',
+                        hintStyle: const TextStyle(color: Colors.white54),
+                        filled: true,
+                        fillColor: Colors.white12,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white12,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                      onPressed: () async {
+                        final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 70);
+                        if (pickedFile != null) {
+                          setSheetState(() {
+                            selectedImage = File(pickedFile.path);
+                          });
+                        }
+                      },
+                      icon: const Icon(Icons.add_a_photo_rounded),
+                      label: Text(selectedImage == null ? 'إرفاق صورة (اختياري)' : 'تم إرفاق الصورة ✔'),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.goldPrimary,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                      onPressed: () async {
+                        if (controller.text.trim().isEmpty) return;
+                        Navigator.pop(context);
+                        
+                        setState(() { _isSubmitting = true; });
+                        String? uploadedUrl;
+                        if (selectedImage != null) {
+                            uploadedUrl = await ImageUploadService.uploadImage(selectedImage!);
+                        }
+                        setState(() { _isSubmitting = false; });
+                        
+                        _submitReport('cold', controller.text.trim(), imageUrl: uploadedUrl);
+                      },
+                      child: const Text('إرسال البلاغ', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.goldPrimary,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  ),
-                  onPressed: () {
-                    if (controller.text.trim().isEmpty) return;
-                    Navigator.pop(context);
-                    _submitReport('cold', controller.text.trim());
-                  },
-                  child: Text(context.tr('send_report'), style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-                ),
-              ),
-              const SizedBox(height: 20),
-            ],
-          ),
-        ),
-      ),
+            );
+          }
+        );
+      },
     );
   }
+
 
   @override
   Widget build(BuildContext context) {

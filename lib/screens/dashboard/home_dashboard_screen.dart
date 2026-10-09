@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import '../../core/localization/app_strings.dart';
 import '../../core/services/auth_service.dart';
 import '../../core/services/traffic_service.dart';
@@ -22,6 +24,24 @@ class HomeDashboardScreen extends StatefulWidget {
 }
 
 class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
+  
+  @override
+  void initState() {
+    super.initState();
+    _requestPermissions();
+  }
+
+  Future<void> _requestPermissions() async {
+    // Request multiple permissions at once
+    Map<Permission, PermissionStatus> statuses = await [
+      Permission.notification,
+      Permission.camera,
+      Permission.location,
+    ].request();
+    
+    // We don't need to block UI, just request them so the OS prompts the user.
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthService>();
@@ -83,7 +103,63 @@ class _HomeDashboardScreenState extends State<HomeDashboardScreen> {
                   ],
                 ),
 
+                
+                const SizedBox(height: 16),
+                CarouselSlider(
+                  options: CarouselOptions(
+                    height: 120.0,
+                    autoPlay: true,
+                    autoPlayInterval: const Duration(seconds: 4),
+                    enlargeCenterPage: true,
+                    viewportFraction: 1.0,
+                  ),
+                  items: [
+                    {
+                      'img': 'https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&q=80&w=600',
+                      'text': 'احذر السرعة الزائدة، حياتك أهم'
+                    },
+                    {
+                      'img': 'https://images.unsplash.com/photo-1596703991206-896df7078332?auto=format&fit=crop&q=80&w=600',
+                      'text': 'أسبوع المرور العربي - معاً لطرق آمنة'
+                    },
+                    {
+                      'img': 'https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?auto=format&fit=crop&q=80&w=600',
+                      'text': 'تجنب استخدام الهاتف أثناء القيادة'
+                    },
+                  ].map((item) {
+                    return Builder(
+                      builder: (BuildContext context) {
+                        return Container(
+                          width: MediaQuery.of(context).size.width,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(16),
+                            image: DecorationImage(
+                              image: NetworkImage(item['img']!),
+                              fit: BoxFit.cover,
+                              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.darken),
+                            ),
+                          ),
+                          child: Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Text(
+                                item['text']!,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }).toList(),
+                ),
                 const Spacer(flex: 1),
+
 
                 // البطاقة الزجاجية الرئيسية (حالة السجل)
                 GlassCard(

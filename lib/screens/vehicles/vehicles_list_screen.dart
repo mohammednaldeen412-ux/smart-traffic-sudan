@@ -186,7 +186,7 @@ class _VehiclesListScreenState extends State<VehiclesListScreen> {
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? (c.isDark ? Colors.white : Colors.white) : c.text.withValues(alpha: 0.7),
+                color: isSelected ? (c.isDark ? Colors.white : Colors.black) : c.text.withValues(alpha: 0.7),
               ),
               textAlign: TextAlign.center,
             ),

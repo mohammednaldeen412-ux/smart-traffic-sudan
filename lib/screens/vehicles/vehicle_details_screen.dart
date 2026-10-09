@@ -10,7 +10,7 @@ import '../../widgets/glass_card.dart';
 import '../../widgets/sudan_plate_widget.dart';
 import '../violations/violations_list_screen.dart';
 
-class VehicleDetailsScreen extends StatelessWidget {
+class VehicleDetailsScreen extends StatefulWidget {
   final VehicleModel vehicle;
 
   const VehicleDetailsScreen({
@@ -19,7 +19,27 @@ class VehicleDetailsScreen extends StatelessWidget {
   });
 
   @override
+  State<VehicleDetailsScreen> createState() => _VehicleDetailsScreenState();
+}
+
+class _VehicleDetailsScreenState extends State<VehicleDetailsScreen> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(seconds: 10))..repeat();
+  }
+  
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final vehicle = widget.vehicle;
     final c = GlassColors.of(context);
     final dateFormat = DateFormat('yyyy/MM/dd', context.isArabic ? 'ar' : 'en');
     final formattedExpiry = vehicle.licenseExpiryDate != null
@@ -217,15 +237,6 @@ class VehicleDetailsScreen extends StatelessWidget {
                         title: context.tr('registration_card'),
                         subtitle: context.tr('search_certificate'),
                         icon: Icons.assignment_rounded,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _buildDocCard(
-                        context,
-                        title: context.tr('driving_license_doc'),
-                        subtitle: context.tr('owner_license'),
-                        icon: Icons.badge_rounded,
                       ),
                     ),
                   ],

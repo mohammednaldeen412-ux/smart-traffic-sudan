@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace = "com.example.smart_traffic_sudan"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

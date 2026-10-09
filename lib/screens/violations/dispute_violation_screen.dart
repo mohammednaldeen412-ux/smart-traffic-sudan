@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import '../../core/services/image_upload_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../core/localization/app_strings.dart';
@@ -23,6 +26,7 @@ class DisputeViolationScreen extends StatefulWidget {
 
 class _DisputeViolationScreenState extends State<DisputeViolationScreen> {
   final _descriptionController = TextEditingController();
+  File? _selectedImage;
   bool _isSubmitting = false;
 
   Future<void> _submitDispute() async {
@@ -212,6 +216,25 @@ class _DisputeViolationScreenState extends State<DisputeViolationScreen> {
                   ),
                 ),
                 
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  onPressed: () async {
+                    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery, imageQuality: 70);
+                    if (pickedFile != null) {
+                      setState(() {
+                        _selectedImage = File(pickedFile.path);
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.add_a_photo_outlined),
+                  label: Text(_selectedImage == null ? 'إرفاق إثبات / صورة' : 'تم اختيار الإثبات ✔'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: c.text,
+                    side: BorderSide(color: c.text.withValues(alpha: 0.3)),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))
+                  ),
+                ),
                 const SizedBox(height: 24),
                 
                 SizedBox(

@@ -66,7 +66,7 @@ class AuthService extends ChangeNotifier {
         final isAdmin = defaultRole == UserRole.admin || (user?.email?.toLowerCase().contains('admin') ?? false);
         _currentUser = UserModel(
           id: uid,
-          fullName: user?.displayName ?? (isOfficer ? 'الملازم أول / أحمد علي' : (isAdmin ? 'مدير النظام' : 'المواطن')),
+          fullName: user?.displayName ?? (isOfficer ? 'الملازم أول / أحمد علي' : (isAdmin ? 'مدير النظام' : 'أحمد عبد الله')),
           nationalId: '1029384756',
           phoneNumber: '0912345678',
           email: user?.email ?? '',
