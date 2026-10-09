@@ -24,6 +24,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _securityAnswerController = TextEditingController();
+  String _selectedSecurityQuestion = 'ما هو اسم أول مدرسة التحقت بها؟';
   
   final _cityController = TextEditingController();
   final _addressController = TextEditingController();
@@ -277,7 +279,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
                       onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                     ),
-                    validator: (v) => v!.length < 6 ? 'كلمة المرور قصيرة جداً' : null,
+                    validator: (v) {
+                        if (v == null || v.isEmpty) return 'مطلوب';
+                        if (v.length < 8) return 'يجب أن تكون 8 أحرف على الأقل';
+                        if (!RegExp(r'(?=.*[A-Z])').hasMatch(v)) return 'يجب أن تحتوي على حرف كبير';
+                        if (!RegExp(r'(?=.*[a-z])').hasMatch(v)) return 'يجب أن تحتوي على حرف صغير';
+                        if (!RegExp(r'(?=.*[0-9])').hasMatch(v)) return 'يجب أن تحتوي على رقم';
+                        if (!RegExp(r'(?=.*[@$!%*?&\s])').hasMatch(v)) return 'يجب أن تحتوي على رمز أو مسافة';
+                        return null;
+                      },
                   ),
                   const SizedBox(height: 16),
                   CustomTextField(
@@ -288,6 +298,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     obscureText: _obscurePassword,
                     validator: (v) => v != _passwordController.text ? 'كلمات المرور غير متطابقة' : null,
                   ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<String>(
+                      value: _selectedSecurityQuestion,
+                      decoration: InputDecoration(
+                        labelText: 'سؤال الأمان (لاستعادة الحساب)',
+                        prefixIcon: const Icon(Icons.security),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                      items: [
+                        'ما هو اسم أول مدرسة التحقت بها؟',
+                        'في أي مدينة ولد والدك؟',
+                        'ما هو اسم حيوانك الأليف الأول؟'
+                      ].map((s) => DropdownMenuItem(value: s, child: Text(s, style: const TextStyle(fontSize: 13)))).toList(),
+                      onChanged: (val) => setState(() => _selectedSecurityQuestion = val!),
+                    ),
+                    const SizedBox(height: 16),
+                    CustomTextField(
+                      controller: _securityAnswerController,
+                      label: 'إجابة سؤال الأمان',
+                      hint: '',
+                      prefixIcon: Icons.question_answer_outlined,
+                      validator: (v) => v!.isEmpty ? 'مطلوب لاسترداد الحساب' : null,
+                    ),
+                    const SizedBox(height: 16),
+
                   const SizedBox(height: 16),
                   CheckboxListTile(
                     value: _agreedToTerms,

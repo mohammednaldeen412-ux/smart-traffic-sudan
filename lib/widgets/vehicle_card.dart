@@ -194,7 +194,7 @@ class VehicleCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.surface,
+        color: (Theme.of(context).brightness == Brightness.dark ? AppColors.surface : AppColors.lightCardElevated),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: (Theme.of(context).brightness == Brightness.dark ? AppColors.cardBorder : AppColors.lightCardBorder), width: 0.8),
       ),
